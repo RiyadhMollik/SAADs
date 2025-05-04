@@ -40,7 +40,7 @@ const FarmerRegistration = () => {
     cultivationSeason: [],
     cropType: [],
     role: "farmer",
-    saaoId: authUser?.RegistedUser?.id || null
+    userId: authUser?.id || null
   });
   // Base API URL
 
@@ -324,6 +324,9 @@ const FarmerRegistration = () => {
                 <option value={100}>Show 100</option>
                 <option value={500}>Show 500</option>
                 <option value={1000}>Show 1000</option>
+                <option value={1500}>Show 1500</option>
+                <option value={2000}>Show 2000</option>
+                <option value={2500}>Show 2500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>

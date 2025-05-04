@@ -77,7 +77,7 @@ const UAORegistration = () => {
 
         setDivisions(
           data.sort((a, b) => a.localeCompare(b))
-        );        
+        );
       } catch (error) {
         console.error("Error fetching division data:", error);
       }
@@ -378,6 +378,9 @@ const UAORegistration = () => {
                 <option value={100}>Show 100</option>
                 <option value={500}>Show 500</option>
                 <option value={1000}>Show 1000</option>
+                <option value={1500}>Show 1500</option>
+                <option value={2000}>Show 2000</option>
+                <option value={2500}>Show 2500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -573,7 +576,7 @@ const UAORegistration = () => {
                     value={formData.alternateContact}
                     onChange={handleChange}
                   />
-                 
+
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>

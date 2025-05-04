@@ -1,6 +1,7 @@
 // models/farmer.js
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
+import User from "./user.js";
 
 const Farmer = sequelize.define("Farmer", {
   farmerName: {
@@ -55,7 +56,6 @@ const Farmer = sequelize.define("Farmer", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  // Location Information
   village: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -145,7 +145,7 @@ const Farmer = sequelize.define("Farmer", {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  // Stage-wise Crop Management
+
   plantingDate: {
     type: DataTypes.DATE,
     allowNull: true,
@@ -174,6 +174,17 @@ const Farmer = sequelize.define("Farmer", {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  userId: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: "id",
+    },
+    allowNull: false,
+  },
 });
+
+Farmer.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(Farmer, { foreignKey: "userId" });
 
 export default Farmer;
