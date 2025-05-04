@@ -1,7 +1,7 @@
 import { Sequelize } from 'sequelize';
 
 // Database configuration
-const sequelize = new Sequelize('iinms', 'iinms_admin', 'inms@#975', {
+const sequelize = new Sequelize('iinms', 'iinms_admin', 'iinms@#975', {
   host: 'localhost',
   dialect: 'mysql',
   logging: console.log,
