@@ -101,8 +101,8 @@ const Sidebar = () => {
             <li><Link className="hover:text-green-700" to="/district">Add District</Link></li>
             <li><Link className="hover:text-green-700" to="/division">Add Division</Link></li>
             <li><Link className="hover:text-green-700" to="/region">Add Region</Link></li>
-            <li><Link className="hover:text-green-700" to="/csa">Add CSA</Link></li>
-            <li><Link className="hover:text-green-700" to="/aez"> Add AEZ</Link></li>
+            {/* <li><Link className="hover:text-green-700" to="/csa">Add CSA</Link></li>
+            <li><Link className="hover:text-green-700" to="/aez"> Add AEZ</Link></li> */}
             <li><Link className="hover:text-green-700" to="/hotspot">Add Hotspot</Link></li>
             <li><Link className="hover:text-green-700" to="/weather-parameter"> Add Weather Parameter</Link></li>
             <li><Link className="hover:text-green-700" to="/user">Add User</Link></li>

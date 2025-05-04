@@ -609,17 +609,9 @@ const SAAORegistration = () => {
                   <input
                     type="text"
                     name="alternateContact"
-                    placeholder="Alternate Contact"
+                    placeholder="Official Contact"
                     className="border w-full p-2 rounded"
                     value={formData.alternateContact}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="nationalId"
-                    placeholder="National ID"
-                    className="border w-full p-2 rounded"
-                    value={formData.nationalId}
                     onChange={handleChange}
                   />
                 </div>

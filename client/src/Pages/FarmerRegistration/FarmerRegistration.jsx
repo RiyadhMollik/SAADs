@@ -14,8 +14,8 @@ const FarmerRegistration = () => {
   const [selectedcrop, setSelectedcrop] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [otherSoilType , setOtherSoilType] = useState('');
-  const [otherIrrigation , setOtherIrrigation] = useState('');
+  const [otherSoilType, setOtherSoilType] = useState('');
+  const [otherIrrigation, setOtherIrrigation] = useState('');
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -27,34 +27,22 @@ const FarmerRegistration = () => {
     email: "",
     alternateContact: "",
     nationalId: "",
-    // Location Information
-    upazila: "",
-    district: "",
-    division: "",
-    region: "",
+    // Location Information,
+    region: authUser?.RegistedUser?.region,
+    block: authUser?.RegistedUser?.block || "",
+    union: authUser?.RegistedUser?.union || "",
+    upazila: authUser?.RegistedUser?.upazila || "",
+    district: authUser?.RegistedUser?.district || "",
+    division: authUser?.RegistedUser?.division || "",
+    // coordinates: authUser?.RegistedUser?.coordinates || "",
+    hotspot: authUser?.RegistedUser?.hotspot || [],
     coordinates: "",
-    hotspot: '',
+    cultivationSeason: [],
+    cropType: [],
     role: "farmer",
+    saaoId: authUser?.RegistedUser?.id || null
   });
-  console.log(authUser);
-
   // Base API URL
-  const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
-
-  // Fetch all hotspots
-  const fetchRoles = async () => {
-    try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-      setHotspot(data.reverse());
-    } catch (error) {
-      console.error("Error fetching hotspots:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchRoles();
-  }, []);
 
   const fetchFarmers = async () => {
     try {
@@ -152,6 +140,7 @@ const FarmerRegistration = () => {
     setIsFarmerModalOpen(false);
   };
   const registerFarmer = async () => {
+    console.log("Form Data: ", formData);
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
@@ -170,7 +159,7 @@ const FarmerRegistration = () => {
         const data = await response.json();
         setIsFarmerModalOpen(false);
         setIsEdit(false); // reset edit mode
-        console.log("SAAO saved successfully:", data);
+        console.log("farmer saved successfully:", data);
         fetchFarmers(); // Refresh the list
       } else {
         throw new Error("Failed to save SAAO");
@@ -266,10 +255,11 @@ const FarmerRegistration = () => {
       setSelectedseason(updatedSeason);
       setFormData({
         ...formData,
-        hotspot: updatedSeason, // Update the formData with the new hotspots list
+        cultivationSeason: updatedSeason.join(', '), // Convert array to string
       });
     }
-  }
+  };
+
   const handleDelete = (valueToDelete) => {
     // Remove selected value
     const updatedSeason = selectedseason.filter((value) => value !== valueToDelete);
@@ -283,10 +273,11 @@ const FarmerRegistration = () => {
       setSelectedcrop(updatedSeason);
       setFormData({
         ...formData,
-        hotspot: updatedSeason, // Update the formData with the new hotspots list
+        majorCrops: updatedSeason.join(', '), // Convert array to string
       });
     }
-  }
+  };
+
   const handleDeleteCrops = (valueToDelete) => {
     // Remove selected value
     const updatedSeason = selectedcrop.filter((value) => value !== valueToDelete);
@@ -682,8 +673,8 @@ const FarmerRegistration = () => {
                         name="irrigationPracticesOthers"
                         placeholder="Others"
                         className="border w-full p-2 rounded"
-                        value={formData.irrigationPracticesOthers}
-                        onChange={handleChange}
+                        value={otherIrrigation}
+                        onChange={(e) => setOtherIrrigation(e.target.value)}
                       />
                     )
                   }
@@ -708,8 +699,8 @@ const FarmerRegistration = () => {
                         name="soilTypeOthers"
                         placeholder="Others"
                         className="border w-full p-2 rounded"
-                        value={formData.soilTypeOthers}
-                        onChange={handleChange}
+                        value={otherSoilType}
+                        onChange={(e) => setOtherSoilType(e.target.value)}
                       />
                     )
                   }

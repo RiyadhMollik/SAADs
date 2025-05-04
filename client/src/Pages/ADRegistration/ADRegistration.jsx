@@ -482,7 +482,7 @@ const ADRegistration = () => {
                   <input
                     type="text"
                     name="alternateContact"
-                    placeholder="Alternate Contact"
+                    placeholder="Official Contact"
                     className="border w-full p-2 rounded"
                     value={formData.alternateContact}
                     onChange={handleChange}

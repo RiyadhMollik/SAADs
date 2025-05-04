@@ -545,19 +545,12 @@ const AdminRegistration = () => {
                   <input
                     type="text"
                     name="alternateContact"
-                    placeholder="Alternate Contact"
+                    placeholder="Official Contact"
                     className="border w-full p-2 rounded"
                     value={formData.alternateContact}
                     onChange={handleChange}
                   />
-                  <input
-                    type="text"
-                    name="nationalId"
-                    placeholder="National ID"
-                    className="border w-full p-2 rounded"
-                    value={formData.nationalId}
-                    onChange={handleChange}
-                  />
+                  
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>

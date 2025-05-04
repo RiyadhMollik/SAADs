@@ -62,13 +62,9 @@ const Report = () => {
         { id: 4, name: 'Bob Brown', age: 40 },
     ];
 
-    // Dynamic search filtering
-    const filteredData = data.filter(item =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     // Sorting the table data
-    const sortedData = [...filteredData].sort((a, b) => {
+    const sortedData = [...data].sort((a, b) => {
         if (sortOrder === 'asc') {
             return a.age - b.age;
         }
