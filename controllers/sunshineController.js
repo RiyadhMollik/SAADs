@@ -5,7 +5,7 @@ import moment from 'moment';
 
 // Load CSV data into memory
 let sunshineData = [];
-const csvFilePath = 'D:/Project/iinms/controllers/sunshine.csv';
+const csvFilePath = '/var/www/SAADs/controllers/sunshine.csv';
 
 fs.createReadStream(csvFilePath)
   .pipe(csvParser())
