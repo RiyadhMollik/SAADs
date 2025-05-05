@@ -16,6 +16,13 @@ const FarmerRegistration = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [otherSoilType, setOtherSoilType] = useState('');
   const [otherIrrigation, setOtherIrrigation] = useState('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalFarmers: 0,
+    limit: 10,
+  });
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -46,14 +53,20 @@ const FarmerRegistration = () => {
 
   const fetchFarmers = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer");
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}`);
       console.log(response);
 
       if (response.ok) {
         const data = await response.json();
         console.log(data);
 
-        setFarmerList(data);
+        setFarmerList(data.data);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalFarmers: data.pagination.totalFarmers,
+          limit: data.pagination.limit,
+        });
       } else {
         throw new Error("Failed to fetch farmers");
       }
@@ -64,7 +77,7 @@ const FarmerRegistration = () => {
 
   useEffect(() => {
     fetchFarmers();
-  }, []);
+  }, [page, rowsPerPage]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -101,6 +114,7 @@ const FarmerRegistration = () => {
     { name: "Irrigation Practices", visible: true },
     { name: "Fertilizer Usage", visible: true },
     { name: "Soil Type", visible: true },
+    { name: "SAAO", visible: true },
     { name: "Action", visible: true },
   ];
 
@@ -139,8 +153,8 @@ const FarmerRegistration = () => {
   const closeModal = () => {
     setIsFarmerModalOpen(false);
   };
-  const registerFarmer = async () => {
-    console.log("Form Data: ", formData);
+  const registerFarmer = async (e) => {
+
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
@@ -161,6 +175,7 @@ const FarmerRegistration = () => {
         setIsEdit(false); // reset edit mode
         console.log("farmer saved successfully:", data);
         fetchFarmers(); // Refresh the list
+        e.form.reset();
       } else {
         throw new Error("Failed to save SAAO");
       }
@@ -210,7 +225,7 @@ const FarmerRegistration = () => {
       messengerId: SAAO.messengerId || "",
       email: SAAO.email || "",
       alternateContact: SAAO.alternateContact || "",
-      // nationalId: SAAO.nationalId || "",
+      nationalId: SAAO.nationalId || "",
       // agrilCard: SAAO.agrilCard || "",
       educationStatus: SAAO.educationStatus || "",
       // Location
@@ -247,42 +262,7 @@ const FarmerRegistration = () => {
       eduOther: SAAO.eduOther || "",
     });
   };
-  const handleSelect = (e) => {
-    const selectedValue = e.target.value;
-    // Check if the value is already selected
-    if (!selectedseason.includes(selectedValue)) {
-      const updatedSeason = [...selectedseason, selectedValue];
-      setSelectedseason(updatedSeason);
-      setFormData({
-        ...formData,
-        cultivationSeason: updatedSeason.join(', '), // Convert array to string
-      });
-    }
-  };
 
-  const handleDelete = (valueToDelete) => {
-    // Remove selected value
-    const updatedSeason = selectedseason.filter((value) => value !== valueToDelete);
-    setSelectedseason(updatedSeason);
-  };
-  const handleselectCrops = (e) => {
-    const selectedValue = e.target.value;
-    // Check if the value is already selected
-    if (!selectedcrop.includes(selectedValue)) {
-      const updatedSeason = [...selectedcrop, selectedValue];
-      setSelectedcrop(updatedSeason);
-      setFormData({
-        ...formData,
-        majorCrops: updatedSeason.join(', '), // Convert array to string
-      });
-    }
-  };
-
-  const handleDeleteCrops = (valueToDelete) => {
-    // Remove selected value
-    const updatedSeason = selectedcrop.filter((value) => value !== valueToDelete);
-    setSelectedcrop(updatedSeason);
-  };
   return (
     <div className="min-h-screen w-full bg-gray-100">
 
@@ -322,11 +302,6 @@ const FarmerRegistration = () => {
                 <option value={25}>Show 25</option>
                 <option value={50}>Show 50</option>
                 <option value={100}>Show 100</option>
-                <option value={500}>Show 500</option>
-                <option value={1000}>Show 1000</option>
-                <option value={1500}>Show 1500</option>
-                <option value={2000}>Show 2000</option>
-                <option value={2500}>Show 2500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -343,13 +318,16 @@ const FarmerRegistration = () => {
 
           {/* Table */}
           <div className="max-w-[150vh]  overflow-x-scroll">
-            <table className="table-auto w-full mt-4 border rounded ">
+            <table className="table-auto w-full mt-4 border rounded">
               <thead>
                 <tr className="bg-gray-200">
                   {columns
                     .filter((col) => col.visible)
-                    .map((col) => (
-                      <th key={col.name} className="border px-4 py-2">
+                    .map((col, index) => (
+                      <th
+                        key={col.name}
+                        className={`border px-4 py-2 ${index === 0 ? "sticky left-0 bg-gray-200 " : ""}`}
+                      >
                         {col.name}
                       </th>
                     ))}
@@ -359,9 +337,12 @@ const FarmerRegistration = () => {
                 {filteredFarmers.slice(0, rowsPerPage).map((farmer, index) => (
                   <tr key={farmer.id}>
                     {columns
-                      .filter((col) => col.visible)
-                      .map((col) => (
-                        <td key={col.name} className="border px-4 py-2">
+                      .filter((col, colIndex) => col.visible)
+                      .map((col, colIndex) => (
+                        <td
+                          key={col.name}
+                          className={`border px-4 py-2 ${colIndex === 0 ? "sticky left-0 bg-white " : ""}`}
+                        >
                           {/* Render farmer data dynamically based on column names */}
                           {col.name === "ID" && index + 1}
                           {col.name === "Farmer Name" && farmer.name}
@@ -373,8 +354,6 @@ const FarmerRegistration = () => {
                           {col.name === "Messenger ID" && farmer.messengerId}
                           {col.name === "Email" && farmer.email}
                           {col.name === "Alternate Contact" && farmer.alternateContact}
-                          {/* {col.name === "National ID" && farmer.nationalId}
-                          {col.name === "Agriculture Card" && farmer.agrilCard} */}
                           {col.name === "Education Status" && farmer.educationStatus}
                           {col.name === "Village" && farmer.village}
                           {col.name === "Block" && farmer.block}
@@ -383,7 +362,6 @@ const FarmerRegistration = () => {
                           {col.name === "District" && farmer.district}
                           {col.name === "Division" && farmer.division}
                           {col.name === "Region" && farmer.region}
-                          {/* {col.name === "Coordinates" && farmer.coordinates} */}
                           {col.name === "Hotspot" && farmer.hotspot && farmer.hotspot.join(", ")}
                           {col.name === "Farm Size" && farmer.farmSize}
                           {col.name === "Land Type" && farmer.landType}
@@ -395,6 +373,7 @@ const FarmerRegistration = () => {
                           {col.name === "Irrigation Practices" && farmer.irrigationPractices}
                           {col.name === "Fertilizer Usage" && farmer.fertilizerUsage}
                           {col.name === "Soil Type" && farmer.soilType}
+                          {col.name === "SAAO" && ''}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
                               <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(farmer)}>
@@ -411,6 +390,27 @@ const FarmerRegistration = () => {
                 ))}
               </tbody>
             </table>
+
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={pagination.currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <span>
+              Page
+              {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
           </div>
         </div>
 
@@ -453,27 +453,30 @@ const FarmerRegistration = () => {
               >
                 &times;
               </button>
-              <form>
+              <form onSubmit={registerFarmer}>
                 {/* Step 1: Farmer Identification */}
-                <div className={`space-y-4 ${currentStep === 1 ? "" : "hidden"}`}>
-                  <h1 className="text-xl">Personal Information</h1>
+                <div>
+                  <label className="block mt-4" htmlFor="">Farmer's Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="name"
-                    placeholder="Farmer's Name"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.name}
                     onChange={handleChange}
                     required
                   />
+                  <label className="block mt-4" htmlFor="">Father's Name <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="fatherName"
-                    placeholder="Father's Name"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.fatherName}
                     onChange={handleChange}
+                    required
                   />
+                  <label className="block mt-4" htmlFor="">Gender</label>
                   <select
                     name="gender"
                     className="border w-full p-2 rounded"
@@ -485,64 +488,55 @@ const FarmerRegistration = () => {
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
+                  <label className="block mt-4" htmlFor="">Age <span className="text-red-500">*</span></label>
                   <input
                     type="number"
                     name="age"
-                    placeholder="Age"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.age}
                     onChange={handleChange}
                     required
                   />
+                  <label className="block mt-4" htmlFor="">Mobile Number <span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="mobileNumber"
-                    placeholder="Mobile Number"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.mobileNumber}
                     onChange={handleChange}
                     required
                   />
+                  <label className="block mt-4" htmlFor="">NID Number</label>
+                  <input
+                    type="text"
+                    name="mobileNumber"
+                    placeholder=""
+                    className="border w-full p-2 rounded"
+                    value={formData.nationalId}
+                    onChange={handleChange}
+
+                  />
+                  <label className="block mt-4" htmlFor="">WhatsApp Number</label>
                   <input
                     type="text"
                     name="whatsappNumber"
-                    placeholder="WhatsApp Number"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.whatsappNumber}
                     onChange={handleChange}
                   />
-                  <input
-                    type="text"
-                    name="imoNumber"
-                    placeholder="IMO Number"
-                    className="border w-full p-2 rounded"
-                    value={formData.imoNumber}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="text"
-                    name="messengerId"
-                    placeholder="Messenger ID"
-                    className="border w-full p-2 rounded"
-                    value={formData.messengerId}
-                    onChange={handleChange}
-                  />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    className="border w-full p-2 rounded"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
+                  <label className="block mt-4" htmlFor="">Alternate Contact</label>
                   <input
                     type="text"
                     name="alternateContact"
-                    placeholder="Alternate Contact"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.alternateContact}
                     onChange={handleChange}
                   />
+                  <label className="block mt-4" htmlFor="">Education Status</label>
                   <select
                     name="educationStatus"
                     className="border w-full p-2 rounded"
@@ -561,207 +555,47 @@ const FarmerRegistration = () => {
 
                       onChange={handleChange} />
                   }
+                  <label className="block mt-4" htmlFor="">Village/Locality</label>
                   <input
                     type="text"
                     name="village"
-                    placeholder="Village/Locality"
+                    placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.village}
                     onChange={handleChange}
                   />
-                </div>
-
-                {/* Step 3: Rice Crop Details */}
-                <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
-                  <h1 className="text-xl">Farming Information</h1>
+                  <label className="block mt-4" htmlFor="">Farm Size (in decimal)</label>
                   <input
                     type="text"
                     name="farmSize"
-                    placeholder="Farm Size (in acres/hectares)"
-                    className="border w-full p-2 rounded"
+                    placeholder=""
+                    className="border w-full p-2  rounded"
                     value={formData.farmSize}
                     onChange={handleChange}
                   />
-                  <select
-                    name="landType"
-                    className="border w-full p-2 rounded"
-                    value={formData.landType}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">Select Land Type</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                  </select>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {selectedseason.map((seasonName) => (
-                      <div key={seasonName} className="flex items-center bg-gray-200 p-1 rounded">
-                        <span>{seasonName}</span>
-                        <button
-                          type="button"
-                          className="ml-2 text-red-500"
-                          onClick={() => handleDelete(seasonName)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <select
-                    name="cultivationSeason"
-                    className="border w-full p-2 rounded"
-                    value={formData.cultivationSeason}
-                    onChange={handleSelect}
-                    required
-                  >
-                    <option value="">Select Season</option>
-                    <option value="aus">Aus</option>
-                    <option value="aman">Aman</option>
-                    <option value="boro">Boro</option>
-                  </select>
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {selectedcrop.map((seasonName) => (
-                      <div key={seasonName} className="flex items-center bg-gray-200 p-1 rounded">
-                        <span>{seasonName}</span>
-                        <button
-                          type="button"
-                          className="ml-2 text-red-500"
-                          onClick={() => handleDeleteCrops(seasonName)}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <select
-                    name="majorCrops"
-                    className="border w-full p-2 rounded"
-                    value={formData.majorCrops}
-                    onChange={handleselectCrops}
-                  >
-                    <option value="">Select Major Crops</option>
-                    <option value="rice">Rice</option>
-                    <option value="wheat">Wheat</option>
-                    <option value="maize">Maize</option>
-                    <option value="vegetables">Vegetables</option>
-                  </select>
-
-                  <select
-                    name="plantingMethod"
-                    className="border w-full p-2 rounded"
-                    value={formData.plantingMethod}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Planting Method</option>
-                    <option value="directSeeding">Direct Seeding</option>
-                    <option value="transplanting">Transplanting</option>
-                  </select>
-
-                  <select
-                    name="irrigationPractices"
-                    className="border w-full p-2 rounded"
-                    value={formData.irrigationPractices}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Irrigation Practices</option>
-                    <option value="AWD">AWD</option>
-                    <option value="continuousFlooding">Continuous Flooding</option>
-                    <option value="others">Others</option>
-                  </select>
-                  {
-                    formData.irrigationPractices === "others" && (
-                      <input
-                        type="text"
-                        name="irrigationPracticesOthers"
-                        placeholder="Others"
-                        className="border w-full p-2 rounded"
-                        value={otherIrrigation}
-                        onChange={(e) => setOtherIrrigation(e.target.value)}
-                      />
-                    )
-                  }
-                  <select
-                    name="soilType"
-                    className="border w-full p-2 rounded"
-                    value={formData.soilType}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Soil Type</option>
-                    <option value="clay">Clay</option>
-                    <option value="clayLoam">Clay Loam</option>
-                    <option value="sandy">Sandy</option>
-                    <option value="silt">Silt</option>
-                    <option value="sandyLoam">Sandy Loam</option>
-                    <option value="others">Others</option>
-                  </select>
-                  {
-                    formData.soilType === "others" && (
-                      <input
-                        type="text"
-                        name="soilTypeOthers"
-                        placeholder="Others"
-                        className="border w-full p-2 rounded"
-                        value={otherSoilType}
-                        onChange={(e) => setOtherSoilType(e.target.value)}
-                      />
-                    )
-                  }
-                  <input
-                    type="text"
-                    name="croppingPattern"
-                    placeholder="Cropping Pattern"
-                    className="border w-full p-2 rounded"
-                    value={formData.croppingPattern}
-                    onChange={handleChange}
-                  />
-
-                  <input
-                    type="text"
-                    name="riceVarieties"
-                    placeholder="Rice Varieties"
-                    className="border w-full p-2 rounded"
-                    value={formData.riceVarieties}
-                    onChange={handleChange}
-                  />
-
+                  <label className="block mt-4" htmlFor="">Total Urea Usage (kg/bigha)</label>
                   <input
                     type="text"
                     name="fertilizerUsage"
-                    placeholder="total Urea usage (kg)/season"
-                    className="border w-full p-2 rounded"
+                    placeholder=""
+                    className="border w-full p-2  rounded"
                     value={formData.fertilizerUsage}
                     onChange={handleChange}
                   />
-
                 </div>
 
-              </form>
 
-              {/* Navigation Buttons */}
-              <div className="flex justify-between space-x-4 mt-4">
-                <button
-                  className={`bg-gray-400 text-white px-4 py-2 rounded ${currentStep === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-500"
-                    }`}
-                  onClick={prevStep}
-                  disabled={currentStep === 1}
-                >
-                  Previous
-                </button>
-                {currentStep === 2 ?
+                <div className="flex justify-end mt-4">
                   <button
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={registerFarmer}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    type="submit"
+
                   >
                     Submit
-                  </button> :
-                  <button
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={nextStep}
-                  >
-                    Next
-                  </button>}
-              </div>
+                  </button>
+                </div>
+              </form>
+
             </div>
           </div>
         )}

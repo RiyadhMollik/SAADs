@@ -15,6 +15,13 @@ const ADRegistration = () => {
   const [selectedHotspots, setSelectedHotspots] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalFarmers: 0,
+    limit: 10,
+  });
   const handleUseMyLocation = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -41,13 +48,13 @@ const ADRegistration = () => {
           `https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots}`
         );
         console.log(response);
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch region data");
         }
         const data = await response.json();
         console.log(data);
-        
+
         setRegions(data);
       } catch (error) {
         console.error("Error fetching region data:", error);
@@ -93,10 +100,16 @@ const ADRegistration = () => {
   });
   const fetchADs = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/AD");
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/Ad?page=${page}&limit=${rowsPerPage}`);
       if (response.ok) {
         const data = await response.json();
-        setADList(data);
+        setADList(data.data);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalFarmers: data.pagination.totalFarmers,
+          limit: data.pagination.limit,
+        });
       } else {
         throw new Error("Failed to fetch ADs");
       }
@@ -107,7 +120,7 @@ const ADRegistration = () => {
 
   useEffect(() => {
     fetchADs();
-  }, []);
+  }, [page, rowsPerPage]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -369,6 +382,26 @@ const ADRegistration = () => {
                 ))}
               </tbody>
             </table>
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={pagination.currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <span>
+              Page
+              {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
           </div>
         </div>
 

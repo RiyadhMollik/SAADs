@@ -19,6 +19,13 @@ const SAAORegistration = () => {
   const [block, setBlock] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalFarmers: 0,
+    limit: 10,
+  });
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -58,7 +65,7 @@ const SAAORegistration = () => {
     fetchUnion();
   }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
   useEffect(() => {
-    if (!formData.union || !formData.upazila || !formData.district  || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
+    if (!formData.union || !formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
 
     const fetchBlock = async () => {
       try {
@@ -74,7 +81,7 @@ const SAAORegistration = () => {
     };
 
     fetchBlock();
-  }, [formData.union,formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+  }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
 
   useEffect(() => {
     if (!formData.district || !formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
@@ -204,11 +211,17 @@ const SAAORegistration = () => {
   };
   const fetchSAAOs = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         console.log(data);
-        setSAAOList(data);
+        setSAAOList(data.data);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalFarmers: data.pagination.totalFarmers,
+          limit: data.pagination.limit,
+        });
       } else {
         throw new Error("Failed to fetch SAAOs");
       }
@@ -219,7 +232,7 @@ const SAAORegistration = () => {
 
   useEffect(() => {
     fetchSAAOs();
-  }, []);
+  }, [page, rowsPerPage]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -496,6 +509,27 @@ const SAAORegistration = () => {
                 ))}
               </tbody>
             </table>
+
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={pagination.currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <span>
+              Page
+              {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
           </div>
         </div>
 

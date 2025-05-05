@@ -67,15 +67,35 @@ export const deleteFarmer = async (req, res) => {
 
 // Get farmers by role
 export const getFarmersByRole = async (req, res) => {
-    try {
-      const { role } = req.params;
-      const farmers = await Farmer.findAll({ where: { role } });
-      if (farmers.length === 0) {
-        return res.status(404).json({ message: "No farmers found with this role" });
-      }
-      res.status(200).json(farmers);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  try {
+    const { role } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+    const offset = (page - 1) * limit;
+    const parsedLimit = parseInt(limit, 10);
+    
+    const farmers = await Farmer.findAll({
+      where: { role },
+      limit: parsedLimit,
+      offset: offset,
+    });
+
+    if (farmers.length === 0) {
+      return res.status(404).json({ message: "No farmers found with this role" });
     }
-  };
+    const totalFarmers = await Farmer.count({ where: { role } });
+    const totalPages = Math.ceil(totalFarmers / parsedLimit);
+    res.status(200).json({
+      data: farmers,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalFarmers,
+        limit: parsedLimit,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
   

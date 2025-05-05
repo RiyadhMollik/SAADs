@@ -20,6 +20,13 @@ const AdminRegistration = () => {
   // const [selectedRegion, setSelectedRegion] = useState(null);
   // const [selectedDivision, setSelectedDivision] = useState(null);
   // const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalFarmers: 0,
+    limit: 10,
+  });
   const [formData, setFormData] = useState({
     name: "",
     fatherName: "",
@@ -50,13 +57,13 @@ const AdminRegistration = () => {
           `https://iinms.brri.gov.bd/api/data/divisions?region=${formData.region}&hotspot=${selectedHotspots}`
         );
         console.log(response);
-        
+
         if (!response.ok) {
           throw new Error("Failed to fetch division data");
         }
         const data = await response.json();
         console.log(data);
-        
+
         setDivisions(data);
       } catch (error) {
         console.error("Error fetching division data:", error);
@@ -66,26 +73,26 @@ const AdminRegistration = () => {
     fetchDivision();
   }, [formData.region, selectedHotspots]);
 
-   useEffect(() => {
-     if (!formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
- 
-     const fetchDistrict = async () => {
-       try {
-         const response = await fetch(
-           `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
-         );
-         if (!response.ok) {
-           throw new Error("Failed to fetch district data");
-         }
-         const data = await response.json();
-         setDistricts(data);
-       } catch (error) {
-         console.error("Error fetching district data:", error);
-       }
-     };
- 
-     fetchDistrict();
-   }, [formData.division, formData.region, selectedHotspots]);
+  useEffect(() => {
+    if (!formData.division || !formData.region || !selectedHotspots) return; // Prevent unnecessary API calls
+
+    const fetchDistrict = async () => {
+      try {
+        const response = await fetch(
+          `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
+        );
+        if (!response.ok) {
+          throw new Error("Failed to fetch district data");
+        }
+        const data = await response.json();
+        setDistricts(data);
+      } catch (error) {
+        console.error("Error fetching district data:", error);
+      }
+    };
+
+    fetchDistrict();
+  }, [formData.division, formData.region, selectedHotspots]);
   useEffect(() => {
     if (!selectedHotspots) return; // Prevent unnecessary API calls
 
@@ -148,10 +155,16 @@ const AdminRegistration = () => {
   };
   const fetchAdmins = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/Admin");
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/Admin?page=${page}&limit=${rowsPerPage}`);
       if (response.ok) {
         const data = await response.json();
-        setAdminList(data);
+        setAdminList(data.data);
+        setPagination({
+          currentPage: data.pagination.currentPage,
+          totalPages: data.pagination.totalPages,
+          totalFarmers: data.pagination.totalFarmers,
+          limit: data.pagination.limit,
+        });
       } else {
         throw new Error("Failed to fetch Admins");
       }
@@ -162,7 +175,7 @@ const AdminRegistration = () => {
 
   useEffect(() => {
     fetchAdmins();
-  }, []);
+  }, [page, rowsPerPage]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -432,6 +445,26 @@ const AdminRegistration = () => {
               </tbody>
             </table>
           </div>
+          <div className="mt-4 flex justify-between items-center">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={pagination.currentPage === 1}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Previous
+            </button>
+            <span>
+              Page
+              {pagination.currentPage} of {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={pagination.currentPage === pagination.totalPages}
+              className="px-4 py-2 bg-gray-500 text-white rounded disabled:bg-gray-300"
+            >
+              Next
+            </button>
+          </div>
         </div>
 
         {/* Column Modal */}
@@ -554,7 +587,7 @@ const AdminRegistration = () => {
                     value={formData.alternateContact}
                     onChange={handleChange}
                   />
-                  
+
                 </div>
                 {/* Step 2: Location Information */}
                 <div className={`space-y-4 ${currentStep === 2 ? "" : "hidden"}`}>
