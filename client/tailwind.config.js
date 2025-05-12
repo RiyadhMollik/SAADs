@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        montserrat: ['Montserrat', 'sans-serif'],
+        sans: ['"Fira Sans"', 'sans-serif'],
       },
       fontWeight: {
         extralight: '200',

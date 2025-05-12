@@ -6,10 +6,10 @@ function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_URL = "https://iinms.brri.gov.bd/api/users/login";
+  const API_URL = "http://localhost:5000/api/users/login";
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     setError("");
     setIsLoading(true);
 
@@ -36,7 +36,6 @@ function Login() {
      
       // Redirect to the home page
       window.location.href = '/' 
-      alert("Login successful!");
     } catch (error) {
       alert(" Login failed. Please try again.");
       setError(error.message);
@@ -46,8 +45,16 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen w-screen flex items-center justify-center bg-[#1F4E3B]">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div
+      className="min-h-screen w-screen flex items-center justify-center bg-cover bg-center"
+      style={{
+        backgroundImage: "url('/pexels-elina-sazonova-1838552.jpg')", // Your background image URL
+      }}
+    >
+      {/* Black overlay */}
+      <div className="absolute inset-0 bg-black opacity-50"></div> {/* This is the black layer */}
+
+      <div className="bg-white p-8 rounded-lg shadow-lg w-96 opacity-90 z-10 relative"> {/* Add `relative` and `z-10` for layering */}
         <h2 className="text-2xl font-bold mb-6 text-center text-[#1F4E3B]">Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -90,7 +97,7 @@ function Login() {
           <div className="flex items-center justify-center">
             <button
               type="submit"
-              className={`bg-[#1F4E3B] text-white px-4 py-2 rounded-lg font-bold hover:bg-[#17432E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1F4E3B] ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+              className={`bg-[#1F4E3B] w-full text-white px-4 py-2 rounded-lg font-bold hover:bg-[#17432E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#1F4E3B] ${isLoading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
               disabled={isLoading}
             >

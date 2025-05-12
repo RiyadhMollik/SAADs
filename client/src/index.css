@@ -2,14 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap');
-
-* {
-  font-family: "Montserrat", sans-serif;
-  font-weight: 200; /* ExtraLight */
+body {
+  @apply font-sans;
 }
-
-
 
 /* Beautiful Custom Scrollbar */
 ::-webkit-scrollbar {

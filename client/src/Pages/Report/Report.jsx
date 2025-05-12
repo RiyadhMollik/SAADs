@@ -3,13 +3,13 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 // Register the necessary components including LineController
 ChartJS.register(
-    CategoryScale, 
-    LinearScale, 
-    PointElement, 
-    LineElement, 
-    Title, 
-    Tooltip, 
-    Legend, 
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
     LineController // Add LineController to the registration
 );
 
@@ -22,15 +22,16 @@ const Report = () => {
     const chartInstanceRef = useRef(null); // To store the chart instance
     const [selectedOption, setSelectedOption] = useState(""); // For storing selected option
     const [isDropdownOpen, setIsDropdownOpen] = useState(false); // To toggle the dropdown
-
+    const [data, setData] = useState([]);
+    const [refresh, setRefresh] = useState(false);
     // Fetch SAAO list
     const fetchSAAOs = async () => {
         try {
-            const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
+            const response = await fetch("http://localhost:5000/api/farmers/farmers/role/saao");
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
-                setSAAOList(data);
+                setSAAOList(data.data);
             } else {
                 throw new Error("Failed to fetch SAAOs");
             }
@@ -42,6 +43,26 @@ const Report = () => {
     useEffect(() => {
         fetchSAAOs();
     }, []);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch(`http://localhost:5000/api/farmers/farmers/stats/${selectedOption?.id}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data);
+                    setData(data);
+                } else {
+                    throw new Error("Failed to fetch data");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        fetchData();
+    }, [selectedOption, refresh]);
+
+
+    console.log(selectedOption);
 
     // Filter options based on search term
     const filteredOptions = SAAOList.filter(option =>
@@ -49,18 +70,13 @@ const Report = () => {
     );
 
     const handleSelect = (option) => {
-        setSelectedOption(option.name);
-        setSearchTerm(option.name + " - " + option.mobileNumber); 
-        setIsDropdownOpen(false); 
+        setSelectedOption(option);
+        setSearchTerm(option.name + " - " + option.mobileNumber);
+        setIsDropdownOpen(false);
+        setRefresh(!refresh);
     };
 
     // Sample data for the table
-    const data = [
-        { id: 1, name: 'John Doe', age: 28 },
-        { id: 2, name: 'Jane Smith', age: 34 },
-        { id: 3, name: 'Alice Johnson', age: 25 },
-        { id: 4, name: 'Bob Brown', age: 40 },
-    ];
 
 
     // Sorting the table data
@@ -75,14 +91,15 @@ const Report = () => {
     const toggleSortOrder = () => {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     };
-
+    const lebels = data.map((item) => item.date);
+    const values = data.map((item) => item.totalEntries);
     // Graph data (simple example using Chart.js)
     const chartData = {
-        labels: ['January', 'February', 'March', 'April', 'May'],
+        labels: lebels,
         datasets: [
             {
-                label: 'Monthly Growth',
-                data: [65, 59, 80, 81, 56],
+                label: 'Total Entries',
+                data: values,
                 fill: false,
                 borderColor: 'rgba(75,192,192,1)',
                 tension: 0.1,
@@ -115,13 +132,13 @@ const Report = () => {
                         x: {
                             title: {
                                 display: true,
-                                text: 'Months',
+                                text: 'Date',
                             },
                         },
                         y: {
                             title: {
                                 display: true,
-                                text: 'Growth',
+                                text: 'Entries',
                             },
                         },
                     },
@@ -139,35 +156,64 @@ const Report = () => {
 
     return (
         <div className="container mx-auto p-4">
-            {/* Input field as the first option */}
-            <div className="relative w-full mb-10">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown on click
-                />
-                {/* Dropdown list */}
-                {isDropdownOpen && (
-                    <div className="absolute top-10 w-full max-h-60 overflow-y-auto border border-gray-300 bg-white rounded-md shadow-lg">
-                        {filteredOptions.length === 0 ? (
-                            <div className="p-2 text-gray-500">No results found</div>
-                        ) : (
-                            filteredOptions.map((option, index) => (
-                                <div
-                                    key={index}
-                                    onClick={() => handleSelect(option)} // Set option on click
-                                    className="cursor-pointer p-2 hover:bg-gray-200"
-                                >
-                                    {option.name} - {option.mobileNumber}
-                                </div>
-                            ))
-                        )}
+            <div className='flex gap-5  justify-center items-center'>
+                <div className="relative w-full md:w-1/3 lg:w-1/3 mt-2">
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        className="w-full p-2 border border-gray-300 rounded-md"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown on click
+                    />
+                    {/* Dropdown list */}
+                    {isDropdownOpen && (
+                        <div className="absolute top-10 w-full max-h-60 overflow-y-auto border border-gray-300 bg-white rounded-md shadow-lg">
+                            {filteredOptions.length === 0 ? (
+                                <div className="p-2 text-gray-500">No results found</div>
+                            ) : (
+                                filteredOptions.map((option, index) => (
+                                    <div
+                                        key={index}
+                                        onClick={() => handleSelect(option)} // Set option on click
+                                        className="cursor-pointer p-2 hover:bg-gray-200"
+                                    >
+                                        {option.name} - {option.mobileNumber}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    )}
+                </div>
+                <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4 w-full md:w-2/3 lg:w-2/3 ">
+                    <div className=' w-full'>
+                        <label className="block mb-1 font-medium">Start Date</label>
+                        <input
+                            type="date"
+                            // value={startDateTime}
+                            // onChange={(e) => setStartDateTime(e.target.value)}
+                            className="border px-3 py-2 rounded w-full"
+                        />
                     </div>
-                )}
+                    <div className=' w-full'>
+                        <label className="block mb-1 font-medium">End Date</label>
+                        <input
+                            type="date"
+                            // value={endDateTime}
+                            // onChange={(e) => setEndDateTime(e.target.value)}
+                            className="border px-3 py-2 rounded w-full"
+                        />
+                    </div>
+                    <button
+                        // onClick={fetchTemperatureData}
+                        className="self-end bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                    >
+                        Filter
+                    </button>
+                </div>
             </div>
+            {/* Input field as the first option */}
+
 
             {/* Tab Buttons */}
             <div className="flex mb-4 w-full">
@@ -192,8 +238,8 @@ const Report = () => {
                     <table className="min-w-full border-collapse">
                         <thead>
                             <tr>
-                                <th className="px-4 py-2 border">Name</th>
-                                <th className="px-4 py-2 border">Data
+                                <th className="px-4 py-2 border">Date</th>
+                                <th className="px-4 py-2 border">Total Entries
                                     <button onClick={toggleSortOrder} className="ml-2">
                                         {sortOrder === 'asc' ? '↑' : '↓'}
                                     </button>
@@ -202,11 +248,15 @@ const Report = () => {
                         </thead>
                         <tbody>
                             {sortedData.map((item) => (
-                                <tr key={item.id}>
-                                    <td className="px-4 py-2 border">{item.name}</td>
-                                    <td className="px-4 py-2 border">{item.age}</td>
+                                <tr key={item.id} className='text-center'>
+                                    <td className="px-4 py-2 border">{item.date}</td>
+                                    <td className="px-4 py-2 border">{item.totalEntries}</td>
                                 </tr>
                             ))}
+                            <tr className='text-center bg-slate-200'>
+                                <td className="px-4 py-2 border">TOTAL</td>
+                                <td className="px-4 py-2 border">{sortedData.reduce((sum, item) => sum + item.totalEntries, 0)}</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>

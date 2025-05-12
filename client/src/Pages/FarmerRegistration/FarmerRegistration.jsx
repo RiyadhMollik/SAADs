@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { useAuthContext } from "../../Components/context/AuthProvider";
+import { use } from "react";
+import { ChevronsUpDown } from "lucide-react";
 
 const FarmerRegistration = () => {
   const [isFarmerModalOpen, setIsFarmerModalOpen] = useState(false);
@@ -10,12 +12,14 @@ const FarmerRegistration = () => {
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const { authUser, loadingUser } = useAuthContext();
-  const [selectedseason, setSelectedseason] = useState([]);
-  const [selectedcrop, setSelectedcrop] = useState([]);
+  const [selectedDeseases, setSelectedDeseases] = useState([]);
+  const [selectedInsects, setSelectedInsects] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
-  const [otherSoilType, setOtherSoilType] = useState('');
-  const [otherIrrigation, setOtherIrrigation] = useState('');
+  const [isOtherDiseasesOpen, setIsOtherDiseasesOpen] = useState(false);
+  const [isOtherInsectsOpen, setIsOtherInsectsOpen] = useState(false);
+  const [otherDiseases, setOtherDiseases] = useState("");
+  const [otherInsects, setOtherInsects] = useState("");
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     currentPage: 1,
@@ -44,16 +48,15 @@ const FarmerRegistration = () => {
     // coordinates: authUser?.RegistedUser?.coordinates || "",
     hotspot: authUser?.RegistedUser?.hotspot || [],
     coordinates: "",
-    cultivationSeason: [],
-    cropType: [],
     role: "farmer",
-    userId: authUser?.id || null
+    saaoId: authUser?.id || null,
+    saaoName: authUser?.name || null,
   });
   // Base API URL
 
   const fetchFarmers = async () => {
     try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}`);
+      const response = await fetch(`http://localhost:5000/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}`);
       console.log(response);
 
       if (response.ok) {
@@ -141,14 +144,6 @@ const FarmerRegistration = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const nextStep = () => {
-    if (currentStep < 4) setCurrentStep((prev) => prev + 1);
-    else console.log("Form Data: ", formData);
-  };
-
-  const prevStep = () => {
-    if (currentStep > 1) setCurrentStep((prev) => prev - 1);
-  };
   const resetForm = () => setCurrentStep(1);
   const closeModal = () => {
     setIsFarmerModalOpen(false);
@@ -158,8 +153,8 @@ const FarmerRegistration = () => {
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
-        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
-        : "https://iinms.brri.gov.bd/api/farmers/farmers";
+        ? `http://localhost:5000/api/farmers/farmers/${selectedId}`
+        : "http://localhost:5000/api/farmers/farmers";
 
       const response = await fetch(url, {
         method,
@@ -262,6 +257,63 @@ const FarmerRegistration = () => {
       eduOther: SAAO.eduOther || "",
     });
   };
+  const handleSelectDiseases = (e) => {
+    const selectedValue = e.target.value;
+    if (selectedValue === "others") {
+      setIsOtherDiseasesOpen(true);
+      return;
+    }
+    // Check if the value is already selected
+    if (!selectedDeseases.includes(selectedValue)) {
+      const updatedSelectedDeseases = [...selectedDeseases, selectedValue];
+      setSelectedDeseases(updatedSelectedDeseases);
+      setFormData({
+        ...formData,
+        majorDiseases: updatedSelectedDeseases.join(', '), // Update the formData with the new hotspots list
+      });
+    }
+  }
+
+  const handleDeleteDiseases = (valueToDelete) => {
+    // Remove selected value
+    const updatedSelectedDeseases = selectedDeseases.filter((value) => value !== valueToDelete);
+    setSelectedDeseases(updatedSelectedDeseases);
+  };
+  const handleAddDiseases = () => {
+    setSelectedDeseases([...selectedDeseases, otherDiseases]);
+    setIsOtherDiseasesOpen(false);
+    setOtherDiseases("");
+  }
+  const handleSelectInsect = (e) => {
+    const selectedValue = e.target.value;
+    if (selectedValue === "others") {
+      setIsOtherInsectsOpen(true);
+      return;
+    }
+    // Check if the value is already selected
+    if (!selectedDeseases.includes(selectedValue)) {
+      const updatedSelectedInsects = [...selectedInsects, selectedValue];
+      setSelectedInsects(updatedSelectedInsects);
+      setFormData({
+        ...formData,
+        majorInsects: updatedSelectedInsects.join(', '), // Update the formData with the new hotspots list
+      });
+    }
+  }
+
+  const handleDeleteInsect = (valueToDelete) => {
+    // Remove selected value
+    const updatedSelectedInsects = selectedInsects.filter((value) => value !== valueToDelete);
+    setSelectedInsects(updatedSelectedInsects);
+  };
+
+
+  const handleAddInsect = () => {
+    setSelectedInsects([...selectedInsects, otherInsects]);
+    setIsOtherInsectsOpen(false);
+    setOtherInsects("");
+  }
+  console.log(authUser);
 
   return (
     <div className="min-h-screen w-full bg-gray-100">
@@ -292,7 +344,7 @@ const FarmerRegistration = () => {
             />
 
             {/* Buttons & Select Section */}
-            <div className="flex flex-wrap justify-center md:justify-end space-x-2">
+            <div className="flex flex-wrap justify-between md:justify-end space-x-2">
               <select
                 className="border rounded px-4 py-2"
                 value={rowsPerPage}
@@ -304,7 +356,6 @@ const FarmerRegistration = () => {
                 <option value={100}>Show 100</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
-              <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">CSV</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">PDF</button>
               <button
@@ -317,34 +368,39 @@ const FarmerRegistration = () => {
           </div>
 
           {/* Table */}
-          <div className="max-w-[150vh]  overflow-x-scroll">
-            <table className="table-auto w-full mt-4 border rounded">
-              <thead>
-                <tr className="bg-gray-200">
+          <div className="max-w-[150vh]  overflow-x-scroll overflow-auto max-h-[500px] custom-scrollbar">
+            <table className="table-fixed w-full mt-4 border rounded">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-gray-50 text-sm border-b">
                   {columns
                     .filter((col) => col.visible)
                     .map((col, index) => (
                       <th
                         key={col.name}
-                        className={`border px-4 py-2 ${index === 0 ? "sticky left-0 bg-gray-200 " : ""}`}
+                        className={`border px-4 py-2 ${index === 0 ? "sticky left-0 bg-gray-50" : ""} `}
+                        style={{ width: "150px" }}  // Apply fixed width to each header
                       >
-                        {col.name}
+                        <p className="flex items-center justify-between">{col.name} <ChevronsUpDown size={14} /></p>
                       </th>
                     ))}
                 </tr>
               </thead>
+
               <tbody>
                 {filteredFarmers.slice(0, rowsPerPage).map((farmer, index) => (
-                  <tr key={farmer.id}>
+                  <tr className="text-sm" key={farmer.id} style={{ height: "50px" }}> {/* Fixed row height */}
                     {columns
                       .filter((col, colIndex) => col.visible)
                       .map((col, colIndex) => (
                         <td
                           key={col.name}
-                          className={`border px-4 py-2 ${colIndex === 0 ? "sticky left-0 bg-white " : ""}`}
+                          className={`border px-4 py-2 ${colIndex === 0 ? "sticky left-0" : ""} ${index % 2 === 0 ? "bg-white" : "bg-gray-50"} ${colIndex === 3 ? 'capitalize' : ''}`}
+                          style={{ width: "150px" }} // Apply fixed width to each cell
                         >
-                          {/* Render farmer data dynamically based on column names */}
-                          {col.name === "ID" && index + 1}
+                          {col.name === "ID" && (
+                            pagination?.currentPage === 1 ? index + 1 : (pagination?.currentPage - 1) * rowsPerPage + index + 1
+                          )}
+
                           {col.name === "Farmer Name" && farmer.name}
                           {col.name === "Father Name" && farmer.fatherName}
                           {col.name === "Gender" && farmer.gender}
@@ -362,7 +418,7 @@ const FarmerRegistration = () => {
                           {col.name === "District" && farmer.district}
                           {col.name === "Division" && farmer.division}
                           {col.name === "Region" && farmer.region}
-                          {col.name === "Hotspot" && farmer.hotspot && farmer.hotspot.join(", ")}
+                          {col.name === "Hotspot" && farmer.hotspot && farmer.hotspot}
                           {col.name === "Farm Size" && farmer.farmSize}
                           {col.name === "Land Type" && farmer.landType}
                           {col.name === "Cultivation Season" && farmer.cultivationSeason}
@@ -373,12 +429,14 @@ const FarmerRegistration = () => {
                           {col.name === "Irrigation Practices" && farmer.irrigationPractices}
                           {col.name === "Fertilizer Usage" && farmer.fertilizerUsage}
                           {col.name === "Soil Type" && farmer.soilType}
-                          {col.name === "SAAO" && ''}
+                          {col.name === "SAAO" && farmer.saaoName}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(farmer)}>
-                                <FaEdit />
-                              </button>
+                              {authUser?.RegistedUser?.role !== "saao" && (
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(farmer)}>
+                                  <FaEdit />
+                                </button>
+                              )}
                               <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(farmer.id)}>
                                 <FaTrash />
                               </button>
@@ -390,9 +448,17 @@ const FarmerRegistration = () => {
                 ))}
               </tbody>
             </table>
-
           </div>
-          <div className="mt-4 flex justify-between items-center">
+          <div className=" flex justify-between items-center w-full mt-5 md:hidden lg:hidden">
+            <label className="mr-2 w-1/2">Jump to page:</label>
+            <input
+              type="number"
+              value={page}
+              onChange={(e) => setPage(parseInt(e.target.value))}
+              className="px-2 py-1 border rounded border-gray-300 w-1/2"
+            />
+          </div>
+          <div className="mt-4 flex justify-between items-center text-sm">
             <button
               onClick={() => setPage(page - 1)}
               disabled={pagination.currentPage === 1}
@@ -404,6 +470,15 @@ const FarmerRegistration = () => {
               Page
               {pagination.currentPage} of {pagination.totalPages}
             </span>
+            <div className="hidden md:block lg:block text-sm">
+              <label className="mr-2">Jump to page:</label>
+              <input
+                type="number"
+                value={page}
+                onChange={(e) => setPage(parseInt(e.target.value))}
+                className="px-2 py-1 border rounded border-gray-300"
+              />
+            </div>
             <button
               onClick={() => setPage(page + 1)}
               disabled={pagination.currentPage === pagination.totalPages}
@@ -412,35 +487,34 @@ const FarmerRegistration = () => {
               Next
             </button>
           </div>
+
         </div>
 
         {/* Column Modal */}
         {isColumnModalOpen && (
-          <div className="fixed inset-0  z-[999] bg-black bg-opacity-50 flex items-center justify-end">
-            <div className="bg-white p-6 rounded shadow-lg w-full md:w-1/3 lg:w-1/3">
-              <h3 className="text-lg font-semibold mb-4">Select Columns</h3>
+          <div
+            className="fixed inset-0 z-[9999] bg-black bg-opacity-50 flex items-center justify-end"
+            onClick={toggleColumnModal} // This will close the modal when clicking outside
+          >
+            <div
+              className="bg-white rounded shadow-lg w-full md:w-1/4 lg:w-1/5 py-1"
+              onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside the modal content
+            >
               <ul className="space-y-2 max-h-[50vh] overflow-y-scroll">
                 {columns.map((col) => (
-                  <li key={col.name} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox"
-                      checked={col.visible}
-                      onChange={() => handleColumnToggle(col.name)}
-                    />
+                  <li
+                    key={col.name}
+                    className={`flex items-center cursor-pointer px-3 space-x-2 ${col.visible ? "bg-gray-200 p-1 px-3" : ""}`}
+                    onClick={() => handleColumnToggle(col.name)}
+                  >
                     <span>{col.name}</span>
                   </li>
                 ))}
               </ul>
-              <button
-                className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                onClick={toggleColumnModal}
-              >
-                Close
-              </button>
             </div>
           </div>
         )}
+
 
         {/* Farmer Modal */}
         {isFarmerModalOpen && (
@@ -496,6 +570,7 @@ const FarmerRegistration = () => {
                     className="border w-full p-2 rounded"
                     value={formData.age}
                     onChange={handleChange}
+
                     required
                   />
                   <label className="block mt-4" htmlFor="">Mobile Number <span className="text-red-500">*</span></label>
@@ -505,13 +580,18 @@ const FarmerRegistration = () => {
                     placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.mobileNumber}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d{0,11}$/.test(value)) {
+                        handleChange(e);
+                      }
+                    }}
                     required
                   />
                   <label className="block mt-4" htmlFor="">NID Number</label>
                   <input
                     type="text"
-                    name="mobileNumber"
+                    name="nationalId"
                     placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.nationalId}
@@ -573,7 +653,7 @@ const FarmerRegistration = () => {
                     value={formData.farmSize}
                     onChange={handleChange}
                   />
-                  <label className="block mt-4" htmlFor="">Total Urea Usage (kg/bigha)</label>
+                  <label className="block mt-4" htmlFor="">Total Urea Uses (kg/bigha)</label>
                   <input
                     type="text"
                     name="fertilizerUsage"
@@ -584,7 +664,101 @@ const FarmerRegistration = () => {
                   />
                 </div>
 
+                <label className="block mt-4" htmlFor="">Major Diseases</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {selectedDeseases.map((selectedDesease) => (
+                    <div key={selectedDesease} className="flex items-center bg-gray-200 p-1 rounded">
+                      <span>{selectedDesease}</span>
+                      <button
+                        type="button"
+                        className="ml-2 text-red-500"
+                        onClick={() => handleDeleteDiseases(selectedDesease)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <select
+                  name="cropType"
+                  className="border w-full p-2 rounded"
+                  value={formData.diseases} onChange={handleSelectDiseases}
+                >
+                  <option value="">Select Major Diseases</option>
+                  <option value="Leaf Blast">Leaf Blast</option>
+                  <option value="Neck Blast">Neck Blast</option>
+                  <option value="Bacterial Blight">Bacterial Blight</option>
+                  <option value="Sheath Blight">Sheath Blight</option>
+                  <option value="Bakani">Bakani</option>
+                  <option value="others">others</option>
+                </select>
+                {
+                  isOtherDiseasesOpen ? (
+                    <div>
+                      <label className="block mt-4" htmlFor="">Other Diseases</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          name="otherDiseases"
+                          placeholder=""
+                          className="border w-full p-2 rounded"
+                          value={otherDiseases}
+                          onChange={(e) => setOtherDiseases(e.target.value)}
+                        />
+                        <button className="btn-sm w-[30%] bg-gray-500 text-white font-bold py-2 px-4 rounded" onClick={handleAddDiseases}>Add Diseases</button>
+                      </div>
+                    </div>
 
+                  ) : null
+                }
+                <label className="block mt-4" htmlFor="">Major Insects</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {selectedInsects.map((selectedInsect) => (
+                    <div key={selectedInsect} className="flex items-center bg-gray-200 p-1 rounded">
+                      <span>{selectedInsect}</span>
+                      <button
+                        type="button"
+                        className="ml-2 text-red-500"
+                        onClick={() => handleDeleteInsect(selectedInsect)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <select
+                  name="cropType"
+                  className="border w-full p-2 rounded"
+                  value={formData.insects} onChange={handleSelectInsect}
+                >
+                  <option value="">Select Major Insects</option>
+                  <option value="BPH">BPH</option>
+                  <option value="Majra">Majra</option>
+                  <option value="Hispa">Hispa</option>
+                  <option value="leaf Folder">leaf Folder</option>
+                  <option value="Rice Borer">Rice Borer</option>
+                  <option value="Green Leaf hopper">Green Leaf hopper</option>
+                  <option value="others">others</option>
+                </select>
+                {
+                  isOtherInsectsOpen ? (
+                    <div>
+                      <label className="block mt-4" htmlFor="">Other Insects</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          name="otherInsects"
+                          placeholder=""
+                          className="border w-full p-2 rounded"
+                          value={otherInsects}
+                          onChange={(e) => setOtherInsects(e.target.value)}
+                        />
+                        <button className="btn-sm w-[30%] bg-gray-500 text-white font-bold py-2 px-4 rounded" onClick={handleAddInsect}>Add Insects</button>
+                      </div>
+                    </div>
+
+                  ) : null
+                }
                 <div className="flex justify-end mt-4">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
