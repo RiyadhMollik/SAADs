@@ -16,9 +16,9 @@ const User = () => {
   const [showFarmerDropdown, setShowFarmerDropdown] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
-  const USERS_API_URL = "http://localhost:5000/api/users";
-  const ROLES_API_URL = "http://localhost:5000/api/roles";
-  const FARMERS_API_URL = "http://localhost:5000/api/farmers/farmers";
+  const USERS_API_URL = "https://iinms.brri.gov.bd/api/users";
+  const ROLES_API_URL = "https://iinms.brri.gov.bd/api/roles";
+  const FARMERS_API_URL = "https://iinms.brri.gov.bd/api/farmers/farmers";
 
   const farmerInputRef = useRef();
   const roleInputRef = useRef();

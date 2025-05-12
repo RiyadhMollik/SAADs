@@ -6,7 +6,7 @@ function Login() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const API_URL = "http://localhost:5000/api/users/login";
+  const API_URL = "https://iinms.brri.gov.bd/api/users/login";
 
   const handleSubmit = async (e) => {
     e.preventDefault();

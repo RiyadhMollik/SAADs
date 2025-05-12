@@ -215,7 +215,7 @@ const SAAORegistration = () => {
   };
   const fetchSAAOs = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}`);
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}`);
       if (response.ok) {
         const data = await response.json();
         console.log(data);
@@ -310,8 +310,8 @@ const SAAORegistration = () => {
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
-        ? `http://localhost:5000/api/farmers/farmers/${selectedId}`
-        : "http://localhost:5000/api/farmers/farmers";
+        ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`
+        : "https://iinms.brri.gov.bd/api/farmers/farmers";
 
       const response = await fetch(url, {
         method,

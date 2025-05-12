@@ -27,7 +27,7 @@ const Report = () => {
     // Fetch SAAO list
     const fetchSAAOs = async () => {
         try {
-            const response = await fetch("http://localhost:5000/api/farmers/farmers/role/saao");
+            const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
             if (response.ok) {
                 const data = await response.json();
                 console.log(data);
@@ -46,7 +46,7 @@ const Report = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/farmers/farmers/stats/${selectedOption?.id}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/stats/${selectedOption?.id}`);
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data);

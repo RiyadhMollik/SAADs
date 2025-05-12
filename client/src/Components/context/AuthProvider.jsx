@@ -16,7 +16,7 @@ export const AuthContextProvider = ({ children }) => {
         const fetchUserData = async (userId) => {
             setLoadingUser(true);
             try {
-                const response = await fetch(`http://localhost:5000/api/users/${userId}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/users/${userId}`);
                 if (response.ok) {
                     const userData = await response.json(); 
                     setAuthUser(userData);
