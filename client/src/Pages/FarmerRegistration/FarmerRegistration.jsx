@@ -24,7 +24,7 @@ const FarmerRegistration = () => {
   const [otherInsects, setOtherInsects] = useState("");
   const [page, setPage] = useState(1);
   // const [authRole, setAuthRole] = useState('');
-  const [saaoId , setSaaoId] = useState(null);
+  const [saaoId, setSaaoId] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -58,40 +58,44 @@ const FarmerRegistration = () => {
   });
   // Base API URL
   useEffect(() => {
+    console.log(authUser?.role?.toLowerCase());
+
     if (authUser?.role?.toLowerCase() === "saao") {
       setSaaoId(authUser.id);
+      console.log("successfully set saao id");
+
     }
   }, [authUser]);
 
 
-  const fetchFarmers = async () => {
-    try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${saaoId}`);
-      console.log(response);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-
-        setFarmerList(data.data);
-        setPagination({
-          currentPage: data.pagination.currentPage,
-          totalPages: data.pagination.totalPages,
-          totalFarmers: data.pagination.totalFarmers,
-          limit: data.pagination.limit,
-        });
-      } else {
-        throw new Error("Failed to fetch farmers");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-  console.log(authUser);
 
   useEffect(() => {
+    const fetchFarmers = async () => {
+      try {
+        const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${saaoId}`);
+        console.log(response);
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+
+          setFarmerList(data.data);
+          setPagination({
+            currentPage: data.pagination.currentPage,
+            totalPages: data.pagination.totalPages,
+            totalFarmers: data.pagination.totalFarmers,
+            limit: data.pagination.limit,
+          });
+        } else {
+          throw new Error("Failed to fetch farmers");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    };
     fetchFarmers();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, saaoId, authUser.role]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
