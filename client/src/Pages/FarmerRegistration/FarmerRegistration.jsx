@@ -23,6 +23,8 @@ const FarmerRegistration = () => {
   const [otherDiseases, setOtherDiseases] = useState("");
   const [otherInsects, setOtherInsects] = useState("");
   const [page, setPage] = useState(1);
+  // const [authRole, setAuthRole] = useState('');
+  const [saaoId , setSaaoId] = useState(null);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
@@ -55,10 +57,16 @@ const FarmerRegistration = () => {
     saaoName: authUser?.name || null,
   });
   // Base API URL
+  useEffect(() => {
+    if (authUser?.role?.toLowerCase() === "saao") {
+      setSaaoId(authUser.id);
+    }
+  }, [authUser]);
+
 
   const fetchFarmers = async () => {
     try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}`);
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${saaoId}`);
       console.log(response);
 
       if (response.ok) {
@@ -79,6 +87,7 @@ const FarmerRegistration = () => {
       console.error("Error:", error);
     }
   };
+  console.log(authUser);
 
   useEffect(() => {
     fetchFarmers();

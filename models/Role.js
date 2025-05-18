@@ -17,14 +17,36 @@ const Role = sequelize.define("Role", {
 // After creating a new role, set default permissions to false
 Role.afterCreate(async (role) => {
   const defaultPermissions = [
-    "Forecast Data",
-    "Forecast Summary",
-    "Historical Records",
-    "Parameters",
-    "Stations",
-    "Users",
     "Roles",
     "Permissions",
+    "Farmer List",
+    "Farmer Edit",
+    "Farmer Delete",
+    "SAAO List",
+    "SAAO Edit",
+    "SAAO Delete",
+    "UAO List",
+    "UAO Edit",
+    "UAO Delete",
+    "DD List",
+    "DD Edit",
+    "DD Delete",
+    "AD List",
+    "AD Edit",
+    "AD Delete",
+    "Report",
+    "Feedback",
+    "Send Feedback",
+    "Feedback Table",
+    "Add Block",
+    "Add Union",
+    "Add Upazela",
+    "Add District",
+    "Add Division",
+    "Add Region",
+    "Add Hotspot",
+    "Add User",
+    "Change Password"
   ];
 
   await Promise.all(
