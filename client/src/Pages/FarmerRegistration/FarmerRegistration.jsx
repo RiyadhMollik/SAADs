@@ -378,7 +378,7 @@ const FarmerRegistration = () => {
                       <th
                         key={col.name}
                         className={`border px-4 py-2 ${index === 0 ? "sticky left-0 bg-gray-50" : ""} `}
-                        style={{ width: "150px" }}  // Apply fixed width to each header
+                        style={{ width: index === 0 ? "50px" : "150px" }}  // Apply fixed width to each header
                       >
                         <p className="flex items-center justify-between">{col.name} <ChevronsUpDown size={14} /></p>
                       </th>
@@ -395,7 +395,7 @@ const FarmerRegistration = () => {
                         <td
                           key={col.name}
                           className={`border px-4 py-2 ${colIndex === 0 ? "sticky left-0" : ""} ${index % 2 === 0 ? "bg-white" : "bg-gray-50"} ${colIndex === 3 ? 'capitalize' : ''}`}
-                          style={{ width: "150px" }} // Apply fixed width to each cell
+                          style={{ width: colIndex === 0 ? "50px" : "150px" }} // Apply fixed width to each cell
                         >
                           {col.name === "ID" && (
                             pagination?.currentPage === 1 ? index + 1 : (pagination?.currentPage - 1) * rowsPerPage + index + 1

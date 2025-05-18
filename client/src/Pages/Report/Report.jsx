@@ -73,6 +73,7 @@ const Report = () => {
         setSelectedOption(option);
         setSearchTerm(option.name + " - " + option.mobileNumber);
         setIsDropdownOpen(false);
+        setData([]);
         setRefresh(!refresh);
     };
 
@@ -156,7 +157,7 @@ const Report = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <div className='flex gap-5  justify-center items-center'>
+            <div className='flex flex-col md:flex-row lg:flex-row gap-5  justify-center items-center'>
                 <div className="relative w-full md:w-1/3 lg:w-1/3 mt-2">
                     <input
                         type="text"
@@ -206,7 +207,7 @@ const Report = () => {
                     </div>
                     <button
                         // onClick={fetchTemperatureData}
-                        className="self-end bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        className="self-end w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                     >
                         Filter
                     </button>

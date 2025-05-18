@@ -42,10 +42,10 @@ const FeedbackTable = () => {
 
 
   return (
-    <div className="p-4 w-full">
+    <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Feedback</h1>
-      <div className="w-full overflow-x-scroll">
-        <table className="border border-gray-300 bg-white w-[160vh] ">
+      <div className=" w-full overflow-x-scroll ">
+        <table className="border border-gray-300 bg-white w-full">
           <thead>
             <tr className="bg-gray-100">
               <th className="px-4 py-2 border">ID</th>
@@ -68,38 +68,25 @@ const FeedbackTable = () => {
           </tbody>
         </table>
       </div>
-      <div className="flex flex-col justify-between items-center mt-4 gap-3">
+      <div className="flex  justify-center items-center mt-4 gap-3">
         {/* Rows Per Page Selector */}
-       <div className="flex items-center ">
-       <div>
-          <label htmlFor="rows" className="mr-2">
-            Show:
-          </label>
-          <select
-            id="rows"
-            className="border rounded px-2 py-1"
-            value={rowsPerPage}
-            onChange={handleRowsPerPageChange}
-          >
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </select>
+        <div className="flex items-center ">
+          <div>
+            <label htmlFor="rows" className="mr-2">
+              Show:
+            </label>
+            <select
+              id="rows"
+              className="border rounded px-2 py-1"
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+            >
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+            </select>
+          </div>
         </div>
-
-        {/* Export Buttons */}
-        <div className="space-x-2">
-          <button className="px-3 py-1 bg-green-500 text-white rounded">
-            Excel
-          </button>
-          <button className="px-3 py-1 bg-blue-500 text-white rounded">
-            CSV
-          </button>
-          <button className="px-3 py-1 bg-red-500 text-white rounded">
-            PDF
-          </button>
-        </div> 
-       </div>
 
         {/* Pagination */}
         <div className="flex space-x-1">
@@ -117,7 +104,7 @@ const FeedbackTable = () => {
                 }`}
               onClick={() => handlePageChange(index + 1)}
             >
-              {index + 1}
+              {index + 1} 
             </button>
           ))}
           <button

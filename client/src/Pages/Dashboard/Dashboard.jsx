@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CustomCalendar.css';
-import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2 } from 'lucide-react';
+import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText } from 'lucide-react';
 
 const Dashboard = () => {
   const [value, onChange] = useState(new Date());
@@ -14,10 +14,10 @@ const Dashboard = () => {
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {/* Top Section */}
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center mb-8">
         <div className='bg-white rounded-lg px-4 py-3 shadow-lg w-full min-h-[330px]'>
           <p className="text-lg font-semibold mb-4">Quick Links</p>
-          <ul className="grid grid-cols-3 gap-4 text-xs">
+          <ul className="grid grid-cols-3 gap-4 text-xs text-center">
             <li className="bg-gray-100 rounded-lg py-4">
               <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                 <FilePlus size={20} />
@@ -84,53 +84,54 @@ const Dashboard = () => {
       {/* Dashboard Cards Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <User className="mx-auto mb-2 text-teal-500" size={32} />
+          <UserPlus className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">1</p>
-          <p className="text-sm text-gray-500">Total Requisition</p>
+          <p className="text-sm text-gray-500">Total Registration</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <FilePlus className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">0</p>
-          <p className="text-sm text-gray-500">New Requisition</p>
+          <p className="text-sm text-gray-500">New Registration</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <Car className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">43</p>
-          <p className="text-sm text-gray-500">Available Vehicles</p>
+          <p className="text-sm text-gray-500">Total SAAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <Truck className="mx-auto mb-2 text-teal-500" size={32} />
+          <Tractor className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">44</p>
-          <p className="text-sm text-gray-500">Total Vehicles</p>
+          <p className="text-sm text-gray-500">Total Farmer</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <AlertTriangle className="mx-auto mb-2 text-red-500" size={32} />
+          <AlertCircle className="mx-auto mb-2 text-red-500" size={32} />
           <p className="text-2xl font-bold text-red-500">0</p>
-          <p className="text-sm text-gray-500">Emergency</p>
+          <p className="text-sm text-gray-500">Total Feedback</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <FileMinus className="mx-auto mb-2 text-red-500" size={32} />
+          <FileText className="mx-auto mb-2 text-red-500" size={32} />
           <p className="text-2xl font-bold text-red-500">0</p>
-          <p className="text-sm text-gray-500">Declined Requisition</p>
+          <p className="text-sm text-gray-500">Active SAAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <User className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">0</p>
-          <p className="text-sm text-gray-500">Available Drivers</p>
+          <p className="text-sm text-gray-500">Total UAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <User className="mx-auto mb-2 text-teal-500" size={32} />
+          <Users className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">0</p>
-          <p className="text-sm text-gray-500">Total Drivers</p>
+          <p className="text-sm text-gray-500">Total DD</p>
         </div>
       </div>
+
     </div>
   );
 };
