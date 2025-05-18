@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { MdGpsFixed } from "react-icons/md";
 import axios from "axios";
+import { AuthContext } from "../../Components/context/AuthProvider";
+import { useContext } from "react";
 const UAORegistration = () => {
+  const { rolePermission } = useContext(AuthContext);
   const [isUAOModalOpen, setIsUAOModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -452,12 +455,16 @@ const UAORegistration = () => {
                           {col.name === "Hotspot" && UAO.hotspot && UAO.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(UAO)}>
-                                <FaEdit />
-                              </button>
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(UAO.id)}>
+                              {rolePermission["UAO Edit"] === "true" && (
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(UAO)}>
+                                  <FaEdit />
+                                </button>
+                              )}
+                              {rolePermission["UAO Delete"] === "true" && (
+                                <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(UAO.id)}>
                                 <FaTrash />
                               </button>
+                              )}
                             </div>
                           )}
                         </td>

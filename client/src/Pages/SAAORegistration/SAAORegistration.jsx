@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { ChevronsUpDown } from "lucide-react";
+import { AuthContext } from "../../Components/context/AuthProvider";
+import { useContext } from "react";
 const SAAORegistration = () => {
+  const { rolePermission } = useContext(AuthContext);
   const [isSAAOModalOpen, setIsSAAOModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -542,12 +545,16 @@ const SAAORegistration = () => {
                           {col.name === "Hotspot" && SAAO.hotspot && SAAO?.hotspot}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
-                                <FaEdit />
-                              </button>
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
-                                <FaTrash />
-                              </button>
+                              {rolePermission["SAAO Edit"] === "true" && (
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
+                                  <FaEdit />
+                                </button>
+                              )}
+                              {rolePermission["SAAO Delete"] === "true" && (
+                                <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
+                                  <FaTrash />
+                                </button>
+                              )}
                             </div>
                           )}
                         </td>

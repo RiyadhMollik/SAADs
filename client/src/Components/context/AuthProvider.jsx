@@ -10,6 +10,7 @@ export const AuthContextProvider = ({ children }) => {
     const [authUser, setAuthUser] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
     const [isslider, setIsslider] = useState(false);
+    const [rolePermission, setRolePermission] = useState({});
 
     useEffect(() => {
 
@@ -18,7 +19,29 @@ export const AuthContextProvider = ({ children }) => {
             try {
                 const response = await fetch(`https://iinms.brri.gov.bd/api/users/${userId}`);
                 if (response.ok) {
-                    const userData = await response.json(); 
+                    const userData = await response.json();
+                    console.log(userData);
+                    const res = await fetch(
+                        `https://iinms.brri.gov.bd/api/roles/roles/${userData.roleId}/permissions`
+                    );
+                    if (res.ok) {
+                        const data = await res.json();
+                        const convertPermissions = (permissionsArray) => {
+                            if (!permissionsArray || permissionsArray.length === 0) return {};
+
+                            const roleId = permissionsArray[0].roleId;
+
+                            const permissions = permissionsArray.reduce((acc, item) => {
+                                acc[item.permission] = item.isGranted;
+                                return acc;
+                            }, {});
+
+                            return { permissions };
+                        };
+                        const result = convertPermissions(data);
+                        console.log(result.permissions);
+                        setRolePermission(result.permissions);
+                    }
                     setAuthUser(userData);
                 } else {
                     console.error("Failed to fetch user data");
@@ -51,7 +74,7 @@ export const AuthContextProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ authUser, setAuthUser, loadingUser ,isslider, setIsslider}}>
+        <AuthContext.Provider value={{ authUser,rolePermission, setAuthUser, loadingUser, isslider, setIsslider }}>
             {children}
         </AuthContext.Provider>
     );

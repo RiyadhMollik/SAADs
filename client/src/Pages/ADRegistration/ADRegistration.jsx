@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import axios from "axios";
 import { MdGpsFixed } from "react-icons/md";
+import { AuthContext } from "../../Components/context/AuthProvider";
+import { useContext } from "react";
 
 const ADRegistration = () => {
+
+   const { rolePermission } = useContext(AuthContext);
   const [isADModalOpen, setIsADModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -368,12 +372,18 @@ const ADRegistration = () => {
                           {col.name === "Hotspot" && AD.hotspot && AD.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(AD)}>
-                                <FaEdit />
-                              </button>
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(AD.id)}>
-                                <FaTrash />
-                              </button>
+                              {rolePermission["AD Edit"] === "true" && (
+                                <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(AD)}>
+                                  <FaEdit />
+                                </button>
+                              )}
+                              {rolePermission["AD Delete"] === "true" && (
+                                <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(AD.id)}>
+                                  <FaTrash />
+                                </button>
+                              )}
+
+
                             </div>
                           )}
                         </td>

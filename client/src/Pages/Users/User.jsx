@@ -9,7 +9,7 @@ const User = () => {
   const [filteredRoles, setFilteredRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
-  const [currentUser, setCurrentUser] = useState({ id: null, name: "", role: "", password: "", mobileNumber: "" });
+  const [currentUser, setCurrentUser] = useState({ id: null, name: "", role: "", password: "", mobileNumber: "" , roleId: null });
   const [selectedFarmer, setSelectedFarmer] = useState(null);
   const [searchFarmer, setSearchFarmer] = useState("");
   const [searchRole, setSearchRole] = useState("");
@@ -64,7 +64,7 @@ const User = () => {
     fetchFarmers();
   }, []);
 
-  const openModal = (type, user = { id: null, name: "", role: "", password: "", mobileNumber: "" }) => {
+  const openModal = (type, user = { id: null, name: "", role: "", password: "", mobileNumber: "" , roleId: null }) => {
     setModalType(type);
     setCurrentUser(user);
     setIsModalOpen(true);
@@ -72,18 +72,19 @@ const User = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentUser({ id: null, name: "", role: "", password: "", mobileNumber: "" });
+    setCurrentUser({ id: null, name: "", role: "", password: "", mobileNumber: "" , roleId: null });
     setSelectedFarmer(null);
   };
 
   const handleSave = async () => {
-    const { id, name, role, password } = currentUser;
+    const { id, name, role, password , roleId} = currentUser;
     const payload = {
       name,
       role,
       password,
       mobileNumber:selectedFarmer?.mobileNumber ,
       farmerId: selectedFarmer?.id || null,
+      roleId
     };
 
     try {
@@ -267,7 +268,7 @@ const User = () => {
                         currentUser.role === role.name ? "bg-gray-200" : ""
                       }`}
                       onClick={() => {
-                        setCurrentUser({ ...currentUser, role: role.name });
+                        setCurrentUser({ ...currentUser, role: role.name , roleId: role.id });
                         setSearchRole(role.name);
                         setShowRoleDropdown(false);
                       }}

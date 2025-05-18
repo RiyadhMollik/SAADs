@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
-import { useAuthContext } from "../../Components/context/AuthProvider";
+import { AuthContext, useAuthContext } from "../../Components/context/AuthProvider";
 import { use } from "react";
 import { ChevronsUpDown } from "lucide-react";
+import { useContext } from "react";
 
 const FarmerRegistration = () => {
+  const { rolePermission } = useContext(AuthContext);
   const [isFarmerModalOpen, setIsFarmerModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -432,14 +434,17 @@ const FarmerRegistration = () => {
                           {col.name === "SAAO" && farmer.saaoName}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              {authUser?.RegistedUser?.role !== "saao" && (
+                              {rolePermission["Farmer Edit"] === "true" && (
                                 <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(farmer)}>
                                   <FaEdit />
                                 </button>
                               )}
-                              <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(farmer.id)}>
-                                <FaTrash />
-                              </button>
+                              {rolePermission["Farmer Delete"] === "true" && (
+                                <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(farmer.id)}>
+                                  <FaTrash />
+                                </button>
+                              )}
+
                             </div>
                           )}
                         </td>

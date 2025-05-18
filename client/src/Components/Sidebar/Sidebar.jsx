@@ -12,7 +12,7 @@ import { GoArrowSwitch } from "react-icons/go";
 const Sidebar = () => {
   const { logout, loading } = useLogout();
   const [openMenus, setOpenMenus] = useState({});
-  const { isslider, setIsslider } = useContext(AuthContext);
+  const { isslider, setIsslider, rolePermission } = useContext(AuthContext);
   const location = useLocation();
   const [isHidden, setIsHidden] = useState(false);
 
@@ -39,6 +39,7 @@ const Sidebar = () => {
       setIsHidden(true); // Set back to true when mouse leaves
     }
   };
+  console.log(rolePermission);
 
   return (
     <div
@@ -49,7 +50,7 @@ const Sidebar = () => {
       onMouseOut={handleMouseLeave}
     >
       <div className="flex flex-col justify-center items-center px-4 py-5 border-b relative">
-        <GoArrowSwitch onClick={() => setIsHidden(!isHidden)}  className={`text-3xl hidden md:block lg:block ml-auto cursor-pointer absolute ${isHidden ? "top-0 mb-2" : " top-4"} right-4 bg-slate-300 m-2 rounded-full p-2`}/>
+        <GoArrowSwitch onClick={() => setIsHidden(!isHidden)} className={`text-3xl hidden md:block lg:block ml-auto cursor-pointer absolute ${isHidden ? "top-0 mb-2" : " top-4"} right-4 bg-slate-300 m-2 rounded-full p-2`} />
         <img src={logo} alt="Logo" className={`w-12 h-12 rounded-full mr-4 ${isHidden ? "hidden" : ""}`} />
         <h2 className={`text-xl font-bold text-center ml-[-14px] ${isHidden ? "hidden" : ""}`}>SAADS</h2>
         <p className={`text-center text-[9px]  ${isHidden ? "hidden" : ""}`}>Smart Agro-Advisory Dissemination System</p>
@@ -72,35 +73,55 @@ const Sidebar = () => {
             {isHidden ? '' : <IoIosAddCircle />}
           </button>
           <ul className={`mt-2 ${openMenus.registration ? "block" : "hidden"} pl-4 space-y-1`}>
-            <li><Link onClick={() => setIsslider(false)} to="/ad-registration" className="hover:text-green-700">AD</Link></li>
-            <li><Link onClick={() => setIsslider(false)} to="/admin-registration" className="hover:text-green-700">DD</Link></li>
-            <li><Link onClick={() => setIsslider(false)} to="/uao-registration" className="hover:text-green-700">UAO</Link></li>
-            <li><Link onClick={() => setIsslider(false)} to="/saao-registration" className="hover:text-green-700">SAAO</Link></li>
-            <li><Link onClick={() => setIsslider(false)} to="/farmer-registration" className="hover:text-green-700">Farmer</Link></li>
+            {(rolePermission && rolePermission["AD List"]) && (
+              <li><Link onClick={() => setIsslider(false)} to="/ad-registration" className="hover:text-green-700">AD</Link></li>
+            )}
+            {(rolePermission && rolePermission["DD List"]) && (
+              <li><Link onClick={() => setIsslider(false)} to="/admin-registration" className="hover:text-green-700">DD</Link></li>
+            )}
+            {(rolePermission && rolePermission["UAO List"]) && (
+              <li><Link onClick={() => setIsslider(false)} to="/uao-registration" className="hover:text-green-700">UAO</Link></li>
+            )}
+            {(rolePermission && rolePermission["SAAO List"]) && (
+              <li><Link onClick={() => setIsslider(false)} to="/saao-registration" className="hover:text-green-700">SAAO</Link></li>
+            )}
+            {(rolePermission && rolePermission["Farmer List"]) && (
+              <li>
+                <Link onClick={() => setIsslider(false)} to="/farmer-registration" className="hover:text-green-700">
+                  Farmer
+                </Link>
+              </li>
+            )}
           </ul>
         </div>
-
-        <div>
-          <Link onClick={() => setIsslider(false)} to="/report">
-            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/report") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <TbReport className="mr-3" /> {isHidden ? "" : "Report"}
+        {(rolePermission && rolePermission["Report"]) && (
+          <div>
+            <Link onClick={() => setIsslider(false)} to="/report">
+              <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/report") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+                <TbReport className="mr-3" /> {isHidden ? "" : "Report"}
+              </button>
+            </Link>
+          </div>
+        )}
+        {(rolePermission && rolePermission["Feedback"]) && (
+          <div>
+            <button
+              className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/feedback") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
+              onClick={() => toggleMenu("feedback")}
+            >
+              <span className="flex items-center"><FaComments className="mr-3" /> {isHidden ? "" : "Feedback"}</span>
+              {isHidden ? '' : <IoIosAddCircle />}
             </button>
-          </Link>
-        </div>
-
-        <div>
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/feedback") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
-            onClick={() => toggleMenu("feedback")}
-          >
-            <span className="flex items-center"><FaComments className="mr-3" /> {isHidden ? "" : "Feedback"}</span>
-            {isHidden ? '' : <IoIosAddCircle />}
-          </button>
-          <ul className={`mt-2 ${openMenus["feedback"] ? "block" : "hidden"} pl-4 space-y-1`}>
-            <li><Link onClick={() => setIsslider(false)} to="/send-feedback" className="hover:text-green-700">Send</Link></li>
-            <li><Link onClick={() => setIsslider(false)} to="/feedback" className="hover:text-green-700">User Feedbacks</Link></li>
-          </ul>
-        </div>
+            <ul className={`mt-2 ${openMenus["feedback"] ? "block" : "hidden"} pl-4 space-y-1`}>
+              {(rolePermission && rolePermission["Send Feedback"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/send-feedback" className="hover:text-green-700">Send</Link></li>
+              )}
+              {(rolePermission && rolePermission["Feedback Table"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/feedback" className="hover:text-green-700">User Feedbacks</Link></li>
+              )}
+            </ul>
+          </div>
+        )}
 
         <div>
           <Link onClick={() => setIsslider(false)} to="/about">
@@ -119,17 +140,41 @@ const Sidebar = () => {
             {isHidden ? '' : <IoIosAddCircle />}
           </button>
           <ul className={`mt-2 ${openMenus["settings"] ? "block" : "hidden"} pl-4 space-y-3`}>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role">Role</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role-permission">Role Permission</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/block">Add Block</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/union">Add Union</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/upazila">Add Upazila</Link></li>
-            <li><Link className="hover:text-green-700" to="/district">Add District</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/division">Add Division</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/region">Add Region</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/hotspot">Add Hotspot</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/weather-parameter"> Add Weather Parameter</Link></li>
-            <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/user">Add User</Link></li>
+            
+            
+            {(rolePermission && rolePermission["Roles"]) && (
+             <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role">Role</Link></li>
+            )}
+            {(rolePermission && rolePermission["Permissions"]) && (
+              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role-permission">Role Permission</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add Block"]) && (
+              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/block">Add Block</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add Union"]) && (
+              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/union">Add Union</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add Upazela"]) && (
+              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/upazila">Add Upazila</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add District"]) && (
+              <li><Link onClick={() => setIsslider(false)}  className="hover:text-green-700" to="/district">Add District</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add Division"]) && (
+              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/division">Add Division</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add Region"]) && (
+              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/region">Add Region</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add Hotspot"]) && (
+               <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/hotspot">Add Hotspot</Link></li>
+            )}
+            {(rolePermission && rolePermission["Add User"]) && (
+               <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/user">Add User</Link></li>
+            )}
+            
+            {/* <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/weather-parameter"> Add Weather Parameter</Link></li> */}
+           
           </ul>
         </div>
 

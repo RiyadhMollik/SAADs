@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CustomCalendar.css';
 import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText } from 'lucide-react';
+import { AuthContext } from '../../Components/context/AuthProvider';
 
 const Dashboard = () => {
+  const { rolePermission } = useContext(AuthContext);
   const [value, onChange] = useState(new Date());
   const formattedDate = value.toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -18,54 +20,90 @@ const Dashboard = () => {
         <div className='bg-white rounded-lg px-4 py-3 shadow-lg w-full min-h-[330px]'>
           <p className="text-lg font-semibold mb-4">Quick Links</p>
           <ul className="grid grid-cols-3 gap-4 text-xs text-center">
+
+            {
+              rolePermission['AD List']  && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/ad-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <FilePlus size={20} />
+                    <p>AD Registration</p>
+                  </a>
+                </li>
+              )
+            }
+            {
+              rolePermission['DD List']  && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/admin-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <FilePlus size={20} />
+                    <p>DD Registration</p>
+                  </a>
+                </li>
+              )
+            }
+            {
+              rolePermission['UAO List']  && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/uao-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <FilePlus size={20} />
+                    <p>UAO Registration</p>
+                  </a>
+                </li>
+              )
+            }
+            {
+              rolePermission['SAAO List']  && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/saao-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <FilePlus size={20} />
+                    <p>SAAO Registration</p>
+                  </a>
+                </li>
+              )
+            }
+            {
+              rolePermission['Farmer List'] && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/farmer-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <FilePlus size={20} />
+                    <p>Farmer Registration</p>
+                  </a>
+                </li>
+              )
+            }
+            {
+              rolePermission['Report']  && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/report" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <BarChart2 size={20} />
+                    <p>Report</p>
+                  </a>
+                </li>
+              )
+            }
+            {
+              rolePermission['Feedback']  && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/send-feedback" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <AlertTriangle size={20} />
+                    <p>Feedback</p>
+                  </a>
+                </li>
+              )
+            }
             <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <FilePlus size={20} />
-                <p>AD Registration</p>
-              </a>
-            </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <FilePlus size={20} />
-                <p>DD Registration</p>
-              </a>
-            </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <FilePlus size={20} />
-                <p>UAO Registration</p>
-              </a>
-            </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <FilePlus size={20} />
-                <p>SAAO Registration</p>
-              </a>
-            </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <FilePlus size={20} />
-                <p>Farmer Registration</p>
-              </a>
-            </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <BarChart2 size={20} />
-                <p>Report</p>
-              </a>
-            </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <AlertTriangle size={20} />
-                <p>Feedback</p>
+              <a href="/about" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                <FileMinus size={20} />
+                <p>About</p>
               </a>
             </li>
             <li className="bg-gray-100 rounded-lg py-4">
               <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                 <FileMinus size={20} />
-                <p>About</p>
+                <p>Password Change</p>
               </a>
             </li>
+
           </ul>
 
         </div>
