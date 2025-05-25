@@ -329,6 +329,7 @@ const FarmerRegistration = () => {
     setOtherInsects("");
   }
   console.log(authUser);
+console.log(rolePermission["Farmer Edit"]);
 
   return (
     <div className="min-h-screen w-full bg-gray-100">
@@ -447,12 +448,12 @@ const FarmerRegistration = () => {
                           {col.name === "SAAO" && farmer.saaoName}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              {rolePermission["Farmer Edit"] === "true" && (
+                              {rolePermission["Farmer Edit"] === true && (
                                 <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(farmer)}>
                                   <FaEdit />
                                 </button>
                               )}
-                              {rolePermission["Farmer Delete"] === "true" && (
+                              {rolePermission["Farmer Delete"] === true && (
                                 <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(farmer.id)}>
                                   <FaTrash />
                                 </button>

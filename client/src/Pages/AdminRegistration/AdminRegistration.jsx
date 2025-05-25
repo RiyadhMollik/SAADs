@@ -373,10 +373,6 @@ const AdminRegistration = () => {
                 <option value={50}>Show 50</option>
                 <option value={100}>Show 100</option>
                 <option value={500}>Show 500</option>
-                <option value={1000}>Show 1000</option>
-                <option value={1500}>Show 1500</option>
-                <option value={2000}>Show 2000</option>
-                <option value={2500}>Show 2500</option>
               </select>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
@@ -433,12 +429,12 @@ const AdminRegistration = () => {
                           {col.name === "Hotspot" && Admin.hotspot && Admin.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              {rolePermission["DD Edit"] === "true" && (
+                              {rolePermission["DD Edit"] === true && (
                                 <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(Admin)}>
                                   <FaEdit />
                                 </button>
                               )}
-                              {rolePermission["DD Delete"] === "true" && (
+                              {rolePermission["DD Delete"] === true && (
                                 <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(Admin.id)}>
                                   <FaTrash />
                                 </button>

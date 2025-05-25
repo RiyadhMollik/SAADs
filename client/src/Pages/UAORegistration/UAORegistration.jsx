@@ -455,12 +455,12 @@ const UAORegistration = () => {
                           {col.name === "Hotspot" && UAO.hotspot && UAO.hotspot.join(", ")}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              {rolePermission["UAO Edit"] === "true" && (
+                              {rolePermission["UAO Edit"] === true && (
                                 <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(UAO)}>
                                   <FaEdit />
                                 </button>
                               )}
-                              {rolePermission["UAO Delete"] === "true" && (
+                              {rolePermission["UAO Delete"] === true && (
                                 <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(UAO.id)}>
                                 <FaTrash />
                               </button>

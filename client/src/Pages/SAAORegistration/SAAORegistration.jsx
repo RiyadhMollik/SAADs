@@ -50,7 +50,13 @@ const SAAORegistration = () => {
     division: "",
     region: "",
     coordinates: "",
+    landType: "",
     hotspot: selectedHotspots,
+    majorCrops: selectedMajorCrop.join(", "),
+    irrigationPractices: "",
+    plantingMethods: "",
+    croppingPattern: "",
+    riceVarieties: "",
     role: "saao",
   });
   useEffect(() => {
@@ -384,7 +390,8 @@ const SAAORegistration = () => {
   const handleEdit = (SAAO) => {
     setIsEdit(true);
     setIsSAAOModalOpen(true);
-
+    console.log(SAAO);
+    
     setFormData({
       name: SAAO.name || "",
       fatherName: SAAO.fatherName || "",
@@ -403,6 +410,13 @@ const SAAORegistration = () => {
       division: SAAO.division || "",
       region: SAAO.region || "",
       coordinates: SAAO.coordinates || "",
+      majorCrops: SAAO.majorCrops || "",
+      plantingMethod: SAAO.plantingMethod || "",
+      irrigationPractices: SAAO.irrigationPractices || "",
+      croppingPattern: SAAO.croppingPattern || "",
+      riceVarieties: SAAO.riceVarieties || "",
+      soilType: SAAO.soilType || "",
+      landType: SAAO.landType || "",
       hotspot: SAAO.hotspot || [],
       role: SAAO.role || "saao", // defaulting to "saao"
     });
@@ -545,12 +559,12 @@ const SAAORegistration = () => {
                           {col.name === "Hotspot" && SAAO.hotspot && SAAO?.hotspot}
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              {rolePermission["SAAO Edit"] === "true" && (
+                              {rolePermission["SAAO Edit"] === true && (
                                 <button className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600" onClick={() => handleEdit(SAAO)}>
                                   <FaEdit />
                                 </button>
                               )}
-                              {rolePermission["SAAO Delete"] === "true" && (
+                              {rolePermission["SAAO Delete"] === true && (
                                 <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(SAAO.id)}>
                                   <FaTrash />
                                 </button>
