@@ -55,6 +55,8 @@ const FarmerRegistration = () => {
     role: "farmer",
     saaoId: authUser?.id || null,
     saaoName: authUser?.name || null,
+    majorDiseases: '',
+    majorInsects: '',
   });
   // Base API URL
   useEffect(() => {
@@ -224,7 +226,8 @@ const FarmerRegistration = () => {
     setIsEdit(true);
     setIsFarmerModalOpen(true);
     setSelectedId(SAAO.id);
-
+    console.log(SAAO);
+    
     setFormData({
       name: SAAO.name || "",
       fatherName: SAAO.fatherName || "",
@@ -268,9 +271,13 @@ const FarmerRegistration = () => {
       harvestDate: SAAO.harvestDate || "",
       pestDiseases: SAAO.pestDiseases || "",
       weedManagement: SAAO.weedManagement || "",
+      majorDiseases: SAAO.majorDiseases || "",
+      majorInsects: SAAO.majorInsects || "",
       role: "farmer",
       eduOther: SAAO.eduOther || "",
     });
+    setSelectedDeseases(SAAO.majorDiseases.split(', '));
+    setSelectedInsects(SAAO.majorInsects.split(', '));
   };
   const handleSelectDiseases = (e) => {
     const selectedValue = e.target.value;
@@ -701,7 +708,7 @@ console.log(rolePermission["Farmer Edit"]);
                 <select
                   name="cropType"
                   className="border w-full p-2 rounded"
-                  value={formData.diseases} onChange={handleSelectDiseases}
+                  value={formData.majorDiseases} onChange={handleSelectDiseases}
                 >
                   <option value="">Select Major Diseases</option>
                   <option value="Leaf Blast">Leaf Blast</option>
@@ -748,7 +755,7 @@ console.log(rolePermission["Farmer Edit"]);
                 <select
                   name="cropType"
                   className="border w-full p-2 rounded"
-                  value={formData.insects} onChange={handleSelectInsect}
+                  value={formData.majorInsects} onChange={handleSelectInsect}
                 >
                   <option value="">Select Major Insects</option>
                   <option value="BPH">BPH</option>
