@@ -166,7 +166,7 @@ const FarmerRegistration = () => {
     setIsFarmerModalOpen(false);
   };
   const registerFarmer = async (e) => {
-
+    if(formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit

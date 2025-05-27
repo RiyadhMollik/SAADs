@@ -7,7 +7,7 @@ import { useContext } from "react";
 
 const ADRegistration = () => {
 
-   const { rolePermission } = useContext(AuthContext);
+  const { rolePermission } = useContext(AuthContext);
   const [isADModalOpen, setIsADModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -182,6 +182,7 @@ const ADRegistration = () => {
     setIsADModalOpen(false);
   };
   const registerAD = async () => {
+    if (formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit

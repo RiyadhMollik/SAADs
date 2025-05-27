@@ -257,6 +257,7 @@ const UAORegistration = () => {
     setIsUAOModalOpen(false);
   };
   const registerUAO = async () => {
+    if (formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
@@ -462,8 +463,8 @@ const UAORegistration = () => {
                               )}
                               {rolePermission["UAO Delete"] === true && (
                                 <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(UAO.id)}>
-                                <FaTrash />
-                              </button>
+                                  <FaTrash />
+                                </button>
                               )}
                             </div>
                           )}

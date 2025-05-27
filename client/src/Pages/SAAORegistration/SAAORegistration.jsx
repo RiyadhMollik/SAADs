@@ -307,7 +307,7 @@ const SAAORegistration = () => {
     setIsSAAOModalOpen(false);
   };
   const registerSAAO = async () => {
-
+    if (formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
     if (formData.soilType === "others") {
       formData.soilType = otherSoilType;
     }
@@ -391,7 +391,7 @@ const SAAORegistration = () => {
     setIsEdit(true);
     setIsSAAOModalOpen(true);
     console.log(SAAO);
-    
+
     setFormData({
       name: SAAO.name || "",
       fatherName: SAAO.fatherName || "",
