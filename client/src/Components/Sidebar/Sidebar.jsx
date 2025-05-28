@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump } from "react-icons/fa";
+import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaLock } from "react-icons/fa";
 import { IoIosAddCircle, IoMdSwitch } from "react-icons/io";
 import logo from "../../assets/brri.png";
 import useLogout from "../../Hook/useLogout";
@@ -12,7 +12,7 @@ import { GoArrowSwitch } from "react-icons/go";
 const Sidebar = () => {
   const { logout, loading } = useLogout();
   const [openMenus, setOpenMenus] = useState({});
-  const { isslider, setIsslider, rolePermission } = useContext(AuthContext);
+  const { authUser, isslider, setIsslider, rolePermission } = useContext(AuthContext);
   const location = useLocation();
   const [isHidden, setIsHidden] = useState(false);
 
@@ -131,52 +131,73 @@ const Sidebar = () => {
           </Link>
         </div>
 
-        <div>
-          <button
-            className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/settings") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
-            onClick={() => toggleMenu("settings")}
-          >
-            <span className="flex items-center"><FaCogs className="mr-3" /> {isHidden ? "" : "Settings"}</span>
-            {isHidden ? '' : <IoIosAddCircle />}
-          </button>
-          <ul className={`mt-2 ${openMenus["settings"] ? "block" : "hidden"} pl-4 space-y-3`}>
-            
-            
-            {(rolePermission && rolePermission["Roles"]) && (
-             <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role">Role</Link></li>
-            )}
-            {(rolePermission && rolePermission["Permissions"]) && (
-              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role-permission">Role Permission</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add Block"]) && (
-              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/block">Add Block</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add Union"]) && (
-              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/union">Add Union</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add Upazela"]) && (
-              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/upazila">Add Upazila</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add District"]) && (
-              <li><Link onClick={() => setIsslider(false)}  className="hover:text-green-700" to="/district">Add District</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add Division"]) && (
-              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/division">Add Division</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add Region"]) && (
-              <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/region">Add Region</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add Hotspot"]) && (
-               <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/hotspot">Add Hotspot</Link></li>
-            )}
-            {(rolePermission && rolePermission["Add User"]) && (
-               <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/user">Add User</Link></li>
-            )}
-            
-            {/* <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/weather-parameter"> Add Weather Parameter</Link></li> */}
-           
-          </ul>
-        </div>
+        {
+          authUser?.role?.toLowerCase() === "saao" && (
+            <div>
+              <Link onClick={() => setIsslider(false)} to="/update-password">
+                <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/update-password") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+                  <FaLock className="mr-3" /> {isHidden ? "" : "Change Password"}
+                </button>
+              </Link>
+            </div>
+          )
+
+        }
+
+        {
+          authUser?.role?.toLowerCase() !== "saao" && (
+            <div>
+              <button
+                className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/settings") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
+                onClick={() => toggleMenu("settings")}
+              >
+                <span className="flex items-center"><FaCogs className="mr-3" /> {isHidden ? "" : "Settings"}</span>
+                {isHidden ? '' : <IoIosAddCircle />}
+              </button>
+              <ul className={`mt-2 ${openMenus["settings"] ? "block" : "hidden"} pl-4 space-y-3`}>
+
+
+
+                {(rolePermission && rolePermission["Add Block"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/block">Add Block</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add District"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/district">Add District</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add Division"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/division">Add Division</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add Hotspot"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/hotspot">Add Hotspot</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add Region"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/region">Add Region</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add Upazela"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/upazila">Add Upazila</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add User"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/user">Add User</Link></li>
+                )}
+                {(rolePermission && rolePermission["Add Union"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/union">Add Union</Link></li>
+                )}
+                {(rolePermission && rolePermission["Change Password"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/update-password">Change Password</Link></li>
+                )}
+                {(rolePermission && rolePermission["Roles"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role">Role</Link></li>
+                )}
+                {(rolePermission && rolePermission["Permissions"]) && (
+                  <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/role-permission">Role Permission</Link></li>
+                )}
+
+                {/* <li><Link onClick={() => setIsslider(false)} className="hover:text-green-700" to="/weather-parameter"> Add Weather Parameter</Link></li> */}
+
+              </ul>
+            </div>
+          )
+        }
 
         <div>
           <button

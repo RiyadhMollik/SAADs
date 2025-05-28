@@ -1,18 +1,31 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CustomCalendar.css';
 import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText } from 'lucide-react';
 import { AuthContext } from '../../Components/context/AuthProvider';
+import { use } from 'react';
 
 const Dashboard = () => {
   const { rolePermission } = useContext(AuthContext);
+  const [data , setData] = useState({});
   const [value, onChange] = useState(new Date());
   const formattedDate = value.toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
   });
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://iinms.brri.gov.bd/api/farmers/user-stats');
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    fetchData();
+  },[])
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {/* Top Section */}
@@ -22,7 +35,7 @@ const Dashboard = () => {
           <ul className="grid grid-cols-3 gap-4 text-xs text-center">
 
             {
-              rolePermission['AD List']  && (
+              rolePermission['AD List'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/ad-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
@@ -32,7 +45,7 @@ const Dashboard = () => {
               )
             }
             {
-              rolePermission['DD List']  && (
+              rolePermission['DD List'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/admin-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
@@ -42,7 +55,7 @@ const Dashboard = () => {
               )
             }
             {
-              rolePermission['UAO List']  && (
+              rolePermission['UAO List'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/uao-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
@@ -52,7 +65,7 @@ const Dashboard = () => {
               )
             }
             {
-              rolePermission['SAAO List']  && (
+              rolePermission['SAAO List'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/saao-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
@@ -66,13 +79,13 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/farmer-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>Farmer Registration</p>
+                    <p>Add Farmer </p>
                   </a>
                 </li>
               )
             }
             {
-              rolePermission['Report']  && (
+              rolePermission['Report'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/report" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <BarChart2 size={20} />
@@ -82,7 +95,7 @@ const Dashboard = () => {
               )
             }
             {
-              rolePermission['Feedback']  && (
+              rolePermission['Feedback'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/send-feedback" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <AlertTriangle size={20} />
@@ -98,7 +111,7 @@ const Dashboard = () => {
               </a>
             </li>
             <li className="bg-gray-100 rounded-lg py-4">
-              <a href="#" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+              <a href="/update-password" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                 <FileMinus size={20} />
                 <p>Password Change</p>
               </a>
@@ -123,49 +136,49 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <UserPlus className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">1</p>
+          <p className="text-2xl font-bold text-teal-500">{data?.totalRegistration}</p>
           <p className="text-sm text-gray-500">Total Registration</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <FilePlus className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">0</p>
+          <p className="text-2xl font-bold text-teal-500">{data?.newRegistration}</p>
           <p className="text-sm text-gray-500">New Registration</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <Car className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">43</p>
+          <p className="text-2xl font-bold text-teal-500">{data?.totalSAAO}</p>
           <p className="text-sm text-gray-500">Total SAAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <Tractor className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">44</p>
+          <p className="text-2xl font-bold text-teal-500">{data?.totalFarmer}</p>
           <p className="text-sm text-gray-500">Total Farmer</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <AlertCircle className="mx-auto mb-2 text-red-500" size={32} />
-          <p className="text-2xl font-bold text-red-500">0</p>
+          <p className="text-2xl font-bold text-red-500">{data?.totalFeedback}</p>
           <p className="text-sm text-gray-500">Total Feedback</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <FileText className="mx-auto mb-2 text-red-500" size={32} />
-          <p className="text-2xl font-bold text-red-500">0</p>
+          <p className="text-2xl font-bold text-red-500">{data?.activeSAAO}</p>
           <p className="text-sm text-gray-500">Active SAAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <User className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">0</p>
+          <p className="text-2xl font-bold text-teal-500">{data?.totalUAO}</p>
           <p className="text-sm text-gray-500">Total UAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <Users className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">0</p>
+          <p className="text-2xl font-bold text-teal-500">{data?.totalDD}</p>
           <p className="text-sm text-gray-500">Total DD</p>
         </div>
       </div>

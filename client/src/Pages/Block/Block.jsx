@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { FaPen } from "react-icons/fa";
 import { BiTrash } from "react-icons/bi";
 
@@ -17,7 +17,27 @@ const Block = () => {
   const [block, setBlock] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
+  const [searchRegion, setSearchRegion] = useState("");
+  const [filteredRegions, setFilteredRegions] = useState();
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
+  const [searchDistrict, setSearchDistrict] = useState("");
+  const [filteredDistricts, setFilteredDistricts] = useState();
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
+  const [searchUpazila, setSearchUpazila] = useState("");
+  const [filteredUpazilas, setFilteredUpazilas] = useState();
+  const [selectedUpazila, setSelectedUpazila] = useState(null);
+  const [showUpazilaDropdown, setShowUpazilaDropdown] = useState(false);
+  const [searchUnion, setSearchUnion] = useState("");
+  const [filteredUnions, setFilteredUnions] = useState();
+  const [selectedUnion, setSelectedUnion] = useState(null);
+  const [showUnionDropdown, setShowUnionDropdown] = useState(false);
 
+  const regionInputRef = useRef(null);
+  const districtInputRef = useRef(null);
+  const upazilaInputRef = useRef(null);
+  const unionInputRef = useRef(null);
   // Fetch blocks from the backend
   const fetchBlocks = async () => {
     try {
@@ -70,11 +90,15 @@ const Block = () => {
       // Prepopulate the form with the role data
       setModalVisible(true);
       setSelectedHotspot(roleToEdit.hotspot);
-      setRegion(roleToEdit.region);
+      setSelectedRegion(roleToEdit.region);
+      setSearchRegion(roleToEdit.region);
       setDivision(roleToEdit.division);
-      setDistrict(roleToEdit.district);
-      setUpazila(roleToEdit.upazila);
-      setUnion(roleToEdit.union);
+      setSearchDistrict(roleToEdit.district);
+      setSelectedDistrict(roleToEdit.district);
+      setSearchUpazila(roleToEdit.upazila);
+      setSelectedUpazila(roleToEdit.upazila);
+      setSearchUnion(roleToEdit.union);
+      setSelectedUnion(roleToEdit.union);
       setBlock(roleToEdit.block);
       setLatitude(roleToEdit.latitude);
       setLongitude(roleToEdit.longitude);
@@ -89,7 +113,7 @@ const Block = () => {
         const response = await fetch(`https://iinms.brri.gov.bd/api/bloks/blocks/${editRoleId}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot,  region, division, district, upazila, union }),
+          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, region: selectedRegion, division, district: selectedDistrict, upazila: selectedUpazila, union: selectedUnion }),
         });
         const updatedRole = await response.json();
         setRoles((prevRoles) =>
@@ -104,7 +128,7 @@ const Block = () => {
         const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot,  region, division, district, upazila, union }),
+          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, region: selectedRegion, division, district: selectedDistrict, upazila: selectedUpazila, union: selectedUnion }),
         });
         const newBlock = await response.json();
         fetchBlocks();
@@ -126,7 +150,85 @@ const Block = () => {
       console.error("Error deleting block:", error);
     }
   };
+  useEffect(() => {
+    if (searchRegion) {
+      setFilteredRegions(
+        data.regions.filter((region) =>
+          region.name.toLowerCase().includes(searchRegion.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredRegions(data?.regions?.slice(0, 5)); // Show first 5 if no search
+    }
+  }, [searchRegion, data.regions]);
+  useEffect(() => {
+    if (searchDistrict) {
+      setFilteredDistricts(
+        data.districts.filter((district) =>
+          district.name.toLowerCase().includes(searchDistrict.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredDistricts(data?.districts?.slice(0, 5)); // Show first 5 if no search
+    }
+  }, [searchDistrict, data.districts]);
+  useEffect(() => {
+    if (searchUpazila) {
+      setFilteredUpazilas(
+        data.upazilas.filter((upazila) =>
+          upazila.name.toLowerCase().includes(searchUpazila.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredUpazilas(data?.upazilas?.slice(0, 5)); // Show first 5 if no search
+    }
+  }, [searchUpazila, data.upazilas]);
 
+  useEffect(() => {
+    if (searchUnion) {
+      setFilteredUnions(
+        data.unions.filter((union) =>
+          union.name.toLowerCase().includes(searchUnion.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredUnions(data?.unions?.slice(0, 5)); // Show first 5 if no search
+    }
+  }, [searchUnion, data.unions]);
+
+  // Hide dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        regionInputRef.current &&
+        !regionInputRef.current.contains(event.target)
+      ) {
+        setShowRegionDropdown(false);
+      }
+      if (
+        districtInputRef.current &&
+        !districtInputRef.current.contains(event.target)
+      ) {
+        setShowDistrictDropdown(false);
+      }
+      if (
+        upazilaInputRef.current &&
+        !upazilaInputRef.current.contains(event.target)
+      ) {
+        setShowUpazilaDropdown(false);
+      }
+      if (
+        unionInputRef.current &&
+        !unionInputRef.current.contains(event.target)
+      ) {
+        setShowUnionDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div className="flex flex-col min-h-screen">
       {/* Main Content */}
@@ -144,7 +246,7 @@ const Block = () => {
             </div>
           </div>
 
-          <div className="max-w-[160vh]  overflow-x-scroll">
+          <div className="max-w-[160vh]  overflow-x-scroll max-h-screen overflow-y-scroll">
             <table className="w-full border-collapse bg-white rounded shadow-lg ">
               <thead className="bg-slate-700 text-white">
                 <tr>
@@ -162,7 +264,7 @@ const Block = () => {
                 </tr>
               </thead>
               <tbody>
-                {roles.map((role , index) => (
+                {roles.map((role, index) => (
                   <tr key={role.id} className="hover:bg-gray-100">
                     <td className="border-b px-6 py-3 w-24">{index + 1}</td>
                     <td className="border-b px-6 py-3">{role.block}</td>
@@ -197,8 +299,8 @@ const Block = () => {
 
           {/* Modal */}
           {modalVisible && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-              <div className="bg-white rounded-lg shadow-lg w-1/3 p-6 relative  max-h-[600px] z-[999999] overflow-y-auto">
+            <div className="fixed z-[9999] inset-0 bg-black bg-opacity-50 flex items-center  justify-center">
+              <div className="bg-white rounded-lg shadow-lg w-full md:w-1/3 lg:w-1/3 p-6 relative max-h-[650px]  overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4 text-center text-black">
                   {isEditMode ? "Edit Block" : "Add Block"}
                 </h2>
@@ -215,21 +317,38 @@ const Block = () => {
                     </option>
                   ))}
                 </select>
-                {/* Region */}
-                <label className="block mb-2 font-medium">Region</label>
-                <select
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  value={region}
-                  onChange={(e) => setRegion(e.target.value)}
-                >
-                  <option value="">Select Region</option>
-                  {data.regions.map((item) => (
-                    <option key={item.id} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-
+                <div className="mb-4 relative" ref={regionInputRef}>
+                  <label className="block text-sm font-medium mb-1">Region</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
+                    placeholder="Search region"
+                    value={searchRegion}
+                    onFocus={() => setShowRegionDropdown(true)}
+                    onChange={(e) => setSearchRegion(e.target.value)}
+                  />
+                  {showRegionDropdown && (
+                    <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
+                      {filteredRegions.map((region, index) => (
+                        <li
+                          key={index}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRegion?.name === region.name ? "bg-gray-200" : ""
+                            }`}
+                          onClick={() => {
+                            setSelectedRegion(region.name);
+                            setSearchRegion(region.name);
+                            setShowRegionDropdown(false);
+                          }}
+                        >
+                          {region.name}
+                        </li>
+                      ))}
+                      {filteredRegions.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
                 {/* Division */}
                 <label className="block mb-2 font-medium">Division</label>
                 <select
@@ -246,49 +365,106 @@ const Block = () => {
                 </select>
 
                 {/* District */}
-                <label className="block mb-2 font-medium">District</label>
-                <select
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  value={district}
-                  onChange={(e) => setDistrict(e.target.value)}
-                >
-                  <option value="">Select District</option>
-                  {data.districts.map((item) => (
-                    <option key={item.id} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="mb-4 relative" ref={districtInputRef}>
+                  <label className="block text-sm font-medium mb-1">District</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
+                    placeholder="Search district"
+                    value={searchDistrict}
+                    onFocus={() => setShowDistrictDropdown(true)}
+                    onChange={(e) => setSearchDistrict(e.target.value)}
+                  />
+                  {showDistrictDropdown && (
+                    <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
+                      {filteredDistricts?.map((district, index) => (
+                        <li
+                          key={index}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedDistrict?.name === district.name ? "bg-gray-200" : ""
+                            }`}
+                          onClick={() => {
+                            setSelectedDistrict(district.name);
+                            setSearchDistrict(district.name);
+                            setShowDistrictDropdown(false);
+                          }}
+                        >
+                          {district.name}
+                        </li>
+                      ))}
+                      {filteredDistricts?.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
 
                 {/* Upazila */}
-                <label className="block mb-2 font-medium">Upazila</label>
-                <select
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  value={upazila}
-                  onChange={(e) => setUpazila(e.target.value)}
-                >
-                  <option value="">Select Upazila</option>
-                  {data.upazilas.map((item) => (
-                    <option key={item.id} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="mb-4 relative" ref={upazilaInputRef}>
+                  <label className="block text-sm font-medium mb-1">Upazila</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
+                    placeholder="Search Upazila"
+                    value={searchUpazila}
+                    onFocus={() => setShowUpazilaDropdown(true)}
+                    onChange={(e) => setSearchUpazila(e.target.value)}
+                  />
+                  {showUpazilaDropdown && (
+                    <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
+                      {filteredUpazilas?.map((upazila, index) => (
+                        <li
+                          key={index}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUpazila?.name === upazila.name ? "bg-gray-200" : ""
+                            }`}
+                          onClick={() => {
+                            setSelectedUpazila(upazila.name);
+                            setSearchUpazila(upazila.name);
+                            setShowUpazilaDropdown(false);
+                          }}
+                        >
+                          {upazila.name}
+                        </li>
+                      ))}
+                      {filteredUpazilas?.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
 
                 {/* Union */}
-                <label className="block mb-2 font-medium">Union</label>
-                <select
-                  className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
-                  value={union}
-                  onChange={(e) => setUnion(e.target.value)}
-                >
-                  <option value="">Select Union</option>
-                  {data.unions.map((item, index) => (
-                    <option key={index} value={item.name}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="mb-4 relative" ref={unionInputRef}>
+                  <label className="block text-sm font-medium mb-1">Union</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
+                    placeholder="Search Union"
+                    value={searchUnion}
+                    onFocus={() => setShowUnionDropdown(true)}
+                    onChange={(e) => setSearchUnion(e.target.value)}
+                  />
+                  {showUnionDropdown && (
+                    <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
+                      {filteredUnions?.map((union, index) => (
+                        <li
+                          key={index}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUnion?.name === union.name ? "bg-gray-200" : ""
+                            }`}
+                          onClick={() => {
+                            setFilteredUnions(union.name);
+                            setSearchUnion(union.name);
+                            setShowUnionDropdown(false);
+                          }}
+                        >
+                          {union.name}
+                        </li>
+                      ))}
+                      {filteredUnions?.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
                 <label className="block mb-2 font-medium">Block </label>
                 <input
                   type="text"

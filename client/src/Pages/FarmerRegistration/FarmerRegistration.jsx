@@ -23,6 +23,7 @@ const FarmerRegistration = () => {
   const [otherDiseases, setOtherDiseases] = useState("");
   const [otherInsects, setOtherInsects] = useState("");
   const [page, setPage] = useState(1);
+  const [loading , setLoading] = useState(false);
   // const [authRole, setAuthRole] = useState('');
   const [saaoId, setSaaoId] = useState(null);
   const [pagination, setPagination] = useState({
@@ -75,7 +76,7 @@ const FarmerRegistration = () => {
   useEffect(() => {
     const fetchFarmers = async () => {
       try {
-        const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${saaoId}`);
+        const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${saaoId}&search=${searchText}`);
         console.log(response);
 
         if (response.ok) {
@@ -97,7 +98,7 @@ const FarmerRegistration = () => {
       }
     };
     fetchFarmers();
-  }, [page, rowsPerPage, saaoId, authUser.role]);
+  }, [page, rowsPerPage, saaoId, authUser.role ,searchText]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -167,6 +168,7 @@ const FarmerRegistration = () => {
   };
   const registerFarmer = async (e) => {
     if(formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
+    setLoading(true);
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
@@ -188,11 +190,14 @@ const FarmerRegistration = () => {
         console.log("farmer saved successfully:", data);
         fetchFarmers(); // Refresh the list
         e.form.reset();
+        setLoading(false);
       } else {
         throw new Error("Failed to save SAAO");
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error:", error);
+      setLoading(false);
     }
   };
 
@@ -212,14 +217,6 @@ const FarmerRegistration = () => {
       console.error("Error:", error);
     }
   };
-  // Filter farmerList based on search text
-  const filteredFarmers = farmerList.filter((farmer) => {
-    return (
-      farmer.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      farmer.mobileNumber.includes(searchText) ||
-      farmer.email.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
 
 
   const handleEdit = (SAAO) => {
@@ -360,7 +357,7 @@ console.log(rolePermission["Farmer Edit"]);
             {/* Search Input */}
             <input
               type="text"
-              placeholder="Search by Name, Phone, or Email"
+              placeholder="Search by Name, Phone, or Block"
               className="border rounded px-4 py-2 w-full md:w-1/2 lg:w-1/3"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -410,7 +407,7 @@ console.log(rolePermission["Farmer Edit"]);
               </thead>
 
               <tbody>
-                {filteredFarmers.slice(0, rowsPerPage).map((farmer, index) => (
+                {farmerList.slice(0, rowsPerPage).map((farmer, index) => (
                   <tr className="text-sm" key={farmer.id} style={{ height: "50px" }}> {/* Fixed row height */}
                     {columns
                       .filter((col, colIndex) => col.visible)
@@ -787,11 +784,12 @@ console.log(rolePermission["Farmer Edit"]);
                 }
                 <div className="flex justify-end mt-4">
                   <button
+                  disabled={loading}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     type="submit"
 
                   >
-                    Submit
+                    {loading ? "Submitting..." : "Submit"}
                   </button>
                 </div>
               </form>

@@ -39,6 +39,7 @@ import CISTable from "../Pages/CIS/CISTable";
 import MLModel from "../Pages/MLModel/MLModel";
 import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
 import Report from "../Pages/Report/Report";
+import UpdatePassword from "../Pages/UpdatePassword/UpdatePassword";
 
 export const router = createBrowserRouter([
   {
@@ -169,6 +170,10 @@ export const router = createBrowserRouter([
       {
         path: "/report",
         element: <Report/> , 
+      },  
+      {
+        path: "/update-password",
+        element: <UpdatePassword/> , 
       },  
       
         

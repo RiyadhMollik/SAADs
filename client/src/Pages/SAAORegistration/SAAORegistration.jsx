@@ -224,7 +224,7 @@ const SAAORegistration = () => {
   };
   const fetchSAAOs = async () => {
     try {
-      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}`);
+      const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}&search=${searchText}`);
       if (response.ok) {
         const data = await response.json();
         console.log(data);
@@ -245,7 +245,7 @@ const SAAORegistration = () => {
 
   useEffect(() => {
     fetchSAAOs();
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage ,searchText]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -359,14 +359,7 @@ const SAAORegistration = () => {
       console.error("Error:", error);
     }
   };
-  // Filter SAAOList based on search text
-  const filteredSAAOs = SAAOList.filter((SAAO) => {
-    return (
-      SAAO.name.toLowerCase().includes(searchText.toLowerCase()) ||
-      SAAO.mobileNumber.includes(searchText) ||
-      SAAO.email.toLowerCase().includes(searchText.toLowerCase())
-    );
-  });
+
 
 
   const handleSelect = (e) => {
@@ -473,7 +466,7 @@ const SAAORegistration = () => {
             {/* Search Input */}
             <input
               type="text"
-              placeholder="Search by Name, Phone, or Email"
+              placeholder="Search by Name, Phone, or Block"
               className="border rounded px-4 py-2 w-full md:w-1/2 lg:w-1/3"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -514,7 +507,7 @@ const SAAORegistration = () => {
                       <th
                         key={col.name}
                         className={`border px-4 py-2 ${index === 0 ? "sticky left-0 bg-gray-50" : ""}`}
-                        style={{ width: "150px" }} // Apply fixed width to each header
+                        style={{ width: index === 0 ? "50px" : "150px" }}  // Apply fixed width to each header
                       >
                         <p className="flex items-center justify-between">
                           {col.name} <ChevronsUpDown size={14} />
@@ -525,7 +518,7 @@ const SAAORegistration = () => {
               </thead>
 
               <tbody>
-                {filteredSAAOs.slice(0, rowsPerPage).map((SAAO, rowIndex) => (
+                {SAAOList.slice(0, rowsPerPage).map((SAAO, rowIndex) => (
                   <tr key={SAAO.id} className="text-sm" style={{ height: "50px" }}>
                     {columns
                       .filter((col) => col.visible)
