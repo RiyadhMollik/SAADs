@@ -107,6 +107,7 @@ const Block = () => {
 
 
   const saveRole = async () => {
+    
     if (isEditMode) {
       // Update existing block
       try {
@@ -451,7 +452,7 @@ const Block = () => {
                           className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUnion?.name === union.name ? "bg-gray-200" : ""
                             }`}
                           onClick={() => {
-                            setFilteredUnions(union.name);
+                            setSelectedUnion(union.name);
                             setSearchUnion(union.name);
                             setShowUnionDropdown(false);
                           }}
