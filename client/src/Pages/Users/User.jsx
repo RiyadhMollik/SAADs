@@ -1,20 +1,25 @@
 import { useEffect, useState, useRef } from "react";
-import { BiPen } from "react-icons/bi";
+import { FaPen, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import { BiTrash } from "react-icons/bi";
+import axios from 'axios';
 
 const User = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [farmers, setFarmers] = useState([]);
   const [filteredFarmers, setFilteredFarmers] = useState([]);
   const [filteredRoles, setFilteredRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("add"); // 'add' or 'edit'
-  const [currentUser, setCurrentUser] = useState({ id: null, name: "", role: "", password: "", mobileNumber: "" , roleId: null });
+  const [modalType, setModalType] = useState("add");
+  const [currentUser, setCurrentUser] = useState({ id: null, name: "", role: "", password: "", mobileNumber: "", roleId: null });
   const [selectedFarmer, setSelectedFarmer] = useState(null);
   const [searchFarmer, setSearchFarmer] = useState("");
   const [searchRole, setSearchRole] = useState("");
   const [showFarmerDropdown, setShowFarmerDropdown] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   const USERS_API_URL = "https://iinms.brri.gov.bd/api/users";
   const ROLES_API_URL = "https://iinms.brri.gov.bd/api/roles";
@@ -23,22 +28,21 @@ const User = () => {
   const farmerInputRef = useRef();
   const roleInputRef = useRef();
 
-  // Fetch all users
   const fetchUsers = async () => {
     try {
-      const response = await fetch(USERS_API_URL);
-      const data = await response.json();
+      const response = await axios.get(USERS_API_URL);
+      const data = response.data;
       setUsers(data);
+      setFilteredUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
   };
 
-  // Fetch roles
   const fetchRoles = async () => {
     try {
-      const response = await fetch(ROLES_API_URL);
-      const data = await response.json();
+      const response = await axios.get(ROLES_API_URL);
+      const data = response.data;
       setRoles(data);
       setFilteredRoles(data);
     } catch (error) {
@@ -46,13 +50,12 @@ const User = () => {
     }
   };
 
-  // Fetch farmers
   const fetchFarmers = async () => {
     try {
-      const response = await fetch(FARMERS_API_URL);
-      const data = await response.json();
+      const response = await axios.get(FARMERS_API_URL);
+      const data = response.data;
       setFarmers(data);
-      setFilteredFarmers(data.slice(0, 5)); // Show first 5 farmers initially
+      setFilteredFarmers(data.slice(0, 5));
     } catch (error) {
       console.error("Error fetching farmers:", error);
     }
@@ -64,44 +67,41 @@ const User = () => {
     fetchFarmers();
   }, []);
 
-  const openModal = (type, user = { id: null, name: "", role: "", password: "", mobileNumber: "" , roleId: null }) => {
+  const openModal = (type, user = { id: null, name: "", role: "", password: "", mobileNumber: "", roleId: null }) => {
     setModalType(type);
     setCurrentUser(user);
     setIsModalOpen(true);
+    setSearchFarmer(user.name || "");
+    setSearchRole(user.role || "");
+    setSelectedFarmer(user.name ? { name: user.name, mobileNumber: user.mobileNumber } : null);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentUser({ id: null, name: "", role: "", password: "", mobileNumber: "" , roleId: null });
+    setCurrentUser({ id: null, name: "", role: "", password: "", mobileNumber: "", roleId: null });
     setSelectedFarmer(null);
+    setSearchFarmer("");
+    setSearchRole("");
   };
 
   const handleSave = async () => {
-    const { id, name, role, password , roleId} = currentUser;
+    const { id, name, role, password, roleId } = currentUser;
     const payload = {
       name,
       role,
       password,
-      mobileNumber:selectedFarmer?.mobileNumber ,
+      mobileNumber: selectedFarmer?.mobileNumber,
       farmerId: selectedFarmer?.id || null,
       roleId
     };
 
     try {
       if (modalType === "add") {
-        await fetch(USERS_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        await axios.post(USERS_API_URL, payload);
       } else if (modalType === "edit") {
-        await fetch(`${USERS_API_URL}/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+        await axios.put(`${USERS_API_URL}/${id}`, payload);
       }
-      fetchUsers(); // Refresh users list
+      fetchUsers();
       closeModal();
     } catch (error) {
       console.error("Error saving user:", error);
@@ -110,14 +110,47 @@ const User = () => {
 
   const handleDelete = async (id) => {
     try {
-      await fetch(`${USERS_API_URL}/${id}`, { method: "DELETE" });
-      fetchUsers(); // Refresh users list
+      await axios.delete(`${USERS_API_URL}/${id}`);
+      fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
     }
   };
 
-  // Filter farmers based on search input
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filtered = users.filter((user) =>
+      user.name.toLowerCase().includes(query) ||
+      user.mobileNumber.toLowerCase().includes(query) ||
+      user.role.toLowerCase().includes(query)
+    );
+    setFilteredUsers(filtered);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedUsers = [...filteredUsers].sort((a, b) => {
+      if (key === "name" || key === "mobileNumber" || key === "role") {
+        return direction === "asc"
+          ? a[key].localeCompare(b[key])
+          : b[key].localeCompare(a[key]);
+      }
+      return 0;
+    });
+    setFilteredUsers(sortedUsers);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <FaSort />;
+    return sortConfig.direction === "asc" ? <FaSortUp /> : <FaSortDown />;
+  };
+
   useEffect(() => {
     if (searchFarmer) {
       setFilteredFarmers(
@@ -126,28 +159,25 @@ const User = () => {
         )
       );
     } else {
-      setFilteredFarmers(farmers.slice(0, 5)); // Show first 5 if no search input
+      setFilteredFarmers(farmers.slice(0, 5));
     }
   }, [searchFarmer, farmers]);
 
-  // Filter roles based on search input
   useEffect(() => {
     if (searchRole) {
       setFilteredRoles(
-        roles.filter((role) => role.name.toLowerCase().includes(searchRole.toLowerCase()))
+        roles.filter((role) =>
+          role.name.toLowerCase().includes(searchRole.toLowerCase())
+        )
       );
     } else {
-      setFilteredRoles(roles); // Show all roles if no search input
+      setFilteredRoles(roles);
     }
   }, [searchRole, roles]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        farmerInputRef.current &&
-        !farmerInputRef.current.contains(event.target)
-      ) {
+      if (farmerInputRef.current && !farmerInputRef.current.contains(event.target)) {
         setShowFarmerDropdown(false);
       }
       if (roleInputRef.current && !roleInputRef.current.contains(event.target)) {
@@ -163,24 +193,50 @@ const User = () => {
 
   return (
     <div className="w-[166vh] mx-auto p-4 bg-[#f9fafb]">
-      <h1 className="text-2xl font-semibold mb-4">User List</h1>
-      <button
-        className="mb-4 px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600"
-        onClick={() => openModal("add")}
-      >
-        Add User
-      </button>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">User List</h1>
+        <div className="flex gap-4">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={handleSearch}
+            placeholder="Search users..."
+            className="border px-4 py-2 rounded focus:outline-none focus:ring-2"
+          />
+          <button
+            className="px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-600"
+            onClick={() => openModal("add")}
+          >
+            Add User
+          </button>
+        </div>
+      </div>
       <table className="w-full border border-gray-300">
         <thead className="bg-gray-100">
           <tr>
-            <th className="text-left px-4 py-2 border border-gray-300">Name</th>
-            <th className="text-left px-4 py-2 border border-gray-300">Mobile Number</th>
-            <th className="text-left px-4 py-2 border border-gray-300">Role</th>
+            <th
+              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
+              onClick={() => handleSort("name")}
+            >
+              <p className="flex items-center gap-5">Name {getSortIcon("name")}</p>
+            </th>
+            <th
+              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
+              onClick={() => handleSort("mobileNumber")}
+            >
+              <p className="flex items-center gap-5">Mobile Number {getSortIcon("mobileNumber")}</p>
+            </th>
+            <th
+              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
+              onClick={() => handleSort("role")}
+            >
+              <p className="flex items-center gap-5">Role {getSortIcon("role")}</p>
+            </th>
             <th className="text-left px-4 py-2 border border-gray-300">Action</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <tr key={user.id} className="bg-gray-50">
               <td className="px-4 py-2 border border-gray-300">{user.name}</td>
               <td className="px-4 py-2 border border-gray-300">{user.mobileNumber}</td>
@@ -190,13 +246,13 @@ const User = () => {
                   className="text-blue-500 hover:text-blue-700"
                   onClick={() => openModal("edit", user)}
                 >
-                  <BiPen />
+                  <FaPen />
                 </button>
                 <button
                   className="text-red-500 hover:text-red-700 ml-2"
                   onClick={() => handleDelete(user.id)}
                 >
-                  Delete
+                  <BiTrash />
                 </button>
               </td>
             </tr>
@@ -204,30 +260,27 @@ const User = () => {
         </tbody>
       </table>
 
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start mt-10 z-50">
           <div className="bg-white p-6 rounded shadow-lg w-[500px]">
             <h2 className="text-xl font-bold mb-4">
               {modalType === "add" ? "Add User" : "Edit User"}
             </h2>
-
-            {/* Farmer Name Dropdown */}
             <div className="mb-4 relative" ref={farmerInputRef}>
-              <label className="block text-sm font-medium mb-1">Farmer Name</label>
+              <label className="block text-sm font-medium mb-1">User Name</label>
               <input
                 type="text"
                 className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
-                placeholder="Search farmer"
+                placeholder="Search User Name"
                 value={searchFarmer}
                 onFocus={() => setShowFarmerDropdown(true)}
                 onChange={(e) => setSearchFarmer(e.target.value)}
               />
               {showFarmerDropdown && (
                 <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                  {filteredFarmers.map((farmer, index) => (
+                  {filteredFarmers.map((farmer) => (
                     <li
-                      key={index}
+                      key={farmer.id}
                       className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
                         selectedFarmer?.name === farmer.name ? "bg-gray-200" : ""
                       }`}
@@ -238,7 +291,7 @@ const User = () => {
                         setShowFarmerDropdown(false);
                       }}
                     >
-                      {farmer.name}
+                      {farmer.name} - {farmer.mobileNumber}
                     </li>
                   ))}
                   {filteredFarmers.length === 0 && (
@@ -247,8 +300,6 @@ const User = () => {
                 </ul>
               )}
             </div>
-
-            {/* Role Dropdown */}
             <div className="mb-4 relative" ref={roleInputRef}>
               <label className="block text-sm font-medium mb-1">Role</label>
               <input
@@ -256,19 +307,19 @@ const User = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
                 placeholder="Search role"
                 value={searchRole}
-                onFocus={() => setShowRoleDropdown(true)}
+                onFocus={() => setShowRole(true)}
                 onChange={(e) => setSearchRole(e.target.value)}
               />
               {showRoleDropdown && (
                 <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                  {filteredRoles.map((role, index) => (
+                  {filteredRoles.map((role) => (
                     <li
-                      key={index}
+                      key={role.id}
                       className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
                         currentUser.role === role.name ? "bg-gray-200" : ""
                       }`}
                       onClick={() => {
-                        setCurrentUser({ ...currentUser, role: role.name , roleId: role.id });
+                        setCurrentUser({ ...currentUser, role: role.name, roleId: role.id });
                         setSearchRole(role.name);
                         setShowRoleDropdown(false);
                       }}
@@ -282,7 +333,6 @@ const User = () => {
                 </ul>
               )}
             </div>
-            {/* Password Input */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Password</label>
               <input
@@ -293,7 +343,6 @@ const User = () => {
                 onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}
               />
             </div>
-
             <div className="flex justify-end">
               <button
                 className="px-4 py-2 bg-gray-300 rounded mr-2 hover:bg-gray-400"

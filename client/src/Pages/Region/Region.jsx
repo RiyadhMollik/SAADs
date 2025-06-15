@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
-import { FaPen } from "react-icons/fa";
+import { FaPen, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiTrash } from "react-icons/bi";
 import axios from "axios";
 
 const Region = () => {
   const [regions, setRegions] = useState([]);
+  const [filteredRegions, setFilteredRegions] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentRegion, setCurrentRegion] = useState({ name: ""});
+  const [currentRegion, setCurrentRegion] = useState({ name: "" });
   const [isEditMode, setIsEditMode] = useState(false);
   const [editRegionId, setEditRegionId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   useEffect(() => {
     fetchRegions();
@@ -17,14 +20,16 @@ const Region = () => {
   const fetchRegions = async () => {
     try {
       const response = await axios.get("https://iinms.brri.gov.bd/api/region/regions");
-      setRegions(response.data.reverse());
+      const data = response.data.reverse();
+      setRegions(data);
+      setFilteredRegions(data);
     } catch (error) {
       console.error("Error fetching regions:", error);
     }
   };
 
   const openAddRegionModal = () => {
-    setCurrentRegion({ name: ""});
+    setCurrentRegion({ name: "" });
     setIsEditMode(false);
     setEditRegionId(null);
     setModalVisible(true);
@@ -69,13 +74,55 @@ const Region = () => {
     }
   };
 
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filtered = regions.filter((region) =>
+      region.name.toLowerCase().includes(query)
+    );
+    setFilteredRegions(filtered);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedRegions = [...filteredRegions].sort((a, b) => {
+      if (key === "index") {
+        return direction === "asc" ? a.id - b.id : b.id - a.id;
+      }
+      if (key === "name") {
+        return direction === "asc"
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
+      }
+      return 0;
+    });
+    setFilteredRegions(sortedRegions);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <FaSort />;
+    return sortConfig.direction === "asc" ? <FaSortUp /> : <FaSortDown />;
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "row" }}>
       <div style={{ padding: "25px", flexGrow: 1, backgroundColor: "#f9fafb" }}>
         <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
-          <div className="flex justify-between">
-            <h1 className="text-3xl font-bold mb-6 text-center text-black">Region List</h1>
-            <div className="flex justify-end mb-4">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold text-center text-black">Region List</h1>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearch}
+                placeholder="Search by region name..."
+                className="border px-4 py-2 rounded focus:outline-none focus:ring-2"
+              />
               <button
                 onClick={openAddRegionModal}
                 className="bg-slate-600 text-white px-6 py-2 rounded shadow hover:shadow-lg transition duration-300"
@@ -84,20 +131,24 @@ const Region = () => {
               </button>
             </div>
           </div>
-          <table className="w-full border-collapse bg-white rounded shadow-lg">
+          <table className="w-full max-w-[160vh] border-collapse bg-white rounded shadow-lg">
             <thead className="bg-slate-700 text-white">
               <tr>
-                <th className=" px-6 py-3 text-left">#</th>
-                <th className=" px-6 py-3 text-left">Name</th>
-                <th className=" px-6 py-3 text-left">Action</th>
+                <th className="px-6 py-3 text-left cursor-pointer " onClick={() => handleSort("index")}>
+                 <p className="flex gap-5"> # {getSortIcon("index")}</p>
+                </th>
+                <th className="px-6 py-3 text-left cursor-pointer flex gap-5" onClick={() => handleSort("name")}>
+                  Name {getSortIcon("name")}
+                </th>
+                <th className="px-6 py-3 text-left">Action</th>
               </tr>
             </thead>
             <tbody>
-              {regions?.map((region , index) => (
+              {filteredRegions?.map((region, index) => (
                 <tr key={region.id} className="hover:bg-gray-100 border-b">
-                  <td className=" px-6 py-3 w-24">{index + 1}</td>
-                  <td className=" px-6 py-3">{region.name}</td>
-                  <td className=" px-6 py-3 h-full flex gap-4">
+                  <td className="px-6 py-3 w-24">{index + 1}</td>
+                  <td className="px-6 py-3">{region.name}</td>
+                  <td className="px-6 py-3 h-full flex gap-4">
                     <button
                       onClick={() => openEditRegionModal(region.id)}
                       className="text-slate-600 hover:underline"
@@ -150,7 +201,7 @@ const Region = () => {
                   onClick={() => setModalVisible(false)}
                   className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
                 >
-                  &times;
+                  ×
                 </button>
               </div>
             </div>

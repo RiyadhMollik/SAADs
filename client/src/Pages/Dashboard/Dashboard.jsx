@@ -2,13 +2,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './CustomCalendar.css';
-import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText } from 'lucide-react';
+import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText, Leaf, Newspaper, Microscope, ShieldCheck } from 'lucide-react';
 import { AuthContext } from '../../Components/context/AuthProvider';
 import { use } from 'react';
 
 const Dashboard = () => {
   const { rolePermission } = useContext(AuthContext);
-  const [data , setData] = useState({});
+  const [data, setData] = useState({});
   const [value, onChange] = useState(new Date());
   const formattedDate = value.toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -25,7 +25,7 @@ const Dashboard = () => {
       }
     }
     fetchData();
-  },[])
+  }, [])
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {/* Top Section */}
@@ -141,12 +141,6 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <FilePlus className="mx-auto mb-2 text-teal-500" size={32} />
-          <p className="text-2xl font-bold text-teal-500">{data?.newRegistration}</p>
-          <p className="text-sm text-gray-500">New Registration</p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <Car className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalSAAO}</p>
           <p className="text-sm text-gray-500">Total SAAO</p>
@@ -165,21 +159,39 @@ const Dashboard = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <FileText className="mx-auto mb-2 text-red-500" size={32} />
-          <p className="text-2xl font-bold text-red-500">{data?.activeSAAO}</p>
-          <p className="text-sm text-gray-500">Active SAAO</p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <User className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalUAO}</p>
           <p className="text-sm text-gray-500">Total UAO</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
-          <Users className="mx-auto mb-2 text-teal-500" size={32} />
+          <ShieldCheck className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalDD}</p>
           <p className="text-sm text-gray-500">Total DD</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <User className="mx-auto mb-2 text-teal-500" size={32} />
+          <p className="text-2xl font-bold text-teal-500">{data?.totalAD || 0}</p>
+          <p className="text-sm text-gray-500">Total AD</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <Microscope className="mx-auto mb-2 text-teal-500" size={32} />
+          <p className="text-2xl font-bold text-teal-500">{data?.totalScientists || 0}</p>
+          <p className="text-sm text-gray-500">Total Scientists</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <Newspaper className="mx-auto mb-2 text-teal-500" size={32} />
+          <p className="text-2xl font-bold text-teal-500">{data?.totalJournalists || 0}</p>
+          <p className="text-sm text-gray-500">Total Journalists</p>
+        </div>
+
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+          <Leaf className="mx-auto mb-2 text-teal-500" size={32} />
+          <p className="text-2xl font-bold text-teal-500">{data?.totalProgressiveFarmer || 0}</p>
+          <p className="text-sm text-gray-500">Total Progressive Farmer</p>
         </div>
       </div>
 

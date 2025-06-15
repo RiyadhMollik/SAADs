@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { FaPen } from "react-icons/fa";
+import { FaPen, FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import { BiTrash } from "react-icons/bi";
+import axios from 'axios';
 
 const Block = () => {
   const [roles, setRoles] = useState([]);
+  const [filteredRoles, setFilteredRoles] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editRoleId, setEditRoleId] = useState(null);
@@ -18,46 +20,49 @@ const Block = () => {
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
   const [searchRegion, setSearchRegion] = useState("");
-  const [filteredRegions, setFilteredRegions] = useState();
+  const [filteredRegions, setFilteredRegions] = useState([]);
   const [selectedRegion, setSelectedRegion] = useState(null);
   const [showRegionDropdown, setShowRegionDropdown] = useState(false);
   const [searchDistrict, setSearchDistrict] = useState("");
-  const [filteredDistricts, setFilteredDistricts] = useState();
+  const [filteredDistricts, setFilteredDistricts] = useState([]);
   const [selectedDistrict, setSelectedDistrict] = useState(null);
   const [showDistrictDropdown, setShowDistrictDropdown] = useState(false);
   const [searchUpazila, setSearchUpazila] = useState("");
-  const [filteredUpazilas, setFilteredUpazilas] = useState();
+  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
   const [selectedUpazila, setSelectedUpazila] = useState(null);
   const [showUpazilaDropdown, setShowUpazilaDropdown] = useState(false);
   const [searchUnion, setSearchUnion] = useState("");
-  const [filteredUnions, setFilteredUnions] = useState();
+  const [filteredUnions, setFilteredUnions] = useState([]);
   const [selectedUnion, setSelectedUnion] = useState(null);
   const [showUnionDropdown, setShowUnionDropdown] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
   const regionInputRef = useRef(null);
   const districtInputRef = useRef(null);
   const upazilaInputRef = useRef(null);
   const unionInputRef = useRef(null);
-  // Fetch blocks from the backend
+
   const fetchBlocks = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks");
-      const data = await response.json();
-      setRoles(data.reverse());
+      const response = await axios.get("https://iinms.brri.gov.bd/api/bloks/blocks");
+      const data = response.data.reverse();
+      setRoles(data);
+      setFilteredRoles(data);
     } catch (error) {
       console.error("Error fetching blocks:", error);
     }
   };
+
   const fetchData = async () => {
     try {
-      const response = await fetch("https://iinms.brri.gov.bd/api/data");
-      const data = await response.json();
-      setData(data);
+      const response = await axios.get("https://iinms.brri.gov.bd/api/data");
+      setData(response.data);
     } catch (error) {
-      console.error("Error fetching blocks:", error);
+      console.error("Error fetching data:", error);
     }
-  }
-  // Fetch blocks when the component mounts
+  };
+
   useEffect(() => {
     fetchBlocks();
     fetchData();
@@ -67,8 +72,6 @@ const Block = () => {
     setIsEditMode(false);
     setEditRoleId(null);
     setModalVisible(true);
-
-    // Reset all state variables to empty values when adding a new role
     setSelectedHotspot('');
     setRegion('');
     setDivision('');
@@ -78,16 +81,21 @@ const Block = () => {
     setBlock('');
     setLatitude('');
     setLongitude('');
+    setSearchRegion('');
+    setSearchDistrict('');
+    setSearchUpazila('');
+    setSearchUnion('');
+    setSelectedRegion(null);
+    setSelectedDistrict(null);
+    setSelectedUpazila(null);
+    setSelectedUnion(null);
   };
-
 
   const openEditRoleModal = (id) => {
     const roleToEdit = roles.find((role) => role.id === id);
     if (roleToEdit) {
-      setIsEditMode(true); // Set to Edit mode
-      setEditRoleId(id); // Set the ID of the role being edited
-
-      // Prepopulate the form with the role data
+      setIsEditMode(true);
+      setEditRoleId(id);
       setModalVisible(true);
       setSelectedHotspot(roleToEdit.hotspot);
       setSelectedRegion(roleToEdit.region);
@@ -105,123 +113,146 @@ const Block = () => {
     }
   };
 
-
   const saveRole = async () => {
-    
+    if (!selectedHotspot || !selectedRegion || !division || !selectedDistrict || !selectedUpazila || !selectedUnion || !block || !latitude || !longitude) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+    const payload = { block, latitude, longitude, hotspot: selectedHotspot, region: selectedRegion, division, district: selectedDistrict, upazila: selectedUpazila, union: selectedUnion };
     if (isEditMode) {
-      // Update existing block
       try {
-        const response = await fetch(`https://iinms.brri.gov.bd/api/bloks/blocks/${editRoleId}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, region: selectedRegion, division, district: selectedDistrict, upazila: selectedUpazila, union: selectedUnion }),
-        });
-        const updatedRole = await response.json();
+        const response = await axios.put(`https://iinms.brri.gov.bd/api/bloks/blocks/${editRoleId}`, payload);
         setRoles((prevRoles) =>
-          prevRoles.map((role) => (role.id === editRoleId ? updatedRole : role))
+          prevRoles.map((role) => (role.id === editRoleId ? response.data : role))
+        );
+        setFilteredRoles((prevRoles) =>
+          prevRoles.map((role) => (role.id === editRoleId ? response.data : role))
         );
       } catch (error) {
         console.error("Error updating block:", error);
       }
     } else {
-      // Add new block
       try {
-        const response = await fetch("https://iinms.brri.gov.bd/api/bloks/blocks", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ block, latitude, longitude, hotspot: selectedHotspot, region: selectedRegion, division, district: selectedDistrict, upazila: selectedUpazila, union: selectedUnion }),
-        });
-        const newBlock = await response.json();
+        await axios.post("https://iinms.brri.gov.bd/api/bloks/blocks", payload);
         fetchBlocks();
       } catch (error) {
         console.error("Error adding block:", error);
       }
     }
-
     setModalVisible(false);
   };
 
   const deleteRole = async (id) => {
     try {
-      await fetch(`https://iinms.brri.gov.bd/api/bloks/blocks/${id}`, {
-        method: "DELETE",
-      });
-      setRoles(roles.filter((role) => role.id !== id));
+      await axios.delete(`https://iinms.brri.gov.bd/api/bloks/blocks/${id}`);
+      fetchBlocks();
     } catch (error) {
       console.error("Error deleting block:", error);
     }
   };
+
+  const handleSearch = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchQuery(query);
+    const filtered = roles.filter((role) =>
+      Object.values(role).some((value) =>
+        value?.toString().toLowerCase().includes(query)
+      )
+    );
+    setFilteredRoles(filtered);
+  };
+
+  const handleSort = (key) => {
+    let direction = "asc";
+    if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+
+    const sortedRoles = [...filteredRoles].sort((a, b) => {
+      if (key === "index") {
+        return direction === "asc" ? a.id - b.id : b.id - a.id;
+      }
+      if (["block", "hotspot", "region", "division", "district", "upazila", "union"].includes(key)) {
+        return direction === "asc"
+          ? a[key].localeCompare(b[key])
+          : b[key].localeCompare(a[key]);
+      }
+      if (["latitude", "longitude"].includes(key)) {
+        const aValue = parseFloat(a[key]) || 0;
+        const bValue = parseFloat(b[key]) || 0;
+        return direction === "asc" ? aValue - bValue : bValue - aValue;
+      }
+      return 0;
+    });
+    setFilteredRoles(sortedRoles);
+  };
+
+  const getSortIcon = (key) => {
+    if (sortConfig.key !== key) return <FaSort />;
+    return sortConfig.direction === "asc" ? <FaSortUp /> : <FaSortDown />;
+  };
+
   useEffect(() => {
     if (searchRegion) {
       setFilteredRegions(
-        data.regions.filter((region) =>
+        data.regions?.filter((region) =>
           region.name.toLowerCase().includes(searchRegion.toLowerCase())
-        )
+        ) || []
       );
     } else {
-      setFilteredRegions(data?.regions?.slice(0, 5)); // Show first 5 if no search
+      setFilteredRegions(data.regions?.slice(0, 5) || []);
     }
   }, [searchRegion, data.regions]);
+
   useEffect(() => {
     if (searchDistrict) {
       setFilteredDistricts(
-        data.districts.filter((district) =>
+        data.districts?.filter((district) =>
           district.name.toLowerCase().includes(searchDistrict.toLowerCase())
-        )
+        ) || []
       );
     } else {
-      setFilteredDistricts(data?.districts?.slice(0, 5)); // Show first 5 if no search
+      setFilteredDistricts(data.districts?.slice(0, 5) || []);
     }
   }, [searchDistrict, data.districts]);
+
   useEffect(() => {
     if (searchUpazila) {
       setFilteredUpazilas(
-        data.upazilas.filter((upazila) =>
+        data.upazilas?.filter((upazila) =>
           upazila.name.toLowerCase().includes(searchUpazila.toLowerCase())
-        )
+        ) || []
       );
     } else {
-      setFilteredUpazilas(data?.upazilas?.slice(0, 5)); // Show first 5 if no search
+      setFilteredUpazilas(data.upazilas?.slice(0, 5) || []);
     }
   }, [searchUpazila, data.upazilas]);
 
   useEffect(() => {
     if (searchUnion) {
       setFilteredUnions(
-        data.unions.filter((union) =>
+        data.unions?.filter((union) =>
           union.name.toLowerCase().includes(searchUnion.toLowerCase())
-        )
+        ) || []
       );
     } else {
-      setFilteredUnions(data?.unions?.slice(0, 5)); // Show first 5 if no search
+      setFilteredUnions(data.unions?.slice(0, 5) || []);
     }
   }, [searchUnion, data.unions]);
 
-  // Hide dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (
-        regionInputRef.current &&
-        !regionInputRef.current.contains(event.target)
-      ) {
+      if (regionInputRef.current && !regionInputRef.current.contains(event.target)) {
         setShowRegionDropdown(false);
       }
-      if (
-        districtInputRef.current &&
-        !districtInputRef.current.contains(event.target)
-      ) {
+      if (districtInputRef.current && !districtInputRef.current.contains(event.target)) {
         setShowDistrictDropdown(false);
       }
-      if (
-        upazilaInputRef.current &&
-        !upazilaInputRef.current.contains(event.target)
-      ) {
+      if (upazilaInputRef.current && !upazilaInputRef.current.contains(event.target)) {
         setShowUpazilaDropdown(false);
       }
-      if (
-        unionInputRef.current &&
-        !unionInputRef.current.contains(event.target)
-      ) {
+      if (unionInputRef.current && !unionInputRef.current.contains(event.target)) {
         setShowUnionDropdown(false);
       }
     };
@@ -230,42 +261,98 @@ const Block = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Main Content */}
-      <div >
+      <div>
         <div className="p-6 bg-gray-50 min-h-screen w-full">
           <div className="flex justify-between">
             <h1 className="text-3xl font-bold mb-6 text-center text-black">Block List</h1>
-            <div className="flex justify-end mb-4">
+            <div className="flex gap-4 h-10">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={handleSearch}
+                placeholder="Search blocks..."
+                className="border px-4 py-1 rounded focus:outline-none focus:ring-2"
+              />
               <button
                 onClick={openAddRoleModal}
-                className="bg-slate-600 text-white px-6 py-2 rounded shadow hover:shadow-lg transition duration-300"
+                className="bg-slate-600 text-white px-6 py-1 rounded shadow hover:shadow-lg transition duration-300"
               >
                 Add Block
               </button>
             </div>
           </div>
-
-          <div className="max-w-[160vh]  overflow-x-scroll max-h-screen overflow-y-scroll">
-            <table className="w-full border-collapse bg-white rounded shadow-lg ">
+          <div className="max-w-[160vh] overflow-x-scroll max-h-screen overflow-y-scroll mt-5">
+            <table className="w-full border-collapse bg-white rounded shadow-lg">
               <thead className="bg-slate-700 text-white">
                 <tr>
-                  <th className="border-b px-6 py-3 text-left">#</th>
-                  <th className="border-b px-6 py-3 text-left">Block</th>
-                  <th className="border-b px-6 py-3 text-left">Hotspot</th>
-                  <th className="border-b px-6 py-3 text-left">Region</th>
-                  <th className="border-b px-6 py-3 text-left">Division</th>
-                  <th className="border-b px-6 py-3 text-left">District</th>
-                  <th className="border-b px-6 py-3 text-left">Upazila</th>
-                  <th className="border-b px-6 py-3 text-left">Union</th>
-                  <th className="border-b px-6 py-3 text-left">Latitude</th>
-                  <th className="border-b px-6 py-3 text-left">Longitude</th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("index")}
+                  >
+                    <p className="flex items-center gap-5"># {getSortIcon("index")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer "
+                    onClick={() => handleSort("block")}
+                  >
+                    <p className="flex items-center gap-5">Block {getSortIcon("block")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("hotspot")}
+                  >
+                    <p className="flex items-center gap-5">Hotspot {getSortIcon("hotspot")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("region")}
+                  >
+                    <p className="flex items-center gap-5">Region {getSortIcon("region")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("division")}
+                  >
+                    <p className="flex items-center gap-5">Division {getSortIcon("division")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("district")}
+                  >
+                    <p className="flex items-center gap-5">District {getSortIcon("district")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("upazila")}
+                  >
+                    <p className="flex items-center gap-5">Upazila {getSortIcon("upazila")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("union")}
+                  >
+                    <p className="flex items-center gap-5">Union {getSortIcon("union")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("latitude")}
+                  >
+                   <p className="flex items-center gap-5">Latitude {getSortIcon("latitude")}</p>
+                  </th>
+                  <th
+                    className="border-b px-6 py-3 text-left cursor-pointer"
+                    onClick={() => handleSort("longitude")}
+                  >
+                   <p className="flex items-center gap-5">Longitude {getSortIcon("longitude")}</p>
+                  </th>
                   <th className="border-b px-6 py-3 text-left">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {roles.map((role, index) => (
+                {filteredRoles.map((role, index) => (
                   <tr key={role.id} className="hover:bg-gray-100">
                     <td className="border-b px-6 py-3 w-24">{index + 1}</td>
                     <td className="border-b px-6 py-3">{role.block}</td>
@@ -297,11 +384,9 @@ const Block = () => {
             </table>
           </div>
 
-
-          {/* Modal */}
           {modalVisible && (
-            <div className="fixed z-[9999] inset-0 bg-black bg-opacity-50 flex items-center  justify-center">
-              <div className="bg-white rounded-lg shadow-lg w-full md:w-1/3 lg:w-1/3 p-6 relative max-h-[650px]  overflow-y-auto">
+            <div className="fixed z-[9999] inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <div className="bg-white rounded-lg shadow-lg w-full md:w-1/3 lg:w-1/3 p-6 relative max-h-[650px] overflow-y-auto">
                 <h2 className="text-2xl font-bold mb-4 text-center text-black">
                   {isEditMode ? "Edit Block" : "Add Block"}
                 </h2>
@@ -330,11 +415,10 @@ const Block = () => {
                   />
                   {showRegionDropdown && (
                     <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                      {filteredRegions.map((region, index) => (
+                      {filteredRegions.map((region) => (
                         <li
-                          key={index}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRegion?.name === region.name ? "bg-gray-200" : ""
-                            }`}
+                          key={region.id}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedRegion === region.name ? "bg-gray-200" : ""}`}
                           onClick={() => {
                             setSelectedRegion(region.name);
                             setSearchRegion(region.name);
@@ -350,7 +434,6 @@ const Block = () => {
                     </ul>
                   )}
                 </div>
-                {/* Division */}
                 <label className="block mb-2 font-medium">Division</label>
                 <select
                   className="w-full border px-4 py-2 rounded mb-4 focus:outline-none focus:ring-2"
@@ -358,14 +441,12 @@ const Block = () => {
                   onChange={(e) => setDivision(e.target.value)}
                 >
                   <option value="">Select Division</option>
-                  {data.divisions.map((item) => (
+                  {data.divisions?.map((item) => (
                     <option key={item.id} value={item.name}>
                       {item.name}
                     </option>
                   ))}
                 </select>
-
-                {/* District */}
                 <div className="mb-4 relative" ref={districtInputRef}>
                   <label className="block text-sm font-medium mb-1">District</label>
                   <input
@@ -378,11 +459,10 @@ const Block = () => {
                   />
                   {showDistrictDropdown && (
                     <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                      {filteredDistricts?.map((district, index) => (
+                      {filteredDistricts.map((district) => (
                         <li
-                          key={index}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedDistrict?.name === district.name ? "bg-gray-200" : ""
-                            }`}
+                          key={district.id}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedDistrict === district.name ? "bg-gray-200" : ""}`}
                           onClick={() => {
                             setSelectedDistrict(district.name);
                             setSearchDistrict(district.name);
@@ -392,14 +472,12 @@ const Block = () => {
                           {district.name}
                         </li>
                       ))}
-                      {filteredDistricts?.length === 0 && (
-                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      {filteredDistricts.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No districts found</li>
                       )}
                     </ul>
                   )}
                 </div>
-
-                {/* Upazila */}
                 <div className="mb-4 relative" ref={upazilaInputRef}>
                   <label className="block text-sm font-medium mb-1">Upazila</label>
                   <input
@@ -412,11 +490,10 @@ const Block = () => {
                   />
                   {showUpazilaDropdown && (
                     <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                      {filteredUpazilas?.map((upazila, index) => (
+                      {filteredUpazilas.map((upazila) => (
                         <li
-                          key={index}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUpazila?.name === upazila.name ? "bg-gray-200" : ""
-                            }`}
+                          key={upazila.id}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUpazila === upazila.name ? "bg-gray-200" : ""}`}
                           onClick={() => {
                             setSelectedUpazila(upazila.name);
                             setSearchUpazila(upazila.name);
@@ -426,14 +503,12 @@ const Block = () => {
                           {upazila.name}
                         </li>
                       ))}
-                      {filteredUpazilas?.length === 0 && (
-                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      {filteredUpazilas.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No upazilas found</li>
                       )}
                     </ul>
                   )}
                 </div>
-
-                {/* Union */}
                 <div className="mb-4 relative" ref={unionInputRef}>
                   <label className="block text-sm font-medium mb-1">Union</label>
                   <input
@@ -446,11 +521,10 @@ const Block = () => {
                   />
                   {showUnionDropdown && (
                     <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                      {filteredUnions?.map((union, index) => (
+                      {filteredUnions.map((union) => (
                         <li
-                          key={index}
-                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUnion?.name === union.name ? "bg-gray-200" : ""
-                            }`}
+                          key={union.id}
+                          className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${selectedUnion === union.name ? "bg-gray-200" : ""}`}
                           onClick={() => {
                             setSelectedUnion(union.name);
                             setSearchUnion(union.name);
@@ -460,13 +534,13 @@ const Block = () => {
                           {union.name}
                         </li>
                       ))}
-                      {filteredUnions?.length === 0 && (
-                        <li className="px-3 py-2 text-gray-500">No regions found</li>
+                      {filteredUnions.length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No unions found</li>
                       )}
                     </ul>
                   )}
                 </div>
-                <label className="block mb-2 font-medium">Block </label>
+                <label className="block mb-2 font-medium">Block</label>
                 <input
                   type="text"
                   value={block}
@@ -508,7 +582,7 @@ const Block = () => {
                   onClick={() => setModalVisible(false)}
                   className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
                 >
-                  &times;
+                  ×
                 </button>
               </div>
             </div>

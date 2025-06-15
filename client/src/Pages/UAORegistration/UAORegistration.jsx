@@ -376,7 +376,7 @@ const UAORegistration = () => {
             {/* Search Input */}
             <input
               type="text"
-              placeholder="Search by Name, Phone, or Email"
+              placeholder="Search by Name, Phone, or Upazila"
               className="border rounded px-4 py-2 w-full md:w-1/2 lg:w-1/3"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -384,21 +384,14 @@ const UAORegistration = () => {
 
             {/* Buttons & Select Section */}
             <div className="flex flex-wrap justify-center md:justify-end space-x-2">
-              <select
+              <input
+                type="number"
                 className="border rounded px-4 py-2"
                 value={rowsPerPage}
-                onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
-              >
-                <option value={10}>Show 10</option>
-                <option value={25}>Show 25</option>
-                <option value={50}>Show 50</option>
-                <option value={100}>Show 100</option>
-                <option value={500}>Show 500</option>
-                <option value={1000}>Show 1000</option>
-                <option value={1500}>Show 1500</option>
-                <option value={2000}>Show 2000</option>
-                <option value={2500}>Show 2500</option>
-              </select>
+                onChange={(e) => setRowsPerPage(parseInt(e.target.value) || 0)}
+                min={1}
+                placeholder="Rows per page"
+              />
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">CSV</button>

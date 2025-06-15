@@ -40,6 +40,12 @@ import MLModel from "../Pages/MLModel/MLModel";
 import Protentiometer1 from "../Pages/Protentiometer/ProtentiometerTest1";
 import Report from "../Pages/Report/Report";
 import UpdatePassword from "../Pages/UpdatePassword/UpdatePassword";
+import ScientistRegistration from "../Pages/ScientistRegistration/ScientistRegistration";
+import JournalistsRegistration from "../Pages/JournalistsRegistration/JournalistsRegistration";
+import AreaWiseReport from "../Pages/Report/AreaWiseReport";
+import FieldMonitoringReports from "../Pages/Report/FieldMonitoringReports";
+import Profile from "../Pages/Profile/Profile";
+import DiseasesSurvey from "../Pages/DiseasesSurvey/DiseasesSurvey";
 
 export const router = createBrowserRouter([
   {
@@ -81,6 +87,14 @@ export const router = createBrowserRouter([
       {
         path: "/ad-registration",
         element: <ADRegistration/>, 
+      },  
+      {
+        path: "/scientist-registration",
+        element: <ScientistRegistration/>, 
+      },  
+      {
+        path: "/journalists-registration",
+        element: <JournalistsRegistration/>,  
       },  
       {
         path: "/block",
@@ -172,8 +186,24 @@ export const router = createBrowserRouter([
         element: <Report/> , 
       },  
       {
+        path: "/area-report",
+        element: <AreaWiseReport/> , 
+      },  
+      {
+        path: "/field-report",
+        element: <FieldMonitoringReports/> , 
+      },  
+      {
         path: "/update-password",
         element: <UpdatePassword/> , 
+      },  
+      {
+        path: "/profile",
+        element: <Profile/> , 
+      },  
+      {
+        path: "/diseases-survey",
+        element: <DiseasesSurvey/> , 
       },  
       
         

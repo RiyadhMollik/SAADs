@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from 'chart.js';
+import ChartComponent from './ChartComponent';
 
 // Register the necessary components including LineController
 ChartJS.register(

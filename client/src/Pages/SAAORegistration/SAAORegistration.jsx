@@ -245,7 +245,7 @@ const SAAORegistration = () => {
 
   useEffect(() => {
     fetchSAAOs();
-  }, [page, rowsPerPage ,searchText]);
+  }, [page, rowsPerPage, searchText]);
   // Define the available columns and their initial visibility state
   const initialColumns = [
     { name: "ID", visible: true },
@@ -474,16 +474,14 @@ const SAAORegistration = () => {
 
             {/* Buttons & Select Section */}
             <div className="flex flex-wrap justify-center md:justify-end space-x-2">
-              <select
+              <input
+                type="number"
                 className="border rounded px-4 py-2"
                 value={rowsPerPage}
-                onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
-              >
-                <option value={10}>Show 10</option>
-                <option value={25}>Show 25</option>
-                <option value={50}>Show 50</option>
-                <option value={100}>Show 100</option>
-              </select>
+                onChange={(e) => setRowsPerPage(parseInt(e.target.value) || 0)}
+                min={1}
+                placeholder="Rows per page"
+              />
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">CSV</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">PDF</button>

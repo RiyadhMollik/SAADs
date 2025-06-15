@@ -6,7 +6,7 @@ import { AuthContext } from "../../Components/context/AuthProvider";
 import { useContext } from "react";
 
 const AdminRegistration = () => {
-   const { rolePermission } = useContext(AuthContext);
+  const { rolePermission } = useContext(AuthContext);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
@@ -237,7 +237,7 @@ const AdminRegistration = () => {
     setIsAdminModalOpen(false);
   };
   const registerAdmin = async () => {
-    if(formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
+    if (formData.mobileNumber.length < 11) return alert("Mobile number must be 11 digits long.");
     try {
       const method = isEdit ? "PUT" : "POST";
       const url = isEdit
@@ -356,7 +356,7 @@ const AdminRegistration = () => {
             {/* Search Input */}
             <input
               type="text"
-              placeholder="Search by Name, Phone, or Email"
+              placeholder="Search by Name, Phone, or District"
               className="border rounded px-4 py-2 w-full md:w-1/2 lg:w-1/3"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -364,17 +364,14 @@ const AdminRegistration = () => {
 
             {/* Buttons & Select Section */}
             <div className="flex flex-wrap justify-center md:justify-end space-x-2">
-              <select
+              <input
+                type="number"
                 className="border rounded px-4 py-2"
                 value={rowsPerPage}
-                onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
-              >
-                <option value={10}>Show 10</option>
-                <option value={25}>Show 25</option>
-                <option value={50}>Show 50</option>
-                <option value={100}>Show 100</option>
-                <option value={500}>Show 500</option>
-              </select>
+                onChange={(e) => setRowsPerPage(parseInt(e.target.value) || 0)}
+                min={1}
+                placeholder="Rows per page"
+              />
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">Excel</button>
               <button className="border px-4 py-2 rounded hover:bg-gray-100">CSV</button>
@@ -439,7 +436,7 @@ const AdminRegistration = () => {
                                 <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" onClick={() => handleDeleteSAAO(Admin.id)}>
                                   <FaTrash />
                                 </button>
-                              )}           
+                              )}
                             </div>
                           )}
                         </td>
