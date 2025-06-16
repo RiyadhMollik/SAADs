@@ -615,7 +615,7 @@ const FarmerRegistration = () => {
 
       // Table with styling
       autoTable(doc, {
-        startY: 40, 
+        startY: 40,
         head: [headers],
         body: data,
         theme: 'grid',
@@ -992,14 +992,20 @@ const FarmerRegistration = () => {
                     maxLength="11"
                     required
                   />
-                  <label className="block mt-4">NID Number</label>
+                  <label className="block mt-4">NID Number<span className="text-red-500">*</span></label>
                   <input
                     type="text"
                     name="nationalId"
                     placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.nationalId}
-                    onChange={handleChange}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d*$/.test(value)) {
+                        handleChange(e);
+                      }
+                    }}
+                    required
                   />
                   <label className="block mt-4">WhatsApp Number</label>
                   <input
@@ -1044,12 +1050,14 @@ const FarmerRegistration = () => {
                   >
                     <option value="">Select Education Status</option>
                     <option value="illiterate">Illiterate</option>
+                    <option value="signature">Signature</option>
                     <option value="primary">Primary</option>
                     <option value="secondary">Secondary</option>
+                    <option value="SSC">SSC</option>
+                    <option value="HSC">HSC</option>
                     <option value="higher">Higher</option>
-                    <option value="other">Other</option>
                   </select>
-                  {formData.educationStatus === "other" && (
+                  {/* {formData.educationStatus === "other" && (
                     <input
                       type="text"
                       name="eduOther"
@@ -1058,7 +1066,7 @@ const FarmerRegistration = () => {
                       value={formData.eduOther}
                       onChange={handleChange}
                     />
-                  )}
+                  )} */}
                   <label className="block mt-4">Village/Locality</label>
                   <input
                     type="text"
@@ -1070,7 +1078,7 @@ const FarmerRegistration = () => {
                   />
                   <label className="block mt-4">Farm Size (in decimal)</label>
                   <input
-                    type="text"
+                    type="number"
                     name="farmSize"
                     placeholder=""
                     className="border w-full p-2 rounded"
@@ -1079,7 +1087,7 @@ const FarmerRegistration = () => {
                   />
                   <label className="block mt-4">Total Urea Uses (kg/bigha)</label>
                   <input
-                    type="text"
+                    type="number"
                     name="fertilizerUsage"
                     placeholder=""
                     className="border w-full p-2 rounded"
