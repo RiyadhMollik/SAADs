@@ -40,6 +40,7 @@ const FarmerRegistration = () => {
     gender: "",
     dateOfBirth: "",
     age: "",
+    alternateContactRelation: "",
     mobileNumber: "",
     nationalId: "",
     whatsappNumber: "",
@@ -149,6 +150,7 @@ const FarmerRegistration = () => {
     { name: "National ID", visible: true },
     { name: "WhatsApp Number", visible: true },
     { name: "Alternate Contact", visible: true },
+    { name: "Relationship with Farmer", visible: true },
     { name: "Education Status", visible: true },
     { name: "Village", visible: true },
     { name: "Farm Size", visible: true },
@@ -210,6 +212,7 @@ const FarmerRegistration = () => {
       nationalId: "",
       whatsappNumber: "",
       alternateContact: "",
+      alternateContactRelation: "",
       educationStatus: "",
       eduOther: "",
       village: "",
@@ -334,6 +337,7 @@ const FarmerRegistration = () => {
       nationalId: farmer.nationalId || "",
       whatsappNumber: farmer.whatsappNumber || "",
       alternateContact: farmer.alternateContact || "",
+      alternateContactRelation: farmer.alternateContactRelation || "",
       educationStatus: farmer.educationStatus || "",
       eduOther: farmer.educationStatus === "other" ? farmer.educationStatus : "",
       village: farmer.village || "",
@@ -452,6 +456,7 @@ const FarmerRegistration = () => {
     "Major Diseases": "majorDiseases",
     "Major Insects": "majorInsects",
     "Progressive Farmer": "progressiveFarmer",
+    "Relationship with Farmer": "alternateContactRelation",
     Region: "region",
     Block: "block",
     Union: "union",
@@ -792,6 +797,7 @@ const FarmerRegistration = () => {
                           {col.name === "National ID" && farmer.nationalId}
                           {col.name === "WhatsApp Number" && farmer.whatsappNumber}
                           {col.name === "Alternate Contact" && farmer.alternateContact}
+                          {col.name === "Relationship with Farmer" && farmer.alternateContactRelation}
                           {col.name === "Education Status" &&
                             (farmer.educationStatus === "other" ? farmer.eduOther : farmer.educationStatus)}
                           {col.name === "Village" && farmer.village}
@@ -1024,23 +1030,46 @@ const FarmerRegistration = () => {
                     minLength="11"
                     maxLength="11"
                   />
-                  <label className="block mt-4">Alternate Contact Number</label>
-                  <input
-                    type="tel"
-                    name="alternateContact"
-                    placeholder="Family member's mobile number"
-                    className="border w-full p-2 rounded"
-                    value={formData.alternateContact}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (/^\d{0,11}$/.test(value)) {
-                        handleChange(e);
-                      }
-                    }}
-                    pattern="[0-9]{11}"
-                    minLength="11"
-                    maxLength="11"
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mt-4">Alternate Contact Number</label>
+                      <input
+                        type="tel"
+                        name="alternateContact"
+                        placeholder="Family member's mobile number"
+                        className="border w-full p-2 rounded"
+                        value={formData.alternateContact}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d{0,11}$/.test(value)) {
+                            handleChange(e);
+                          }
+                        }}
+                        pattern="[0-9]{11}"
+                        minLength="11"
+                        maxLength="11"
+                      />
+                    </div>
+                    <div>
+                      <label className="block mt-4">Relation With farmer</label>
+                      <select
+                        name="alternateContactRelation"
+                        className="border w-full p-2 rounded"
+                        value={formData.alternateContactRelation}
+                        onChange={handleChange}
+                      >
+                        <option value="">Select Relation</option>
+                        <option value="father">Father</option>
+                        <option value="mother">Mother</option>
+                        <option value="husband">Husband</option>
+                        <option value="wife">Wife</option>
+                        <option value="son">Son</option>
+                        <option value="daughter">Daughter</option>
+                        <option value="brother">Brother</option>
+                        <option value="sister">Sister</option>
+                      </select>
+                    </div>
+                  </div>
                   <label className="block mt-4">Education Status</label>
                   <select
                     name="educationStatus"
