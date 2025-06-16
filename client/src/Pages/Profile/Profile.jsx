@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { ChevronsUpDown } from "lucide-react";
+import { useAuthContext } from "../../Components/context/AuthProvider";
+import { use } from "react";
 
 const Profile = () => {
+    const { authUser, loadingUser } = useAuthContext();
     const [currentStep, setCurrentStep] = useState(1);
     const [isColumnModalOpen, setIsColumnModalOpen] = useState(false);
     const [SAAOList, setSAAOList] = useState([]);
@@ -55,7 +58,14 @@ const Profile = () => {
         soilType: "",
         role: "saao",
     });
-
+    useEffect(() => {
+        if (authUser) {
+            setFormData(authUser.RegistedUser);
+            setSelectedHotspots(authUser.RegistedUser.hotspot || []);
+            setSelectedMajorCrop(authUser.RegistedUser.majorCrops.split(",") || []);
+            setSelectedId(authUser.RegistedUser.id);
+        }
+    }, [authUser])
     useEffect(() => {
         if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchUnion = async () => {
@@ -162,24 +172,6 @@ const Profile = () => {
         fetchRoles();
     }, []);
 
-    const handleUseMyLocation = () => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    setFormData({ ...formData, coordinates: `${lat}, ${lon}` });
-                },
-                (error) => {
-                    console.error("Error getting location:", error);
-                    alert("Failed to fetch location. Please enable GPS.");
-                }
-            );
-        } else {
-            alert("Geolocation is not supported by your browser.");
-        }
-    };
-
     const fetchSAAOs = async () => {
         try {
             const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}&search=${encodeURIComponent(searchText)}`);
@@ -268,8 +260,8 @@ const Profile = () => {
         };
 
         try {
-            const method = isEdit ? "PUT" : "POST";
-            const url = isEdit ? `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}` : "https://iinms.brri.gov.bd/api/farmers/farmers";
+            const method = "PUT";
+            const url = `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`;
             const response = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
@@ -281,6 +273,7 @@ const Profile = () => {
                 fetchSAAOs();
                 resetForm();
                 alert("SAAO registered successfully!");
+                window.location.reload();
             } else {
                 throw new Error("Failed to save SAAO");
             }
@@ -377,7 +370,7 @@ const Profile = () => {
                                 value={formData.whatsappNumber}
                                 onChange={handleChange}
                             />
-                            
+
                             <input
                                 type="text"
                                 name="messengerId"

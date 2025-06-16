@@ -242,15 +242,17 @@ const Sidebar = () => {
             </div>
           )
         }
-        {/* <div>
-          <Link onClick={() => setIsslider(false)} to="/profile">
-            <button
-              className={`flex items-center w-full px-4 py-2 rounded-lg ${loading ? "bg-gray-300" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
-            >
-              <FaUser className="mr-3" /> {isHidden ? "" : "Profile"}
-            </button>
-          </Link>
-        </div> */}
+        {(rolePermission && rolePermission["Profile"]) && (
+          <div>
+            <Link onClick={() => setIsslider(false)} to="/profile">
+              <button
+                className={`flex items-center w-full px-4 py-2 rounded-lg ${loading ? "bg-gray-300" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
+              >
+                <FaUser className="mr-3" /> {isHidden ? "" : "Profile"}
+              </button>
+            </Link>
+          </div>
+        )}
         <div>
           <button
             onClick={logout}
