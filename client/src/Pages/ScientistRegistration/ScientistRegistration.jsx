@@ -33,6 +33,7 @@ const ScientistRegistration = () => {
     region: "",
     division: "",
     district: "",
+    upazila: "",
     gender: "",
     mobileNumber: "",
     alternateContact: "",
@@ -210,8 +211,8 @@ const ScientistRegistration = () => {
     { name: "Division", visible: true },
     { name: "District", visible: true },
     { name: "Upazila", visible: true },
-    { name: "Union", visible: true },
-    { name: "Block", visible: true },
+    // { name: "Union", visible: true },
+    // { name: "Block", visible: true },
     { name: "Gender", visible: true },
     { name: "Mobile Number (Personal)", visible: true },
     { name: "Mobile Number (Official)", visible: true },
@@ -254,6 +255,7 @@ const ScientistRegistration = () => {
       region: "",
       division: "",
       district: "",
+      upazila: "",
       gender: "",
       mobileNumber: "",
       alternateContact: "",
@@ -337,11 +339,12 @@ const ScientistRegistration = () => {
     setSelectedId(scientist.id);
     setFormData({
       name: scientist.name || "",
-      designation: scientist.fatherName || "", // Map fatherName to designation
+      designation: scientist.designation || "", 
       hotspot: scientist.hotspot || "",
       region: scientist.region || "",
       division: scientist.division || "",
       district: scientist.district || "",
+      upazila: scientist.upazila || "",
       gender: scientist.gender || "",
       mobileNumber: scientist.mobileNumber || "",
       alternateContact: scientist.alternateContact || "",
@@ -431,14 +434,14 @@ const ScientistRegistration = () => {
                               ? rowIndex + 1
                               : (pagination.currentPage - 1) * rowsPerPage + rowIndex + 1)}
                           {col.name === "Name" && scientist.name}
-                          {col.name === "Designation" && scientist.fatherName}
+                          {col.name === "Designation" && scientist.designation}
                           {col.name === "Hotspot" && scientist.hotspot}
                           {col.name === "Region" && scientist.region}
                           {col.name === "Division" && scientist.division}
                           {col.name === "District" && scientist.district}
                           {col.name === "Upazila" && scientist.upazila}
-                          {col.name === "Union" && scientist.union}
-                          {col.name === "Block" && scientist.block}
+                          {/* {col.name === "Union" && scientist.union}
+                          {col.name === "Block" && scientist.block} */}
                           {col.name === "Gender" && scientist.gender}
                           {col.name === "Mobile Number (Personal)" && scientist.mobileNumber}
                           {col.name === "Mobile Number (Official)" && scientist.alternateContact}
@@ -636,32 +639,7 @@ const ScientistRegistration = () => {
                       </option>
                     ))}
                   </select>
-                  <select
-                    name="union"
-                    className="border w-full p-2 rounded"
-                    value={formData.union}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Union</option>
-                    {unions?.map((union) => (
-                      <option key={union} value={union}>
-                        {union}
-                      </option>
-                    ))}
-                  </select>
-                  <select
-                    name="block"
-                    className="border w-full p-2 rounded"
-                    value={formData.block}
-                    onChange={handleChange}
-                  >
-                    <option value="">Select Block</option>
-                    {blocks?.map((block) => (
-                      <option key={block} value={block}>
-                        {block}
-                      </option>
-                    ))}
-                  </select>
+                 
                   <select
                     name="gender"
                     className="border w-full p-2 rounded"
@@ -713,7 +691,7 @@ const ScientistRegistration = () => {
                   <input
                     type="text"
                     name="messengerId"
-                    placeholder="Messenger ID"
+                    placeholder="Facebook ID"
                     className="border w-full p-2 rounded"
                     value={formData.messengerId}
                     onChange={handleChange}

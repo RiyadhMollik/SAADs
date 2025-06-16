@@ -305,7 +305,7 @@ const JournalistsRegistration = () => {
                       .map((col, index) => (
                         <td
                           key={col.name}
-                          className={`border px-4 py-2 ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 7 ? "capitalize" : ""}`}
+                          className={`border px-4 py-2 text-center capitalize overflow-hidden ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 7 ? "capitalize" : ""}`}
                           style={{ width: "150px" }}
                         >
                           {col.name === "ID" &&
@@ -319,15 +319,61 @@ const JournalistsRegistration = () => {
                           {col.name === "Name of Media" && journalist.mediaName}
                           {col.name === "Area of Expertise" && journalist.expertise}
                           {col.name === "Gender" && journalist.gender}
-                          {col.name === "Mobile Number (Personal)" && journalist.mobileNumber}
-                          {col.name === "Mobile Number (Official)" && journalist.alternateContact}
-                          {col.name === "WhatsApp Number" && journalist.whatsappNumber}
-                          {col.name === "Facebook ID" && journalist.messengerId}
-                          {col.name === "Email (Personal)" && journalist.email}
-                          {col.name === "Email (Official)" && journalist.emailOfficial}
+                          {col.name === "Mobile Number (Personal)" &&
+                            journalist.mobileNumber && (
+                              <a href={`tel:${journalist.mobileNumber}`} className=" hover:underline">
+                                {journalist.mobileNumber}
+                              </a>
+                            )}
+
+                          {col.name === "Mobile Number (Official)" &&
+                            journalist.alternateContact && (
+                              <a href={`tel:${journalist.alternateContact}`} className=" hover:underline">
+                                {journalist.alternateContact}
+                              </a>
+                            )}
+
+                          {col.name === "WhatsApp Number" &&
+                            journalist.whatsappNumber && (
+                              <a
+                                href={`https://wa.me/${journalist.whatsappNumber}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-green-600  hover:underline"
+                              >
+                                {journalist.whatsappNumber}
+                              </a>
+                            )}
+
+                          {col.name === "Facebook ID" &&
+                            journalist.messengerId && (
+                              <a
+                                href={`https://facebook.com/${journalist.messengerId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-700 lowercase  hover:underline"
+                              >
+                                {journalist.messengerId}
+                              </a>
+                            )}
+
+                          {col.name === "Email (Personal)" &&
+                            journalist.email && (
+                              <a href={`mailto:${journalist.email}`} className="text-purple-700 lowercase  hover:underline">
+                                {journalist.email}
+                              </a>
+                            )}
+
+                          {col.name === "Email (Official)" &&
+                            journalist.emailOfficial && (
+                              <a href={`mailto:${journalist.emailOfficial}`} className="text-purple-700 lowercase  hover:underline">
+                                {journalist.emailOfficial}
+                              </a>
+                            )}
+
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
-                              {rolePermission["Journalists Edit"] && (
+                              {rolePermission["Journalist Edit"] && (
                                 <button
                                   className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
                                   onClick={() => handleEdit(journalist)}
@@ -335,7 +381,7 @@ const JournalistsRegistration = () => {
                                   <FaEdit />
                                 </button>
                               )}
-                              {rolePermission["Journalists Delete"] && (
+                              {rolePermission["Journalist Delete"] && (
                                 <button
                                   className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
                                   onClick={() => handleDeleteJournalists(journalist.id)}

@@ -43,6 +43,8 @@ const User = () => {
     try {
       const response = await axios.get(ROLES_API_URL);
       const data = response.data;
+      console.log(data);
+      
       setRoles(data);
       setFilteredRoles(data);
     } catch (error) {
@@ -291,7 +293,7 @@ const User = () => {
                         setShowFarmerDropdown(false);
                       }}
                     >
-                      {farmer.name} - {farmer.mobileNumber}
+                      {farmer.name} - {farmer.mobileNumber} - {farmer.role}
                     </li>
                   ))}
                   {filteredFarmers.length === 0 && (
@@ -307,7 +309,7 @@ const User = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded mb-1"
                 placeholder="Search role"
                 value={searchRole}
-                onFocus={() => setShowRole(true)}
+                onFocus={() => setShowRoleDropdown(true)}
                 onChange={(e) => setSearchRole(e.target.value)}
               />
               {showRoleDropdown && (
