@@ -143,7 +143,7 @@ const FarmerRegistration = () => {
     { name: "Name", visible: true },
     { name: "Father Name", visible: true },
     { name: "Gender", visible: true },
-    { name: "Date of Birth", visible: true },
+    // { name: "Date of Birth", visible: true },
     { name: "Age", visible: true },
     { name: "Mobile Number", visible: true },
     { name: "National ID", visible: true },
@@ -204,7 +204,7 @@ const FarmerRegistration = () => {
       name: "",
       fatherName: "",
       gender: "",
-      dateOfBirth: "",
+      // dateOfBirth: "",
       age: "",
       mobileNumber: "",
       nationalId: "",
@@ -328,7 +328,7 @@ const FarmerRegistration = () => {
       name: farmer.name || "",
       fatherName: farmer.fatherName || "",
       gender: farmer.gender || "",
-      dateOfBirth: farmer.dateOfBirth || "",
+      // dateOfBirth: farmer.dateOfBirth || "",
       age: farmer.age || calculateAge(farmer.dateOfBirth) || "",
       mobileNumber: farmer.mobileNumber || "",
       nationalId: farmer.nationalId || "",
@@ -439,7 +439,7 @@ const FarmerRegistration = () => {
     Name: "name",
     "Father Name": "fatherName",
     Gender: "gender",
-    "Date of Birth": "dateOfBirth",
+    // "Date of Birth": "dateOfBirth",
     Age: "age",
     "Mobile Number": "mobileNumber",
     "National ID": "nationalId",
@@ -786,7 +786,7 @@ const FarmerRegistration = () => {
                           {col.name === "Name" && farmer.name}
                           {col.name === "Father Name" && farmer.fatherName}
                           {col.name === "Gender" && farmer.gender}
-                          {col.name === "Date of Birth" && farmer.dateOfBirth}
+                          {/* {col.name === "Date of Birth" && farmer.dateOfBirth} */}
                           {col.name === "Age" && farmer.age}
                           {col.name === "Mobile Number" && farmer.mobileNumber}
                           {col.name === "National ID" && farmer.nationalId}
@@ -949,7 +949,7 @@ const FarmerRegistration = () => {
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
-                  <label className="block mt-4">
+                  {/* <label className="block mt-4">
                     Date of Birth <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -959,17 +959,18 @@ const FarmerRegistration = () => {
                     value={formData.dateOfBirth}
                     onChange={handleChange}
                     required
-                  />
+                  /> */}
                   <label className="block mt-4">
                     Age <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
                     name="age"
-                    placeholder="Age (auto-calculated)"
-                    className="border w-full p-2 rounded bg-gray-100"
+                    placeholder="Age "
+                    className="border w-full p-2 rounded"
                     value={formData.age}
-                    readOnly
+                    onChange={handleChange}
+                    required
                   />
                   <label className="block mt-4">
                     Mobile Number <span className="text-red-500">*</span>
