@@ -36,19 +36,6 @@ const JournalistsRegistration = () => {
     role: "Journalists",
   });
 
-  // Remove unused location-related state variables
-  // const [regions, setRegions] = useState([]);
-  // const [hotspot, setHotspot] = useState([]);
-  // const [selectedHotspots, setSelectedHotspots] = useState([]);
-  // const [districts, setDistricts] = useState([]);
-  // const [divisions, setDivisions] = useState([]);
-  // const [upazilas, setUpazilas] = useState([]);
-  // const [unions, setUnions] = useState([]);
-  // const [block, setBlock] = useState([]);  
-
-  // Remove unused useEffect hooks for location data fetching
-  // (All useEffect hooks related to regions, divisions, districts, upazilas, unions, blocks, hotspots)
-
   const fetchJournalists = async () => {
     try {
       const response = await fetch(

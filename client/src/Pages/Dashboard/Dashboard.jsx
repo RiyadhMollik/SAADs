@@ -85,6 +85,16 @@ const Dashboard = () => {
               )
             }
             {
+              rolePermission['Journalist List'] && (
+                <li className="bg-gray-100 rounded-lg py-4">
+                  <a href="/journalists-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
+                    <FilePlus size={20} />
+                    <p>Add Journalist </p>
+                  </a>
+                </li>
+              )
+            }
+            {
               rolePermission['Report'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/report" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
@@ -110,15 +120,7 @@ const Dashboard = () => {
                 <p>About</p>
               </a>
             </li>
-            <li className="bg-gray-100 rounded-lg py-4">
-              <a href="/update-password" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
-                <FileMinus size={20} />
-                <p>Password Change</p>
-              </a>
-            </li>
-
           </ul>
-
         </div>
         <div className="calendar-wrapper h-full">
           <Calendar
