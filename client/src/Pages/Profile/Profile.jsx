@@ -216,7 +216,7 @@ const Profile = () => {
         if (authUser) {
             setFormData(authUser.RegistedUser);
             setSelectedHotspots(authUser.RegistedUser.hotspot || []);
-            setSelectedMajorCrop(authUser.RegistedUser?.majorCrops?mane .split(",") || []);
+            setSelectedMajorCrop(authUser.RegistedUser?.majorCrops?.split(",") || []);
             setSelectedId(authUser.RegistedUser.id);
             setSelectedOptions(authUser.RegistedUser.seasonWiseDominantVarieties || []);
             setTransplantingDates(authUser.RegistedUser.transplantingDates || []);
