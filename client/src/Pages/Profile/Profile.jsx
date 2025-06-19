@@ -25,128 +25,43 @@ const Profile = () => {
     const [otherSoilType, setOtherSoilType] = useState("");
     const [page, setPage] = useState(1);
     const [selectedMajorCrop, setSelectedMajorCrop] = useState([]);
-    const [selectedClimetExtreams, setSelectedClimetExtreams] = useState([]);
+    const [selectedClimateExtremes, setSelectedClimateExtremes] = useState([]);
     const [isOtherMajorCropOpen, setIsOtherMajorCropOpen] = useState(false);
     const [selectedMajorCropOthers, setSelectedMajorCropOthers] = useState("");
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const [selectedOptions2, setSelectedOptions2] = useState([]);
+    const [selectedSeasonVarieties, setSelectedSeasonVarieties] = useState([]);
     const [transplantingDates, setTransplantingDates] = useState([]);
     const [floweringDates, setFloweringDates] = useState([]);
     const [expectedHarvestPeriods, setExpectedHarvestPeriods] = useState([]);
-
-    const harvestOptions = [
-        { label: "Aus", value: "aus" },
-        { label: "Aman", value: "aman" },
-        { label: "Boro", value: "boro" },
-    ];
-
-    const handleExpectedHarvestSelect = (e) => {
-        const selectedValue = e.target.value;
-        if (selectedValue && !expectedHarvestPeriods.find(item => item.value === selectedValue)) {
-            setExpectedHarvestPeriods((prev) => [
-                ...prev,
-                { value: selectedValue, date: "" }
-            ]);
-        }
-    };
-
-    const handleExpectedHarvestDateChange = (date, index) => {
-        const updated = [...expectedHarvestPeriods];
-        updated[index].date = date;
-        setExpectedHarvestPeriods(updated);
-    };
-
-    const removeExpectedHarvestOption = (index) => {
-        const updated = [...expectedHarvestPeriods];
-        updated.splice(index, 1);
-        setExpectedHarvestPeriods(updated);
-    };
-    const floweringOptions = [
-        { label: "Aus", value: "Aus" },
-        { label: "Aman", value: "Aman" },
-        { label: "Boro", value: "Boro" },
-    ];
-
-    const handleFloweringSelect = (e) => {
-        const selectedValue = e.target.value;
-        if (selectedValue && !floweringDates.find(item => item.value === selectedValue)) {
-            setFloweringDates((prev) => [
-                ...prev,
-                { value: selectedValue, date: "" }
-            ]);
-        }
-    };
-    const handleFloweringDateChange = (date, index) => {
-        const updatedFloweringDates = [...floweringDates];
-        updatedFloweringDates[index].date = date;
-        setFloweringDates(updatedFloweringDates);
-    };
-
-    const removeFloweringDateOption = (index) => {
-        const updatedFloweringDates = [...floweringDates];
-        updatedFloweringDates.splice(index, 1);
-        setFloweringDates(updatedFloweringDates);
-    };
-
-
-    const transplantingOptions = [
-        { label: "Aus", value: "Aus" },
-        { label: "Aman", value: "Aman" },
-        { label: "Boro", value: "Boro" },
-    ];
-    const options = [
-        { label: "Aus", value: "Aus" },
-        { label: "Aman", value: "Aman" },
-        { label: "Boro", value: "Boro" },
-    ];
-    const handleTransplantingSelect = (e) => {
-        const selectedValue = e.target.value;
-        if (!transplantingDates.find((item) => item.value === selectedValue)) {
-            setTransplantingDates((prev) => [
-                ...prev,
-                { value: selectedValue, date: "" },
-            ]);
-        }
-    };
-    const handleDateChange = (dateValue, index) => {
-        const updated = [...transplantingDates];
-        updated[index].date = dateValue;
-        setTransplantingDates(updated);
-    };
-    const removeDateOption = (index) => {
-        const updated = [...transplantingDates];
-        updated.splice(index, 1);
-        setTransplantingDates(updated);
-    };
-
-
-
-    const handleInputChange = (value, index) => {
-        const updated = [...selectedOptions];
-        updated[index].input = value;
-        setSelectedOptions(updated);
-    };
-    const removeOption = (index) => {
-        const updated = [...selectedOptions];
-        updated.splice(index, 1);
-        setSelectedOptions(updated);
-    };
-    const handleInputChange2 = (value, index) => {
-        const updated = [...selectedOptions];
-        updated[index].input = value;
-        setSelectedOptions2(updated);
-    };
-    const removeOption2 = (index) => {
-        const updated = [...selectedOptions];
-        updated.splice(index, 1);
-        setSelectedOptions2(updated);
-    };
     const [pagination, setPagination] = useState({
         currentPage: 1,
         totalPages: 1,
         totalFarmers: 0,
         limit: 10,
     });
+
+    const seasonOptions = [
+        { label: "Aus", value: "aus" },
+        { label: "Aman", value: "aman" },
+        { label: "Boro", value: "boro" },
+    ];
+
+    const climateExtremeOptions = [
+        { label: "Flash Flood", value: "Flash Flood" },
+        { label: "River Flood", value: "River Flood" },
+        { label: "Urban Flood", value: "Urban Flood" },
+        { label: "Tidal Surge", value: "Tidal Surge" },
+        { label: "Heat Wave", value: "Heat Wave" },
+        { label: "Cold Wave", value: "Cold Wave" },
+        { label: "Cyclone", value: "Cyclone" },
+        { label: "Tornado", value: "Tornado" },
+        { label: "Drought", value: "Drought" },
+        { label: "Hailstorm", value: "Hailstorm" },
+        { label: "Lightning", value: "Lightning" },
+        { label: "Landslide", value: "Landslide" },
+        { label: "Salinity Intrusion", value: "Salinity Intrusion" },
+        { label: "Sea Level Rise", value: "Sea Level Rise" },
+    ];
+
     const [formData, setFormData] = useState({
         name: "",
         fatherName: "",
@@ -161,17 +76,104 @@ const Profile = () => {
         district: "",
         division: "",
         region: "",
-        coordinates: "",
+        lat: "",
+        lan: "",
         landType: "",
         hotspot: [],
         majorCrops: "",
         irrigationPractices: "",
+        irrigationSourceType: "",
         plantingMethod: "",
         croppingPattern: "",
         riceVarieties: "",
         soilType: "",
         role: "saao",
+        totalCultivatedArea: "",
+        numberOfFarmers: "",
+        communityInformation: "",
+        farmerGroupName: "",
     });
+
+    const handleExpectedHarvestSelect = (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue && !expectedHarvestPeriods.find(item => item.value === selectedValue)) {
+            setExpectedHarvestPeriods(prev => [
+                ...prev,
+                { value: selectedValue, date: "" }
+            ]);
+        }
+    };
+
+    const handleExpectedHarvestDateChange = (date, index) => {
+        const updated = [...expectedHarvestPeriods];
+        updated[index].date = date;
+        setExpectedHarvestPeriods(updated);
+    };
+
+    const removeExpectedHarvestOption = (index) => {
+        setExpectedHarvestPeriods(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleFloweringSelect = (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue && !floweringDates.find(item => item.value === selectedValue)) {
+            setFloweringDates(prev => [
+                ...prev,
+                { value: selectedValue, date: "" }
+            ]);
+        }
+    };
+
+    const handleFloweringDateChange = (date, index) => {
+        const updated = [...floweringDates];
+        updated[index].date = date;
+        setFloweringDates(updated);
+    };
+
+    const removeFloweringDateOption = (index) => {
+        setFloweringDates(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleTransplantingSelect = (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue && !transplantingDates.find(item => item.value === selectedValue)) {
+            setTransplantingDates(prev => [
+                ...prev,
+                { value: selectedValue, date: "" }
+            ]);
+        }
+    };
+
+    const handleTransplantingDateChange = (date, index) => {
+        const updated = [...transplantingDates];
+        updated[index].date = date;
+        setTransplantingDates(updated);
+    };
+
+    const removeTransplantingDateOption = (index) => {
+        setTransplantingDates(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const handleSeasonVarietySelect = (e) => {
+        const selectedValue = e.target.value;
+        if (selectedValue && !selectedSeasonVarieties.find(item => item.value === selectedValue)) {
+            setSelectedSeasonVarieties(prev => [
+                ...prev,
+                { value: selectedValue, input: "" }
+            ]);
+        }
+    };
+
+    const handleSeasonVarietyInputChange = (value, index) => {
+        const updated = [...selectedSeasonVarieties];
+        updated[index].input = value;
+        setSelectedSeasonVarieties(updated);
+    };
+
+    const removeSeasonVarietyOption = (index) => {
+        setSelectedSeasonVarieties(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleImageUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -187,7 +189,7 @@ const Profile = () => {
 
             const data = await response.json();
             if (response.ok) {
-                setFormData((prev) => ({
+                setFormData(prev => ({
                     ...prev,
                     profileImage: data.imageUrl,
                 }));
@@ -199,11 +201,12 @@ const Profile = () => {
             alert('Something went wrong while uploading');
         }
     };
+
     const getLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
-                    setFormData((prev) => ({
+                    setFormData(prev => ({
                         ...prev,
                         lat: position.coords.latitude.toFixed(6),
                         lan: position.coords.longitude.toFixed(6),
@@ -211,6 +214,7 @@ const Profile = () => {
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
+                    alert("Failed to get location");
                 }
             );
         } else {
@@ -219,63 +223,37 @@ const Profile = () => {
     };
 
     useEffect(() => {
-        if (authUser) {
-            setFormData(authUser.RegistedUser);
+        if (authUser?.RegistedUser) {
+            setFormData(prev => ({
+                ...prev,
+                ...authUser.RegistedUser,
+                hotspot: authUser.RegistedUser.hotspot || []
+            }));
             setSelectedHotspots(authUser.RegistedUser.hotspot || []);
-            setSelectedMajorCrop(authUser.RegistedUser?.majorCrops?.split(",") || []);
+            setSelectedMajorCrop(authUser.RegistedUser?.majorCrops?.split(", ") || []);
+            setSelectedClimateExtremes(authUser.RegistedUser?.climateExtremes?.split(", ") || []);
             setSelectedId(authUser.RegistedUser.id);
-            setSelectedOptions(authUser.RegistedUser.seasonWiseDominantVarieties || []);
+            setSelectedSeasonVarieties(authUser.RegistedUser.seasonWiseDominantVarieties || []);
             setTransplantingDates(authUser.RegistedUser.transplantingDates || []);
             setFloweringDates(authUser.RegistedUser.floweringDates || []);
             setExpectedHarvestPeriods(authUser.RegistedUser.expectedHarvestPeriods || []);
-
-
         }
-    }, [authUser])
-    useEffect(() => {
-        if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
-        const fetchUnion = async () => {
-            try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
-                if (!response.ok) throw new Error("Failed to fetch union data");
-                const data = await response.json();
-                setUnions(data.sort((a, b) => a.localeCompare(b)));
-            } catch (error) {
-                console.error("Error fetching union data:", error);
-            }
-        };
-        fetchUnion();
-    }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+    }, [authUser]);
 
     useEffect(() => {
-        if (!formData.union || !formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
-        const fetchBlock = async () => {
+        if (!selectedHotspots.length) return;
+        const fetchRegion = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
-                if (!response.ok) throw new Error("Failed to fetch block data");
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots.join(',')}`);
+                if (!response.ok) throw new Error("Failed to fetch region data");
                 const data = await response.json();
-                setBlock(data.sort((a, b) => a.localeCompare(b)));
+                setRegions(data.sort((a, b) => a.localeCompare(b)));
             } catch (error) {
-                console.error("Error fetching block data:", error);
+                console.error("Error fetching region data:", error);
             }
         };
-        fetchBlock();
-    }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
-
-    useEffect(() => {
-        if (!formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
-        const fetchUpazila = async () => {
-            try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
-                if (!response.ok) throw new Error("Failed to fetch upazila data");
-                const data = await response.json();
-                setUpazilas(data.sort((a, b) => a.localeCompare(b)));
-            } catch (error) {
-                console.error("Error fetching upazila data:", error);
-            }
-        };
-        fetchUpazila();
-    }, [formData.district, formData.division, formData.region, selectedHotspots]);
+        fetchRegion();
+    }, [selectedHotspots]);
 
     useEffect(() => {
         if (!formData.region || !selectedHotspots.length) return;
@@ -296,7 +274,7 @@ const Profile = () => {
         if (!formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchDistrict = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch district data");
                 const data = await response.json();
                 setDistricts(data.sort((a, b) => a.localeCompare(b)));
@@ -308,154 +286,188 @@ const Profile = () => {
     }, [formData.division, formData.region, selectedHotspots]);
 
     useEffect(() => {
-        if (!selectedHotspots.length) return;
-        const fetchRegion = async () => {
+        if (!formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
+        const fetchUpazila = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/regions?hotspot=${selectedHotspots.join(',')}`);
-                if (!response.ok) throw new Error("Failed to fetch region data");
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                if (!response.ok) throw new Error("Failed to fetch upazila data");
                 const data = await response.json();
-                setRegions(data.sort((a, b) => a.localeCompare(b)));
+                setUpazilas(data.sort((a, b) => a.localeCompare(b)));
             } catch (error) {
-                console.error("Error fetching region data:", error);
+                console.error("Error fetching upazila data:", error);
             }
         };
-        fetchRegion();
-    }, [selectedHotspots]);
-
-    const API_URL = "https://iinms.brri.gov.bd/api/hotspots";
-    const fetchRoles = async () => {
-        try {
-            const response = await fetch(API_URL);
-            if (!response.ok) throw new Error("Failed to fetch hotspots");
-            const data = await response.json();
-            setHotspot(data.reverse());
-        } catch (error) {
-            console.error("Error fetching hotspots:", error);
-        }
-    };
+        fetchUpazila();
+    }, [formData.district, formData.division, formData.region, selectedHotspots]);
 
     useEffect(() => {
-        fetchRoles();
+        if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
+        const fetchUnion = async () => {
+            try {
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                if (!response.ok) throw new Error("Failed to fetch union data");
+                const data = await response.json();
+                setUnions(data.sort((a, b) => a.localeCompare(b)));
+            } catch (error) {
+                console.error("Error fetching union data:", error);
+            }
+        };
+        fetchUnion();
+    }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+
+    useEffect(() => {
+        if (!formData.union || !formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
+        const fetchBlock = async () => {
+            try {
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                if (!response.ok) throw new Error("Failed to fetch block data");
+                const data = await response.json();
+                setBlock(data.sort((a, b) => a.localeCompare(b)));
+            } catch (error) {
+                console.error("Error fetching block data:", error);
+            }
+        };
+        fetchBlock();
+    }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+
+    useEffect(() => {
+        const fetchHotspots = async () => {
+            try {
+                const response = await fetch("https://iinms.brri.gov.bd/api/hotspots");
+                if (!response.ok) throw new Error("Failed to fetch hotspots");
+                const data = await response.json();
+                setHotspot(data.reverse());
+            } catch (error) {
+                console.error("Error fetching hotspots:", error);
+            }
+        };
+        fetchHotspots();
     }, []);
 
-    const fetchSAAOs = async () => {
-        try {
-            const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}&search=${encodeURIComponent(searchText)}`);
-            if (response.ok) {
-                const data = await response.json();
-                setSAAOList(data.data);
-                setPagination({
-                    currentPage: data.pagination.currentPage,
-                    totalPages: data.pagination.totalPages,
-                    totalFarmers: data.pagination.totalFarmers,
-                    limit: data.pagination.limit,
-                });
-            } else {
-                throw new Error("Failed to fetch SAAOs");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
-
     useEffect(() => {
+        const fetchSAAOs = async () => {
+            try {
+                const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/role/saao?page=${page}&limit=${rowsPerPage}&search=${encodeURIComponent(searchText)}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setSAAOList(data.data);
+                    setPagination({
+                        currentPage: data.pagination.currentPage,
+                        totalPages: data.pagination.totalPages,
+                        totalFarmers: data.pagination.totalFarmers,
+                        limit: data.pagination.limit,
+                    });
+                } else {
+                    throw new Error("Failed to fetch SAAOs");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
         fetchSAAOs();
     }, [page, rowsPerPage, searchText]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleSelect = (e) => {
+    const handleHotspotSelect = (e) => {
         const selectedValue = e.target.value;
         if (selectedValue && !selectedHotspots.includes(selectedValue)) {
             const updatedHotspots = [...selectedHotspots, selectedValue];
             setSelectedHotspots(updatedHotspots);
-            setFormData({ ...formData, hotspot: updatedHotspots });
+            setFormData(prev => ({ ...prev, hotspot: updatedHotspots }));
         }
     };
 
-    const handleDelete = (valueToDelete) => {
-        const updatedHotspots = selectedHotspots.filter((value) => value !== valueToDelete);
+    const handleHotspotDelete = (valueToDelete) => {
+        const updatedHotspots = selectedHotspots.filter(value => value !== valueToDelete);
         setSelectedHotspots(updatedHotspots);
-        setFormData({ ...formData, hotspot: updatedHotspots });
+        setFormData(prev => ({ ...prev, hotspot: updatedHotspots }));
     };
 
-    const handleSelectCrop = (e) => {
+    const handleCropSelect = (e) => {
         const selectedValue = e.target.value;
         if (selectedValue === "others") {
             setIsOtherMajorCropOpen(true);
             return;
         }
         if (selectedValue && !selectedMajorCrop.includes(selectedValue)) {
-            const updatedSelectedMajorCrop = [...selectedMajorCrop, selectedValue];
-            setSelectedMajorCrop(updatedSelectedMajorCrop);
-            setFormData({ ...formData, majorCrops: updatedSelectedMajorCrop.join(', ') });
+            const updatedCrops = [...selectedMajorCrop, selectedValue];
+            setSelectedMajorCrop(updatedCrops);
+            setFormData(prev => ({ ...prev, majorCrops: updatedCrops.join(', ') }));
         }
     };
-    const handleSelectClimetExtreams = (e) => {
+
+    const handleClimateExtremeSelect = (e) => {
         const selectedValue = e.target.value;
-        
-        if (selectedValue && !selectedClimetExtreams.includes(selectedValue)) {
-            const updatedSelectedMajorCrop = [...selectedClimetExtreams, selectedValue];
-            setSelectedClimetExtreams(updatedSelectedMajorCrop);
-            setFormData({ ...formData, majorCrops: updatedSelectedMajorCrop.join(', ') });
+        if (selectedValue && !selectedClimateExtremes.includes(selectedValue)) {
+            const updatedExtremes = [...selectedClimateExtremes, selectedValue];
+            setSelectedClimateExtremes(updatedExtremes);
+            setFormData(prev => ({ ...prev, climateExtremes: updatedExtremes.join(', ') }));
         }
     };
 
-    const handleDeleteCrop = (valueToDelete) => {
-        const updatedSelectedMajorCrop = selectedMajorCrop.filter((value) => value !== valueToDelete);
-        setSelectedMajorCrop(updatedSelectedMajorCrop);
-        setFormData({ ...formData, majorCrops: updatedSelectedMajorCrop.join(', ') });
+    const handleClimateExtremeDelete = (valueToDelete) => {
+        const updatedExtremes = selectedClimateExtremes.filter(value => value !== valueToDelete);
+        setSelectedClimateExtremes(updatedExtremes);
+        setFormData(prev => ({ ...prev, climateExtremes: updatedExtremes.join(', ') }));
     };
 
-    const handleAddCrop = () => {
+    const handleCropDelete = (valueToDelete) => {
+        const updatedCrops = selectedMajorCrop.filter(value => value !== valueToDelete);
+        setSelectedMajorCrop(updatedCrops);
+        setFormData(prev => ({ ...prev, majorCrops: updatedCrops.join(', ') }));
+    };
+
+    const handleAddOtherCrop = () => {
         if (selectedMajorCropOthers && !selectedMajorCrop.includes(selectedMajorCropOthers)) {
-            const updatedSelectedMajorCrop = [...selectedMajorCrop, selectedMajorCropOthers];
-            setSelectedMajorCrop(updatedSelectedMajorCrop);
-            setFormData({ ...formData, majorCrops: updatedSelectedMajorCrop.join(', ') });
+            const updatedCrops = [...selectedMajorCrop, selectedMajorCropOthers];
+            setSelectedMajorCrop(updatedCrops);
+            setFormData(prev => ({ ...prev, majorCrops: updatedCrops.join(', ') }));
         }
         setIsOtherMajorCropOpen(false);
         setSelectedMajorCropOthers("");
     };
 
-    const registerSAAO = async () => {
+    const registerSAAO = async (e) => {
+        e.preventDefault();
         if (formData.mobileNumber.length !== 11) {
             alert("Mobile number must be 11 digits long.");
             return;
         }
+
         const submissionData = {
             ...formData,
             transplantingDates,
             floweringDates,
             expectedHarvestPeriods,
-            seasonWiseDominantVarieties: selectedOptions,
+            seasonWiseDominantVarieties: selectedSeasonVarieties,
             hotspot: selectedHotspots,
             majorCrops: selectedMajorCrop.join(', '),
+            climateExtremes: selectedClimateExtremes.join(', '),
             soilType: formData.soilType === "others" ? otherSoilType : formData.soilType,
             irrigationPractices: formData.irrigationPractices === "others" ? irrigationPracticesOthers : formData.irrigationPractices,
         };
+
         try {
-            const method = "PUT";
-            const url = `https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`;
-            const response = await fetch(url, {
-                method,
+            const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/${selectedId}`, {
+                method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(submissionData),
             });
+
             if (response.ok) {
                 setIsEdit(false);
-                fetchSAAOs();
-                resetForm();
-                alert("SAAO registered successfully!");
+                alert("SAAO updated successfully!");
                 window.location.reload();
             } else {
-                throw new Error("Failed to save SAAO");
+                throw new Error("Failed to update SAAO");
             }
         } catch (error) {
             console.error("Error:", error);
-            alert("Failed to save SAAO. Please try again.");
+            alert("Failed to update SAAO. Please try again.");
         }
     };
 
@@ -474,30 +486,41 @@ const Profile = () => {
             district: "",
             division: "",
             region: "",
-            coordinates: "",
+            lat: "",
+            lan: "",
             landType: "",
             hotspot: [],
             majorCrops: "",
             irrigationPractices: "",
+            irrigationSourceType: "",
             plantingMethod: "",
             croppingPattern: "",
             riceVarieties: "",
             soilType: "",
             role: "saao",
+            totalCultivatedArea: "",
+            numberOfFarmers: "",
+            communityInformation: "",
+            farmerGroupName: "",
         });
         setSelectedHotspots([]);
         setSelectedMajorCrop([]);
+        setSelectedClimateExtremes([]);
         setOtherSoilType("");
         setIrrigationPracticesOthers("");
         setIsOtherMajorCropOpen(false);
         setSelectedMajorCropOthers("");
+        setSelectedSeasonVarieties([]);
+        setTransplantingDates([]);
+        setFloweringDates([]);
+        setExpectedHarvestPeriods([]);
         setCurrentStep(1);
     };
 
     return (
         <div className="min-h-screen w-full bg-gray-100 p-4 sm:p-6 lg:p-8">
-            <div className=" bg-white rounded-xl shadow-lg p-6 sm:p-8">
-                <form className="space-y-6">
+            <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+                <form className="space-y-6" onSubmit={registerSAAO}>
                     <div className="space-y-4">
                         <h4 className="text-lg font-semibold text-gray-700">Personal Information</h4>
                         <div className="relative w-32 h-32 mx-auto">
@@ -565,7 +588,6 @@ const Profile = () => {
                                 value={formData.whatsappNumber}
                                 onChange={handleChange}
                             />
-
                             <input
                                 type="text"
                                 name="messengerId"
@@ -596,9 +618,8 @@ const Profile = () => {
                     <div className="space-y-4">
                         <h4 className="text-lg font-semibold text-gray-700">Location Information</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Selected Hotspots */}
                             <div className="col-span-1 md:col-span-2 flex flex-wrap gap-2 mb-4">
-                                {selectedHotspots.map((hotspotName) => (
+                                {selectedHotspots.map(hotspotName => (
                                     <div
                                         key={hotspotName}
                                         className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
@@ -607,7 +628,7 @@ const Profile = () => {
                                         <button
                                             type="button"
                                             className="ml-2 text-red-500 hover:text-red-700"
-                                            onClick={() => handleDelete(hotspotName)}
+                                            onClick={() => handleHotspotDelete(hotspotName)}
                                         >
                                             ×
                                         </button>
@@ -615,18 +636,17 @@ const Profile = () => {
                                 ))}
                             </div>
 
-                            {/* Dropdowns */}
                             <select
                                 name="hotspot"
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value=""
-                                onChange={handleSelect}
+                                onChange={handleHotspotSelect}
                                 required
                             >
                                 <option value="">Select Hotspot</option>
-                                {hotspot?.map((hotspot) => (
-                                    <option key={hotspot.id} value={hotspot.name}>
-                                        {hotspot.name}
+                                {hotspot.map(h => (
+                                    <option key={h.id} value={h.name}>
+                                        {h.name}
                                     </option>
                                 ))}
                             </select>
@@ -639,7 +659,7 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select Region</option>
-                                {regions?.map((region) => (
+                                {regions.map(region => (
                                     <option key={region} value={region}>
                                         {region}
                                     </option>
@@ -654,7 +674,7 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select Division</option>
-                                {divisions?.map((division) => (
+                                {divisions.map(division => (
                                     <option key={division} value={division}>
                                         {division}
                                     </option>
@@ -669,7 +689,7 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select District</option>
-                                {districts?.map((district) => (
+                                {districts.map(district => (
                                     <option key={district} value={district}>
                                         {district}
                                     </option>
@@ -684,7 +704,7 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select Upazila</option>
-                                {upazilas?.map((upazila) => (
+                                {upazilas.map(upazila => (
                                     <option key={upazila} value={upazila}>
                                         {upazila}
                                     </option>
@@ -699,7 +719,7 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select Union</option>
-                                {unions?.map((union) => (
+                                {unions.map(union => (
                                     <option key={union} value={union}>
                                         {union}
                                     </option>
@@ -714,14 +734,13 @@ const Profile = () => {
                                 required
                             >
                                 <option value="">Select Block</option>
-                                {block?.map((block) => (
-                                    <option key={block} value={block}>
-                                        {block}
+                                {block.map(b => (
+                                    <option key={b} value={b}>
+                                        {b}
                                     </option>
                                 ))}
                             </select>
 
-                            {/* Latitude, Longitude, GPS */}
                             <div className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
                                 <input
                                     type="text"
@@ -750,7 +769,6 @@ const Profile = () => {
                                 </button>
                             </div>
                         </div>
-
                     </div>
 
                     <div className="space-y-4">
@@ -758,7 +776,7 @@ const Profile = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <select
                                 name="landType"
-                                className="w-full h-11 mt-4 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.landType}
                                 onChange={handleChange}
                                 required
@@ -768,15 +786,16 @@ const Profile = () => {
                                 <option value="medium">Medium</option>
                                 <option value="low">Low</option>
                             </select>
+
                             <div>
-                                <div className=" flex flex-wrap gap-2 mb-4">
-                                    {selectedMajorCrop.map((crop) => (
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {selectedMajorCrop.map(crop => (
                                         <div key={crop} className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
                                             <span>{crop}</span>
                                             <button
                                                 type="button"
                                                 className="ml-2 text-red-500 hover:text-red-700"
-                                                onClick={() => handleDeleteCrop(crop)}
+                                                onClick={() => handleCropDelete(crop)}
                                             >
                                                 <MdDeleteForever />
                                             </button>
@@ -787,7 +806,7 @@ const Profile = () => {
                                     name="majorCrops"
                                     className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     value=""
-                                    onChange={handleSelectCrop}
+                                    onChange={handleCropSelect}
                                 >
                                     <option value="">Select Major Crops</option>
                                     <option value="rice">Rice</option>
@@ -797,6 +816,7 @@ const Profile = () => {
                                     <option value="others">Others</option>
                                 </select>
                             </div>
+
                             {isOtherMajorCropOpen && (
                                 <div className="col-span-2 flex gap-2">
                                     <input
@@ -810,15 +830,16 @@ const Profile = () => {
                                     <button
                                         type="button"
                                         className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-                                        onClick={handleAddCrop}
+                                        onClick={handleAddOtherCrop}
                                     >
                                         Add Crop
                                     </button>
                                 </div>
                             )}
+
                             <select
                                 name="plantingMethod"
-                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.plantingMethod}
                                 onChange={handleChange}
                             >
@@ -831,9 +852,10 @@ const Profile = () => {
                                 <select
                                     onChange={handleTransplantingSelect}
                                     className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value=""
                                 >
                                     <option value="">Select Transplanting Time</option>
-                                    {transplantingOptions.map((opt) => (
+                                    {seasonOptions.map(opt => (
                                         <option key={opt.value} value={opt.value}>
                                             {opt.label}
                                         </option>
@@ -841,40 +863,40 @@ const Profile = () => {
                                 </select>
                                 {transplantingDates.map((opt, index) => (
                                     <div key={index} className="flex items-center gap-1">
-                                        <span className="w-11">{transplantingOptions.find(o => o.value === opt.value)?.label}</span>
+                                        <span className="w-11">{seasonOptions.find(o => o.value === opt.value)?.label}</span>
                                         <input
                                             type="date"
                                             value={opt.date}
-                                            onChange={(e) => handleDateChange(e.target.value, index)}
+                                            onChange={(e) => handleTransplantingDateChange(e.target.value, index)}
                                             className="p-2 border rounded w-full max-w-xs"
                                         />
                                         <button
-                                            onClick={() => removeDateOption(index)}
+                                            onClick={() => removeTransplantingDateOption(index)}
                                             className="text-red-500 hover:text-red-700"
                                         >
                                             <MdDeleteForever />
-
                                         </button>
                                     </div>
                                 ))}
                             </div>
+
                             <div className="space-y-4">
                                 <select
                                     onChange={handleFloweringSelect}
                                     className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value=""
                                 >
                                     <option value="">Select Season for Flowering Date</option>
-                                    {floweringOptions.map((opt) => (
+                                    {seasonOptions.map(opt => (
                                         <option key={opt.value} value={opt.value}>
                                             {opt.label}
                                         </option>
                                     ))}
                                 </select>
-
                                 {floweringDates.map((item, index) => (
                                     <div key={index} className="flex items-center gap-1">
                                         <span className="w-11 font-medium">
-                                            {floweringOptions.find(o => o.value === item.value)?.label}
+                                            {seasonOptions.find(o => o.value === item.value)?.label}
                                         </span>
                                         <input
                                             type="date"
@@ -888,19 +910,19 @@ const Profile = () => {
                                             title="Remove"
                                         >
                                             <MdDeleteForever />
-
                                         </button>
-
                                     </div>
                                 ))}
                             </div>
+
                             <div className="space-y-4">
                                 <select
                                     onChange={handleExpectedHarvestSelect}
                                     className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value=""
                                 >
                                     <option value="">Select Expected Harvest Period</option>
-                                    {harvestOptions.map((opt) => (
+                                    {seasonOptions.map(opt => (
                                         <option key={opt.value} value={opt.value}>
                                             {opt.label}
                                         </option>
@@ -909,7 +931,7 @@ const Profile = () => {
                                 {expectedHarvestPeriods.map((item, index) => (
                                     <div key={index} className="flex items-center gap-1">
                                         <span className="w-11 font-medium capitalize">
-                                            {harvestOptions.find(o => o.value === item.value)?.label}
+                                            {seasonOptions.find(o => o.value === item.value)?.label}
                                         </span>
                                         <input
                                             type="date"
@@ -921,15 +943,16 @@ const Profile = () => {
                                             onClick={() => removeExpectedHarvestOption(index)}
                                             className="text-red-500 hover:text-red-700 text-xl"
                                             title="Remove"
-                                        ><MdDeleteForever />
-
+                                        >
+                                            <MdDeleteForever />
                                         </button>
                                     </div>
                                 ))}
                             </div>
+
                             <select
                                 name="irrigationPractices"
-                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.irrigationPractices}
                                 onChange={handleChange}
                             >
@@ -938,6 +961,7 @@ const Profile = () => {
                                 <option value="continuousFlooding">Continuous Flooding</option>
                                 <option value="others">Others</option>
                             </select>
+
                             {formData.irrigationPractices === "others" && (
                                 <input
                                     type="text"
@@ -948,9 +972,10 @@ const Profile = () => {
                                     onChange={(e) => setIrrigationPracticesOthers(e.target.value)}
                                 />
                             )}
+
                             <select
                                 name="irrigationSourceType"
-                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.irrigationSourceType}
                                 onChange={handleChange}
                             >
@@ -959,9 +984,10 @@ const Profile = () => {
                                 <option value="GroundWaterShallow">Ground Water_Shallow</option>
                                 <option value="GroundWaterDeep">Ground Water_Deep</option>
                             </select>
+
                             <select
                                 name="soilType"
-                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.soilType}
                                 onChange={handleChange}
                             >
@@ -973,6 +999,7 @@ const Profile = () => {
                                 <option value="sandyLoam">Sandy Loam</option>
                                 <option value="others">Others</option>
                             </select>
+
                             {formData.soilType === "others" && (
                                 <input
                                     type="text"
@@ -983,30 +1010,32 @@ const Profile = () => {
                                     onChange={(e) => setOtherSoilType(e.target.value)}
                                 />
                             )}
+
                             <div className="space-y-4">
                                 <select
-                                    onChange={handleChange}
+                                    onChange={handleSeasonVarietySelect}
                                     className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value=""
                                 >
                                     <option value="">Select Season Wise Dominant Varieties</option>
-                                    {options.map((opt) => (
+                                    {seasonOptions.map(opt => (
                                         <option key={opt.value} value={opt.value}>
                                             {opt.label}
                                         </option>
                                     ))}
                                 </select>
-                                {selectedOptions2.map((opt, index) => (
+                                {selectedSeasonVarieties.map((opt, index) => (
                                     <div key={index} className="flex items-center gap-1">
-                                        <span className="w-11">{options.find(o => o.value === opt.value)?.label}</span>
+                                        <span className="w-11">{seasonOptions.find(o => o.value === opt.value)?.label}</span>
                                         <input
                                             type="text"
-                                            placeholder="Your input"
+                                            placeholder="Enter variety"
                                             value={opt.input}
-                                            onChange={(e) => handleInputChange2(e.target.value, index)}
+                                            onChange={(e) => handleSeasonVarietyInputChange(e.target.value, index)}
                                             className="flex-1 p-2 border rounded"
                                         />
                                         <button
-                                            onClick={() => removeOption2(index)}
+                                            onClick={() => removeSeasonVarietyOption(index)}
                                             className="text-red-500 hover:text-red-700"
                                         >
                                             <MdDeleteForever />
@@ -1014,36 +1043,46 @@ const Profile = () => {
                                     </div>
                                 ))}
                             </div>
+
                             <input
                                 type="text"
                                 name="croppingPattern"
                                 placeholder="Cropping Pattern"
-                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full h-11 p-3 md:mt-4 lg:mt-4 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.croppingPattern}
                                 onChange={handleChange}
                             />
-                            <select
-                                name="majorCrops"
-                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value=""
-                                onChange={handleSelectCrop}
-                            >
-                                <option value="">Select Major Climate Extremes</option>
-                                <option value="Flash Flood">Flash Flood</option>
-                                <option value="River Flood">River Flood</option>
-                                <option value="Urban Flood">Urban Flood</option>
-                                <option value="Tidal Surge">Tidal Surge</option>
-                                <option value="Heat Wave">Heat Wave</option>
-                                <option value="Cold Wave">Cold Wave</option>
-                                <option value="Cyclone">Cyclone</option>
-                                <option value="Tornado">Tornado</option>
-                                <option value="Drought">Drought</option>
-                                <option value="Hailstorm">Hailstorm</option>
-                                <option value="Lightning">Lightning</option>
-                                <option value="Landslide">Landslide</option>
-                                <option value="Salinity Intrusion">Salinity Intrusion</option>
-                                <option value="Sea Level Rise">Sea Level Rise</option>
-                            </select>
+
+                            <div>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {selectedClimateExtremes.map(extreme => (
+                                        <div key={extreme} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                                            <span>{extreme}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-2 text-red-500 hover:text-red-700"
+                                                onClick={() => handleClimateExtremeDelete(extreme)}
+                                            >
+                                                <MdDeleteForever />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <select
+                                    name="climateExtremes"
+                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value=""
+                                    onChange={handleClimateExtremeSelect}
+                                >
+                                    <option value="">Select Major Climate Extremes</option>
+                                    {climateExtremeOptions.map(opt => (
+                                        <option key={opt.value} value={opt.value}>
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
                             <input
                                 type="text"
                                 name="riceVarieties"
@@ -1052,6 +1091,7 @@ const Profile = () => {
                                 value={formData.riceVarieties}
                                 onChange={handleChange}
                             />
+
                             <input
                                 type="text"
                                 name="totalCultivatedArea"
@@ -1060,6 +1100,7 @@ const Profile = () => {
                                 value={formData.totalCultivatedArea}
                                 onChange={handleChange}
                             />
+
                             <input
                                 type="text"
                                 name="numberOfFarmers"
@@ -1068,6 +1109,7 @@ const Profile = () => {
                                 value={formData.numberOfFarmers}
                                 onChange={handleChange}
                             />
+
                             <select
                                 name="communityInformation"
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -1081,25 +1123,24 @@ const Profile = () => {
                                 <option value="None">None</option>
                                 <option value="Other">Other</option>
                             </select>
-                            {
-                                formData.communityInformation === "Other" && (
-                                    <input
-                                        type="text"
-                                        name="farmerGroupName"
-                                        placeholder="Farmer Group Name"
-                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.farmerGroupName}
-                                        onChange={handleChange}
-                                    />
-                                )
-                            }
+
+                            {formData.communityInformation === "Other" && (
+                                <input
+                                    type="text"
+                                    name="farmerGroupName"
+                                    placeholder="Farmer Group Name"
+                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={formData.farmerGroupName}
+                                    onChange={handleChange}
+                                />
+                            )}
                         </div>
                     </div>
+
                     <div className="flex justify-end gap-4">
                         <button
-                            type="button"
+                            type="submit"
                             className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                            onClick={registerSAAO}
                         >
                             Update
                         </button>
@@ -1110,4 +1151,4 @@ const Profile = () => {
     );
 };
 
-export default Profile
+export default Profile;

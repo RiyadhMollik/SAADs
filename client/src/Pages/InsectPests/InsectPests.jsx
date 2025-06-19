@@ -637,7 +637,35 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
                                             </div>
                                         ))}
                                     </div>
-                                    
+                                    <select
+                                        name="insectPests"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="">Select Seedbed</option>
+                                        <option value="green_leafhopper">Green leafhopper</option>
+                                        <option value="white_leafhopper">White leafhopper</option>
+                                        <option value="orange_headed_leafhopper">Orange headed leafhopper</option>
+                                        <option value="zig_zag_leafhopper">Zig zag leafhopper</option>
+                                        <option value="brown_plant_hopper">Brown plant hopper</option>
+                                        <option value="white_backed_planthopper">White backed planthopper</option>
+                                        <option value="yellow_stemborer">Yellow stemborer</option>
+                                        <option value="dark_headed_borer">Dark headed borer</option>
+                                        <option value="pink_borer">Pink borer</option>
+                                        <option value="leaf_folder">Leaf folder</option>
+                                        <option value="caseworm">Caseworm</option>
+                                        <option value="short_horn_grasshopper">Short horn grasshopper</option>
+                                        <option value="long_horn_grasshopper">Long horn grasshopper</option>
+                                        <option value="long_horn_cricket">Long horn cricket</option>
+                                        <option value="mole_cricket">Mole Cricket</option>
+                                        <option value="field_cricket">Field cricket</option>
+                                        <option value="swarming_cater_pilar">Swarming cater pilar</option>
+                                        <option value="ear_cutting_cater_pilar">Ear cutting cater pilar</option>
+                                        <option value="rice_bug">Rice bug</option>
+                                        <option value="stink_bug">Stink bug</option>
+                                        <option value="scotinophara_bug">Scotinophara bug</option>
+                                        <option value="rice_hispa">Rice hispa</option>
+                                    </select>
+
                                 </div>
                             </div>
                         ))}
