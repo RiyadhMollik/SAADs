@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { ChevronsUpDown } from "lucide-react";
-import { MdMyLocation } from "react-icons/md";
+import { MdDeleteForever, MdMyLocation } from "react-icons/md";
 import { IoIosAdd } from "react-icons/io";
 import { Parser } from "@json2csv/plainjs";
 import jsPDF from "jspdf";
@@ -41,6 +41,8 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
     const [isGpsLoading, setIsGpsLoading] = useState(false);
     const [isImageUploading, setIsImageUploading] = useState({});
     const [isLoading, setIsLoading] = useState(false);
+    const [transplantingDates, setTransplantingDates] = useState([]);
+    const [naturalEnemies, setNaturalEnemies] = useState([]);
     // Add new insect entry
     const handleAddInsectEntry = () => {
         setFormData((prev) => ({
@@ -56,6 +58,71 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
             ]
         }));
     };
+    const handleTransplantingSelect = (e) => {
+        const selectedValue = e.target.value;
+        if (!transplantingDates.find((item) => item.value === selectedValue)) {
+            setTransplantingDates((prev) => [
+                ...prev,
+                { value: selectedValue, date: "" },
+            ]);
+        }
+    };
+    const removeDateOption = (index) => {
+        const updated = [...transplantingDates];
+        updated.splice(index, 1);
+        setTransplantingDates(updated);
+    };
+    const handleDateChange = (dateValue, index) => {
+        const updated = [...transplantingDates];
+        updated[index].date = dateValue;
+        setTransplantingDates(updated);
+    };
+    const handleNaturalEnemiesSelect = (e) => {
+        const selectedValue = e.target.value;
+        if (!naturalEnemies.find((item) => item.value === selectedValue)) {
+            setNaturalEnemies((prev) => [
+                ...prev,
+                { value: selectedValue, date: "" },
+            ]);
+        }
+    };
+    const removeNaturalEnemiesDateOption = (index) => {
+        const updated = [...transplantingDates];
+        updated.splice(index, 1);
+        setNaturalEnemies(updated);
+    };
+    const handleNaturalEnemiesDateChange = (dateValue, index) => {
+        const updated = [...transplantingDates];
+        updated[index].date = dateValue;
+        setNaturalEnemies(updated);
+    };
+    const transplantingOptions = [
+        { label: "Green leafhopper", value: "Green leafhopper" },
+        { label: "White leafhopper", value: "White leafhopper" },
+        { label: "Short horned Grasshopper", value: "Short horned Grasshopper" },
+        { label: "Long horned Grasshopper", value: "Long horned Grasshopper" },
+        { label: "Long horned Cricket", value: "Long horned Cricket" },
+        { label: "Yellow Stemborer", value: "Yellow Stemborer" },
+        { label: "White Stemborer", value: "White Stemborer" },
+        { label: "Leaf roller", value: "Leaf roller" },
+        { label: "Caseworm", value: "Caseworm" },
+        { label: "Brown Planthopper (BPH)", value: "Brown Planthopper (BPH)" },
+        { label: "White backed planthopper (WBPH)", value: "White backed planthopper (WBPH)" },
+        { label: "Gallmidge", value: "Gallmidge" },
+        { label: "Rice hispa", value: "Rice hispa" },
+        { label: "Rice bug", value: "Rice bug" },
+    ];
+    const naturalEnemyOptions = [
+        { label: "Spider", value: "Spider" },
+        { label: "Damsel fly", value: "Damsel fly" },
+        { label: "Dragon fly", value: "Dragon fly" },
+        { label: "Lady bird beetle (adult)", value: "Lady bird beetle (adult)" },
+        { label: "Lady bird beetle (Grub)", value: "Lady bird beetle (Grub)" },
+        { label: "Carabid beetle", value: "Carabid beetle" },
+        { label: "Staphylinid beetle", value: "Staphylinid beetle" },
+        { label: "Tiger beetle", value: "Tiger beetle" },
+        { label: "Parasitic wasps", value: "Parasitic wasps" },
+    ];
 
     // Remove insect entry
     const handleRemoveInsectEntry = (index) => {
@@ -505,73 +572,13 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
                                 >
                                     <FaTrash />
                                 </button>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Insect Name</label>
-                                        <select
-                                            value={entry.insectName}
-                                            onChange={(e) => handleInsectEntryChange(index, 'insectName', e.target.value)}
-                                            className={`p-2 border w-full rounded text-sm ${errors[`insectName_${index}`] ? 'border-red-500' : ''}`}
-                                        >
-                                            <option value="">Select Insect</option>
-                                            <option value="Brown Plant Hopper">Brown Plant Hopper</option>
-                                            <option value="Whitebacked Plant Hopper">Whitebacked Plant Hopper</option>
-                                            <option value="Rice Bug">Rice Bug</option>
-                                            <option value="Stem Borer">Stem Borer</option>
-                                            <option value="Leaf Folder">Leaf Folder</option>
-                                        </select>
-                                        {errors[`insectName_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`insectName_${index}`]}</p>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Severity</label>
-                                        <select
-                                            value={entry.severity}
-                                            onChange={(e) => handleInsectEntryChange(index, 'severity', e.target.value)}
-                                            className={`p-2 border w-full rounded text-sm ${errors[`insectSeverity_${index}`] ? 'border-red-500' : ''}`}
-                                        >
-                                            <option value="">Select Severity</option>
-                                            <option value="Low">Low</option>
-                                            <option value="Moderate">Moderate</option>
-                                            <option value="High">High</option>
-                                        </select>
-                                        {errors[`insectSeverity_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`insectSeverity_${index}`]}</p>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Incidence (%)</label>
-                                        <select
-                                            value={entry.incidence}
-                                            onChange={(e) => handleInsectEntryChange(index, 'incidence', e.target.value)}
-                                            className={`p-2 border w-full rounded text-sm ${errors[`insectIncidence_${index}`] ? 'border-red-500' : ''}`}
-                                        >
-                                            <option value="">Select Incidence</option>
-                                            <option value="0-25">0-25%</option>
-                                            <option value="26-50">26-50%</option>
-                                            <option value="51-75">51-75%</option>
-                                            <option value="76-100">76-100%</option>
-                                        </select>
-                                        {errors[`insectIncidence_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`insectIncidence_${index}`]}</p>}
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Control Measure</label>
-                                        <select
-                                            value={entry.controlMeasure}
-                                            onChange={(e) => handleInsectEntryChange(index, 'controlMeasure', e.target.value)}
-                                            className={`p-2 border w-full rounded text-sm ${errors[`insectControlMeasure_${index}`] ? 'border-red-500' : ''}`}
-                                        >
-                                            <option value="">Select Control Measure</option>
-                                            <option value="Chemical">Chemical</option>
-                                            <option value="Biological">Biological</option>
-                                            <option value="Cultural">Cultural</option>
-                                            <option value="Integrated">Integrated</option>
-                                        </select>
-                                        {errors[`insectControlMeasure_${index}`] && <p className="text-red-500 text-xs mt-1">{errors[`insectControlMeasure_${index}`]}</p>}
-                                    </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
                                     <div className="space-y-4">
                                         <select
                                             onChange={handleTransplantingSelect}
                                             className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         >
-                                            <option value="">Select Transplanting Time</option>
+                                            <option value="">Select Name of Insects</option>
                                             {transplantingOptions.map((opt) => (
                                                 <option key={opt.value} value={opt.value}>
                                                     {opt.label}
@@ -580,10 +587,11 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
                                         </select>
                                         {transplantingDates.map((opt, index) => (
                                             <div key={index} className="flex items-center gap-1">
-                                                <span className="w-11">{transplantingOptions.find(o => o.value === opt.value)?.label}</span>
+                                                <span className="w-1/3">{transplantingOptions.find(o => o.value === opt.value)?.label}</span>
                                                 <input
-                                                    type="date"
+                                                    type="number"
                                                     value={opt.date}
+                                                    placeholder="number/20 sweep"
                                                     onChange={(e) => handleDateChange(e.target.value, index)}
                                                     className="p-2 border rounded w-full max-w-xs"
                                                 />
@@ -597,6 +605,39 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
                                             </div>
                                         ))}
                                     </div>
+                                    <div className="space-y-4">
+                                        <select
+                                            onChange={handleNaturalEnemiesSelect}
+                                            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Select Name of the Natural Enemies</option>
+                                            {naturalEnemyOptions.map((opt) => (
+                                                <option key={opt.value} value={opt.value}>
+                                                    {opt.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {naturalEnemies.map((opt, index) => (
+                                            <div key={index} className="flex items-center gap-1">
+                                                <span className="w-1/3">{naturalEnemyOptions.find(o => o.value === opt.value)?.label}</span>
+                                                <input
+                                                    type="number"
+                                                    value={opt.date}
+                                                    placeholder="number/20 sweep"
+                                                    onChange={(e) => handleNaturalEnemiesDateChange(e.target.value, index)}
+                                                    className="p-2 border rounded w-full max-w-xs"
+                                                />
+                                                <button
+                                                    onClick={() => removeNaturalEnemiesDateOption(index)}
+                                                    className="text-red-500 hover:text-red-700"
+                                                >
+                                                    <MdDeleteForever />
+
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    
                                 </div>
                             </div>
                         ))}

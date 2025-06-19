@@ -1132,7 +1132,7 @@ const FarmerRegistration = () => {
                         name="TSPUsage"
                         placeholder=""
                         className="border w-full p-2 rounded"
-                        value={formData.fertilizerUsage}
+                        value={formData.TSPUsage}
                         onChange={handleChange}
                       /></div>
                     <div><label className="block mt-4">Total MoP Uses (kg/bigha)</label>
@@ -1141,7 +1141,7 @@ const FarmerRegistration = () => {
                         name="MoPUsage"
                         placeholder=""
                         className="border w-full p-2 rounded"
-                        value={formData.fertilizerUsage}
+                        value={formData.MoPUsage}
                         onChange={handleChange}
                       /></div>
                     <div><label className="block mt-4">Total Gypsum Uses (kg/bigha)</label>
@@ -1150,7 +1150,7 @@ const FarmerRegistration = () => {
                         name="GypsumUsage"
                         placeholder=""
                         className="border w-full p-2 rounded"
-                        value={formData.fertilizerUsage}
+                        value={formData.GypsumUsage}
                         onChange={handleChange}
                       /></div>
                     <div><label className="block mt-4">Total Zinc Uses (kg/bigha)</label>
@@ -1159,7 +1159,7 @@ const FarmerRegistration = () => {
                         name="ZincUsage"
                         placeholder=""
                         className="border w-full p-2 rounded"
-                        value={formData.fertilizerUsage}
+                        value={formData.ZincUsage}
                         onChange={handleChange}
                       /></div>
                   </div>
