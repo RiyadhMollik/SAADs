@@ -46,6 +46,8 @@ import AreaWiseReport from "../Pages/Report/AreaWiseReport";
 import FieldMonitoringReports from "../Pages/Report/FieldMonitoringReports";
 import Profile from "../Pages/Profile/Profile";
 import DiseasesSurvey from "../Pages/DiseasesSurvey/DiseasesSurvey";
+import GrowthStageSurvey from "../Pages/GrowthStageSurvey/GrowthStageSurvey";
+import InsectPests from "../Pages/InsectPests/InsectPests";
 
 export const router = createBrowserRouter([
   {
@@ -204,6 +206,14 @@ export const router = createBrowserRouter([
       {
         path: "/diseases-survey",
         element: <DiseasesSurvey/> , 
+      },  
+      {
+        path: "/growth-stage-survey",
+        element: <GrowthStageSurvey/> , 
+      },  
+      {
+        path: "/insect-pests",
+        element: <InsectPests/> , 
       },  
       
         

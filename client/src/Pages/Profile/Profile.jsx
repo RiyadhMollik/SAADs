@@ -25,9 +25,11 @@ const Profile = () => {
     const [otherSoilType, setOtherSoilType] = useState("");
     const [page, setPage] = useState(1);
     const [selectedMajorCrop, setSelectedMajorCrop] = useState([]);
+    const [selectedClimetExtreams, setSelectedClimetExtreams] = useState([]);
     const [isOtherMajorCropOpen, setIsOtherMajorCropOpen] = useState(false);
     const [selectedMajorCropOthers, setSelectedMajorCropOthers] = useState("");
     const [selectedOptions, setSelectedOptions] = useState([]);
+    const [selectedOptions2, setSelectedOptions2] = useState([]);
     const [transplantingDates, setTransplantingDates] = useState([]);
     const [floweringDates, setFloweringDates] = useState([]);
     const [expectedHarvestPeriods, setExpectedHarvestPeriods] = useState([]);
@@ -117,13 +119,7 @@ const Profile = () => {
         setTransplantingDates(updated);
     };
 
-    const handleSelectChange = (e) => {
-        const selectedValue = e.target.value;
 
-        if (!selectedOptions.find((opt) => opt.value === selectedValue)) {
-            setSelectedOptions((prev) => [...prev, { value: selectedValue, input: "" }]);
-        }
-    };
 
     const handleInputChange = (value, index) => {
         const updated = [...selectedOptions];
@@ -134,6 +130,16 @@ const Profile = () => {
         const updated = [...selectedOptions];
         updated.splice(index, 1);
         setSelectedOptions(updated);
+    };
+    const handleInputChange2 = (value, index) => {
+        const updated = [...selectedOptions];
+        updated[index].input = value;
+        setSelectedOptions2(updated);
+    };
+    const removeOption2 = (index) => {
+        const updated = [...selectedOptions];
+        updated.splice(index, 1);
+        setSelectedOptions2(updated);
     };
     const [pagination, setPagination] = useState({
         currentPage: 1,
@@ -385,6 +391,15 @@ const Profile = () => {
         if (selectedValue && !selectedMajorCrop.includes(selectedValue)) {
             const updatedSelectedMajorCrop = [...selectedMajorCrop, selectedValue];
             setSelectedMajorCrop(updatedSelectedMajorCrop);
+            setFormData({ ...formData, majorCrops: updatedSelectedMajorCrop.join(', ') });
+        }
+    };
+    const handleSelectClimetExtreams = (e) => {
+        const selectedValue = e.target.value;
+        
+        if (selectedValue && !selectedClimetExtreams.includes(selectedValue)) {
+            const updatedSelectedMajorCrop = [...selectedClimetExtreams, selectedValue];
+            setSelectedClimetExtreams(updatedSelectedMajorCrop);
             setFormData({ ...formData, majorCrops: updatedSelectedMajorCrop.join(', ') });
         }
     };
@@ -811,17 +826,7 @@ const Profile = () => {
                                 <option value="directSeeding">Direct Seeding</option>
                                 <option value="transplanting">Transplanting</option>
                             </select>
-                            <select
-                                name="irrigationSourceType"
-                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={formData.irrigationSourceType}
-                                onChange={handleChange}
-                            >
-                                <option value="">Select Irrigation Source Types</option>
-                                <option value="directSeeding">Deep / Shallow Tubewell</option>
-                                <option value="Pump">Pump  </option>
-                                <option value="Sprinkler">Sprinkler </option>
-                            </select>
+
                             <div className="space-y-4">
                                 <select
                                     onChange={handleTransplantingSelect}
@@ -944,6 +949,17 @@ const Profile = () => {
                                 />
                             )}
                             <select
+                                name="irrigationSourceType"
+                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.irrigationSourceType}
+                                onChange={handleChange}
+                            >
+                                <option value="">Select Water Source</option>
+                                <option value="surface">Surface_LLP</option>
+                                <option value="GroundWaterShallow">Ground Water_Shallow</option>
+                                <option value="GroundWaterDeep">Ground Water_Deep</option>
+                            </select>
+                            <select
                                 name="soilType"
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.soilType}
@@ -967,11 +983,50 @@ const Profile = () => {
                                     onChange={(e) => setOtherSoilType(e.target.value)}
                                 />
                             )}
-                            <select
-                                name="majorClimateExtremes"
-                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={formData.majorClimateExtremes}
+                            <div className="space-y-4">
+                                <select
+                                    onChange={handleChange}
+                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    <option value="">Select Season Wise Dominant Varieties</option>
+                                    {options.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                {selectedOptions2.map((opt, index) => (
+                                    <div key={index} className="flex items-center gap-1">
+                                        <span className="w-11">{options.find(o => o.value === opt.value)?.label}</span>
+                                        <input
+                                            type="text"
+                                            placeholder="Your input"
+                                            value={opt.input}
+                                            onChange={(e) => handleInputChange2(e.target.value, index)}
+                                            className="flex-1 p-2 border rounded"
+                                        />
+                                        <button
+                                            onClick={() => removeOption2(index)}
+                                            className="text-red-500 hover:text-red-700"
+                                        >
+                                            <MdDeleteForever />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <input
+                                type="text"
+                                name="croppingPattern"
+                                placeholder="Cropping Pattern"
+                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value={formData.croppingPattern}
                                 onChange={handleChange}
+                            />
+                            <select
+                                name="majorCrops"
+                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                value=""
+                                onChange={handleSelectCrop}
                             >
                                 <option value="">Select Major Climate Extremes</option>
                                 <option value="Flash Flood">Flash Flood</option>
@@ -989,46 +1044,6 @@ const Profile = () => {
                                 <option value="Salinity Intrusion">Salinity Intrusion</option>
                                 <option value="Sea Level Rise">Sea Level Rise</option>
                             </select>
-
-                            <div className="space-y-4">
-                                <select
-                                    onChange={handleSelectChange}
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Select Season Wise Dominant Varieties</option>
-                                    {options.map((opt) => (
-                                        <option key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </option>
-                                    ))}
-                                </select>
-                                {selectedOptions.map((opt, index) => (
-                                    <div key={index} className="flex items-center gap-1">
-                                        <span className="w-11">{options.find(o => o.value === opt.value)?.label}</span>
-                                        <input
-                                            type="text"
-                                            placeholder="Your input"
-                                            value={opt.input}
-                                            onChange={(e) => handleInputChange(e.target.value, index)}
-                                            className="flex-1 p-2 border rounded"
-                                        />
-                                        <button
-                                            onClick={() => removeOption(index)}
-                                            className="text-red-500 hover:text-red-700"
-                                        >
-                                            <MdDeleteForever />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                            <input
-                                type="text"
-                                name="croppingPattern"
-                                placeholder="Cropping Pattern"
-                                className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                value={formData.croppingPattern}
-                                onChange={handleChange}
-                            />
                             <input
                                 type="text"
                                 name="riceVarieties"
@@ -1064,7 +1079,20 @@ const Profile = () => {
                                 <option value="Farmer Field School">Farmer Field School</option>
                                 <option value="Agromet School">Agromet School</option>
                                 <option value="None">None</option>
+                                <option value="Other">Other</option>
                             </select>
+                            {
+                                formData.communityInformation === "Other" && (
+                                    <input
+                                        type="text"
+                                        name="farmerGroupName"
+                                        placeholder="Farmer Group Name"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.farmerGroupName}
+                                        onChange={handleChange}
+                                    />
+                                )
+                            }
                         </div>
                     </div>
                     <div className="flex justify-end gap-4">

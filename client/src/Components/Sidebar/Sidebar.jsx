@@ -119,10 +119,24 @@ const Sidebar = () => {
             </Link>
           </div>
         )} */}
-        {(rolePermission && rolePermission["Disease Survey"]) && (
+        {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/diseases-survey" onClick={() => setIsslider(false)}>
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/diseases-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
               <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Disease Survey"}
+            </button>
+          </Link>
+        )}
+        {(rolePermission && rolePermission["Diseases List"]) && (
+          <Link to="/growth-stage-survey" onClick={() => setIsslider(false)}>
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Growth Stage Survey"}
+            </button>
+          </Link>
+        )}
+        {(rolePermission && rolePermission["Diseases List"]) && (
+          <Link to="/insect-pests" onClick={() => setIsslider(false)}>
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/insect-pests") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Insect Pest Survey"}
             </button>
           </Link>
         )}

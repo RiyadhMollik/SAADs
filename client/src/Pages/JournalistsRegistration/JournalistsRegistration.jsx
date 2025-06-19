@@ -2,9 +2,13 @@ import { useEffect, useState, useContext } from "react";
 import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
 import { ChevronsUpDown } from "lucide-react";
 import { AuthContext } from "../../Components/context/AuthProvider";
+import { Parser } from "@json2csv/plainjs";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import logo from '/logo.png';
 
 const JournalistsRegistration = () => {
-  const { rolePermission } = useContext(AuthContext);
+  const { rolePermission, authUser } = useContext(AuthContext);
   const [isJournalistsModalOpen, setIsJournalistsModalOpen] = useState(false);
   const [JournalistsList, setJournalistsList] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -62,7 +66,6 @@ const JournalistsRegistration = () => {
     fetchJournalists();
   }, [page, rowsPerPage, searchText]);
 
-  // Updated columns to match form inputs
   const initialColumns = [
     { name: "ID", visible: true },
     { name: "Name", visible: true },
@@ -142,12 +145,11 @@ const JournalistsRegistration = () => {
       return alert("WhatsApp number must be 11 digits long.");
     }
 
-    // Prepare data for submission
     const submissionData = {
       ...formData,
       expertise: formData.expertise === "others" ? formData.otherExpertise : formData.expertise,
     };
-    delete submissionData.otherExpertise; // Remove otherExpertise if not needed
+    delete submissionData.otherExpertise;
 
     try {
       const method = isEdit ? "PUT" : "POST";
@@ -222,6 +224,228 @@ const JournalistsRegistration = () => {
     });
   };
 
+  const columnKeyMap = {
+    ID: "id",
+    Name: "name",
+    Designation: "designation",
+    "Office Address": "address",
+    "Media Type": "mediaType",
+    "Name of Media": "mediaName",
+    "Area of Expertise": "expertise",
+    Gender: "gender",
+    "Mobile Number (Personal)": "mobileNumber",
+    "Mobile Number (Official)": "alternateContact",
+    "WhatsApp Number": "whatsappNumber",
+    "Facebook ID": "messengerId",
+    "Email (Personal)": "email",
+    "Email (Official)": "emailOfficial",
+  };
+
+  const handleCopy = async () => {
+    try {
+      const visibleColumns = columns.filter((col) => col.visible && col.name !== "Action");
+      const header = visibleColumns.map((col) => col.name).join("\t");
+      const rows = JournalistsList.slice(0, rowsPerPage).map((journalist, index) =>
+        visibleColumns
+          .map((col) => {
+            if (col.name === "ID") {
+              return pagination.currentPage === 1
+                ? index + 1
+                : (pagination.currentPage - 1) * rowsPerPage + index + 1;
+            }
+            const actualKey = columnKeyMap[col.name];
+            return actualKey ? journalist[actualKey] || "" : "";
+          })
+          .join("\t")
+      );
+      const text = `${header}\n${rows.join("\n")}`;
+      await navigator.clipboard.writeText(text);
+      alert("Table data copied to clipboard!");
+    } catch (error) {
+      console.error("Copy failed:", error);
+      alert("Failed to copy data to clipboard. Please try again.");
+    }
+  };
+
+  const handleExportCSV = () => {
+    try {
+      const visibleColumns = columns.filter((col) => col.visible && col.name !== "Action");
+      const fields = visibleColumns.map((col) => ({
+        label: col.name,
+        value: col.name.toLowerCase().replace(/\s+/g, ""),
+      }));
+      const data = JournalistsList.slice(0, rowsPerPage).map((journalist, index) => {
+        const row = {};
+        visibleColumns.forEach((col) => {
+          const keyAlias = col.name.toLowerCase().replace(/\s+/g, "");
+          const actualKey = columnKeyMap[col.name];
+          if (col.name === "ID") {
+            row[keyAlias] =
+              pagination.currentPage === 1
+                ? index + 1
+                : (pagination.currentPage - 1) * rowsPerPage + index + 1;
+          } else {
+            row[keyAlias] = actualKey ? journalist[actualKey] || "" : "";
+          }
+        });
+        return row;
+      });
+      const json2csvParser = new Parser({ fields });
+      const csv = json2csvParser.parse(data);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "journalists.csv";
+      link.click();
+    } catch (error) {
+      console.error("CSV export failed:", error);
+      alert("Failed to export CSV. Please try again.");
+    }
+  };
+
+  const handleExportPDF = () => {
+    try {
+      // registerFiraSansFont(jsPDF);
+      const doc = new jsPDF('p', 'mm', 'a4'); // Portrait, millimeters, A4 size
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 12; // Margin in mm
+
+      // Set default font
+      doc.setFont(undefined, "normal");
+      doc.setFontSize(12);
+
+      // // Header: Title and Branding
+      // doc.addImage(logo, 'PNG', margin, 16, 15, 15);
+      // doc.setFontSize(12);
+      // doc.setTextColor(50);
+      // doc.setFont("helvetica", "bold");
+      // doc.text("Bangladesh Rice research Institute (BRRI)", margin + 18, 15);
+      // // Branding (Replace with logo if available)
+      // doc.setFontSize(10);
+      // doc.setTextColor(100);
+      // const date = new Date();
+
+      // const options = {
+      //   weekday: 'long',
+      //   year: 'numeric',
+      //   month: 'long',
+      //   day: '2-digit',
+      //   hour: '2-digit',
+      //   minute: '2-digit',
+      //   hour12: true,
+      // };
+
+      // const formattedDate = date.toLocaleString('en-US', options);
+
+      // doc.setFont(undefined, "normal");
+      // doc.text(formattedDate, pageWidth - margin, 35, { align: "right" });
+      // // doc.text("Generated by: " + (authUser?.name || "Admin"), pageWidth - margin, 25, { align: "right" });
+
+      // // Date and Time
+      // doc.setFontSize(10);
+      // doc.setTextColor(50);
+      // doc.text("Gazipur-1701", margin + 18, 20);
+      // doc.setFont("helvetica", "bold");
+      // doc.text("Contact Agromet Lab", margin + 18, 25);
+
+      // doc.setFontSize(10);
+      // doc.setTextColor(50);
+      // doc.setFont(undefined, "normal");
+      // doc.text("Email: info.brriagromet@gmail.com", margin + 18, 30);
+      // doc.text("Mobile: 09644300300", margin + 18, 35);
+
+      // Border around content
+      // doc.setDrawColor(200); // Light gray border
+      // doc.setLineWidth(0.5);
+      // doc.rect(margin - 5, 10, pageWidth - 2 * (margin - 5), pageHeight - 2 * 10); // Border with padding
+
+      // Prepare table data
+      const visibleColumns = columns.filter((col) => col.visible && col.name !== "Action");
+      const headers = visibleColumns.map((col) => col.name);
+      const data = JournalistsList.slice(0, rowsPerPage).map((journalist, index) =>
+        visibleColumns.map((col) => {
+          if (col.name === "ID") {
+            return pagination.currentPage === 1
+              ? index + 1
+              : (pagination.currentPage - 1) * rowsPerPage + index + 1;
+          }
+          const key = columnKeyMap[col.name];
+          return key ? journalist[key] || "" : "";
+        })
+      );
+
+      // Table with styling
+      autoTable(doc, {
+        startY: 40,
+        head: [headers],
+        body: data,
+        theme: 'grid',
+        styles: {
+          font: "helvetica",
+          fontSize: 3,
+          cellPadding: 1,
+          textColor: [50, 50, 50],
+          overflow: 'linebreak',
+        },
+        headStyles: {
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold',
+          halign: 'center',
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+        margin: { top: 40, left: margin, right: margin, bottom: 20 },
+        didDrawPage: (data) => {
+          // ---- Header (repeated on every page) ----
+          doc.addImage(logo, 'PNG', margin, 16, 15, 15);
+          doc.setFontSize(12);
+          doc.setTextColor(50);
+          doc.setFont("helvetica", "bold");
+          doc.text("Bangladesh Rice research Institute (BRRI)", margin + 18, 15);
+          doc.setFontSize(10);
+          doc.setTextColor(100);
+          doc.text("Gazipur-1701", margin + 18, 20);
+          doc.text("Contact Agromet Lab", margin + 18, 25);
+          doc.setFontSize(10);
+          doc.setTextColor(50);
+          doc.setFont(undefined, "normal");
+          doc.text("Email: info.brriagromet@gmail.com", margin + 18, 30);
+          doc.text("Mobile: 09644300300", margin + 18, 35);
+
+          const date = new Date();
+          const formattedDate = date.toLocaleString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+          });
+          doc.setFont(undefined, "normal");
+          doc.text(formattedDate, pageWidth - margin, 35, { align: "right" });
+
+          // ---- Footer (repeated on every page) ----
+          const pageCount = doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.setTextColor(100);
+          doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - 12, { align: "center" });
+          doc.text("© 2025 Smart Agro-Advisory Dissemination System.", margin, pageHeight - 6);
+          doc.text("Generated by: " + (authUser?.name || "Admin"), pageWidth - margin, pageHeight - 6, { align: "right" });
+        },
+      });
+
+
+      doc.save("farmers-report.pdf");
+    } catch (error) {
+      console.error("PDF export failed:", error);
+      alert("Failed to export PDF. Please try again.");
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-gray-100">
       <main className="md:p-6 lg:p-8">
@@ -253,9 +477,24 @@ const JournalistsRegistration = () => {
                 min={1}
                 placeholder="Rows per page"
               />
-              <button className="border px-4 py-2 rounded hover:bg-gray-100">Copy</button>
-              <button className="border px-4 py-2 rounded hover:bg-gray-100">CSV</button>
-              <button className="border px-4 py-2 rounded hover:bg-gray-100">PDF</button>
+              <button
+                className="border px-4 py-2 rounded hover:bg-gray-100"
+                onClick={handleCopy}
+              >
+                Copy
+              </button>
+              <button
+                className="border px-4 py-2 rounded hover:bg-gray-100"
+                onClick={handleExportCSV}
+              >
+                CSV
+              </button>
+              <button
+                className="border px-4 py-2 rounded hover:bg-gray-100"
+                onClick={handleExportPDF}
+              >
+                PDF
+              </button>
               <button
                 className="border px-4 py-2 rounded hover:bg-gray-100 flex items-center justify-center"
                 onClick={toggleColumnModal}
@@ -292,7 +531,8 @@ const JournalistsRegistration = () => {
                       .map((col, index) => (
                         <td
                           key={col.name}
-                          className={`border px-4 py-2 text-center capitalize overflow-hidden ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 7 ? "capitalize" : ""}`}
+                          className={`border px-4 py-2 text-center capitalize overflow-hidden ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"
+                            } ${index === 7 ? "capitalize" : ""}`}
                           style={{ width: "150px" }}
                         >
                           {col.name === "ID" &&
@@ -308,56 +548,50 @@ const JournalistsRegistration = () => {
                           {col.name === "Gender" && journalist.gender}
                           {col.name === "Mobile Number (Personal)" &&
                             journalist.mobileNumber && (
-                              <a href={`tel:${journalist.mobileNumber}`} className=" hover:underline">
+                              <a href={`tel:${journalist.mobileNumber}`} className="text-blue-600 hover:underline">
                                 {journalist.mobileNumber}
                               </a>
                             )}
-
                           {col.name === "Mobile Number (Official)" &&
                             journalist.alternateContact && (
-                              <a href={`tel:${journalist.alternateContact}`} className=" hover:underline">
+                              <a href={`tel:${journalist.alternateContact}`} className="text-blue-600 hover:underline">
                                 {journalist.alternateContact}
                               </a>
                             )}
-
                           {col.name === "WhatsApp Number" &&
                             journalist.whatsappNumber && (
                               <a
                                 href={`https://wa.me/${journalist.whatsappNumber}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-green-600  hover:underline"
+                                className="text-green-600 hover:underline"
                               >
                                 {journalist.whatsappNumber}
                               </a>
                             )}
-
                           {col.name === "Facebook ID" &&
                             journalist.messengerId && (
                               <a
                                 href={`https://facebook.com/${journalist.messengerId}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-700 lowercase  hover:underline"
+                                className="text-blue-700 lowercase hover:underline"
                               >
                                 {journalist.messengerId}
                               </a>
                             )}
-
                           {col.name === "Email (Personal)" &&
                             journalist.email && (
-                              <a href={`mailto:${journalist.email}`} className="text-purple-700 lowercase  hover:underline">
+                              <a href={`mailto:${journalist.email}`} className="text-purple-700 lowercase hover:underline">
                                 {journalist.email}
                               </a>
                             )}
-
                           {col.name === "Email (Official)" &&
                             journalist.emailOfficial && (
-                              <a href={`mailto:${journalist.emailOfficial}`} className="text-purple-700 lowercase  hover:underline">
+                              <a href={`mailto:${journalist.emailOfficial}`} className="text-purple-700 lowercase hover:underline">
                                 {journalist.emailOfficial}
                               </a>
                             )}
-
                           {col.name === "Action" && (
                             <div className="flex space-x-2">
                               {rolePermission["Journalist Edit"] && (
@@ -386,12 +620,12 @@ const JournalistsRegistration = () => {
             </table>
           </div>
 
-          <div className="flex justify-between items-center w-full mt-5 md:hidden lg:hidden">
+          <div className="flex justify-between items-center w-full mt-5 md:hidden">
             <label className="mr-2 w-1/2">Jump to page:</label>
             <input
               type="number"
               value={page}
-              onChange={(e) => setPage(parseInt(e.target.value))}
+              onChange={(e) => setPage(parseInt(e.target.value) || 1)}
               className="px-2 py-1 border rounded border-gray-300 w-1/2"
             />
           </div>
@@ -411,7 +645,7 @@ const JournalistsRegistration = () => {
               <input
                 type="number"
                 value={page}
-                onChange={(e) => setPage(parseInt(e.target.value))}
+                onChange={(e) => setPage(parseInt(e.target.value) || 1)}
                 className="px-2 py-1 border rounded border-gray-300"
               />
             </div>

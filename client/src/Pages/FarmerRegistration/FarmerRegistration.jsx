@@ -142,7 +142,7 @@ const FarmerRegistration = () => {
   const initialColumns = [
     { name: "ID", visible: true },
     { name: "Name", visible: true },
-    { name: "Father Name", visible: true },
+    { name: "Father's Name / Spouse Name", visible: true },
     { name: "Gender", visible: true },
     // { name: "Date of Birth", visible: true },
     { name: "Age", visible: true },
@@ -441,7 +441,7 @@ const FarmerRegistration = () => {
   const columnKeyMap = {
     ID: "id",
     Name: "name",
-    "Father Name": "fatherName",
+    "Father's Name / Spouse Name": "fatherName",
     Gender: "gender",
     // "Date of Birth": "dateOfBirth",
     Age: "age",
@@ -789,7 +789,7 @@ const FarmerRegistration = () => {
                               ? index + 1
                               : (pagination.currentPage - 1) * rowsPerPage + index + 1)}
                           {col.name === "Name" && farmer.name}
-                          {col.name === "Father Name" && farmer.fatherName}
+                          {col.name === "Father's Name / Spouse Name" && farmer.fatherName}
                           {col.name === "Gender" && farmer.gender}
                           {/* {col.name === "Date of Birth" && farmer.dateOfBirth} */}
                           {col.name === "Age" && farmer.age}
@@ -930,7 +930,7 @@ const FarmerRegistration = () => {
                     required
                   />
                   <label className="block mt-4">
-                    Father's Name <span className="text-red-500">*</span>
+                    Father's Name / Spouse Name  <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -1114,15 +1114,55 @@ const FarmerRegistration = () => {
                     value={formData.farmSize}
                     onChange={handleChange}
                   />
-                  <label className="block mt-4">Total Urea Uses (kg/bigha)</label>
-                  <input
-                    type="number"
-                    name="fertilizerUsage"
-                    placeholder=""
-                    className="border w-full p-2 rounded"
-                    value={formData.fertilizerUsage}
-                    onChange={handleChange}
-                  />
+                  <div className="flex flex-col md:flex-row lg:flex-row gap-2 text-center">
+                    <div>
+                      <label className="block mt-4">Total Urea Uses (kg/bigha)</label>
+                      <input
+                        type="number"
+                        name="fertilizerUsage"
+                        placeholder=""
+                        className="border w-full p-2 rounded"
+                        value={formData.fertilizerUsage}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div><label className="block mt-4">Total TSP Uses (kg/bigha)</label>
+                      <input
+                        type="number"
+                        name="TSPUsage"
+                        placeholder=""
+                        className="border w-full p-2 rounded"
+                        value={formData.fertilizerUsage}
+                        onChange={handleChange}
+                      /></div>
+                    <div><label className="block mt-4">Total MoP Uses (kg/bigha)</label>
+                      <input
+                        type="number"
+                        name="MoPUsage"
+                        placeholder=""
+                        className="border w-full p-2 rounded"
+                        value={formData.fertilizerUsage}
+                        onChange={handleChange}
+                      /></div>
+                    <div><label className="block mt-4">Total Gypsum Uses (kg/bigha)</label>
+                      <input
+                        type="number"
+                        name="GypsumUsage"
+                        placeholder=""
+                        className="border w-full p-2 rounded"
+                        value={formData.fertilizerUsage}
+                        onChange={handleChange}
+                      /></div>
+                    <div><label className="block mt-4">Total Zinc Uses (kg/bigha)</label>
+                      <input
+                        type="number"
+                        name="ZincUsage"
+                        placeholder=""
+                        className="border w-full p-2 rounded"
+                        value={formData.fertilizerUsage}
+                        onChange={handleChange}
+                      /></div>
+                  </div>
                   <label className="block mt-4">Major Diseases</label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {selectedDiseases.map((disease) => (
@@ -1201,6 +1241,7 @@ const FarmerRegistration = () => {
                     <option value="Hispa">Hispa</option>
                     <option value="Leaf Folder">Leaf Folder</option>
                     <option value="Rice Borer">Rice Borer</option>
+                    <option value="Rice Borer">Rice Bug</option>
                     <option value="Green Leaf hopper">Green Leaf hopper</option>
                     <option value="others">Others</option>
                   </select>

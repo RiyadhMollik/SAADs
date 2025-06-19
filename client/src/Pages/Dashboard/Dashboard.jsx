@@ -39,7 +39,7 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/ad-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>AD Registration</p>
+                    <p>AD <br /> Registration</p>
                   </a>
                 </li>
               )
@@ -49,7 +49,7 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/admin-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>DD Registration</p>
+                    <p>DD <br /> Registration</p>
                   </a>
                 </li>
               )
@@ -59,7 +59,7 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/uao-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>UAO Registration</p>
+                    <p>UAO <br /> Registration</p>
                   </a>
                 </li>
               )
@@ -69,7 +69,7 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/saao-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>SAAO Registration</p>
+                    <p>SAAO <br /> Registration</p>
                   </a>
                 </li>
               )
@@ -79,7 +79,7 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/farmer-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>Add Farmer </p>
+                    <p>Add <br /> Farmer </p>
                   </a>
                 </li>
               )
@@ -89,7 +89,7 @@ const Dashboard = () => {
                 <li className="bg-gray-100 rounded-lg py-4">
                   <a href="/journalists-registration" className="flex flex-col justify-center items-center gap-2 text-teal-500 hover:text-teal-700">
                     <FilePlus size={20} />
-                    <p>Add Journalist </p>
+                    <p>Add <br /> Journalist </p>
                   </a>
                 </li>
               )
