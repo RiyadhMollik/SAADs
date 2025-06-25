@@ -11,7 +11,9 @@ body {
   width: 10px;
   /* Slightly wider for a smoother look */
 }
-
+.font-nikos {
+  font-family: 'Nikos', sans-serif;
+}
 ::-webkit-scrollbar-track {
   background: #e5e7eb;
   /* Soft gray track */

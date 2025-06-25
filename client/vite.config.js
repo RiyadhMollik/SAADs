@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  assetsInclude: ['**/*.geojson'],
   optimizeDeps: {
     include: ['@json2csv/plainjs', 'jspdf', 'jspdf-autotable'],
   },

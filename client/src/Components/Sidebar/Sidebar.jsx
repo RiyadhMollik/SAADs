@@ -1,13 +1,14 @@
 import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaLock, FaDisease, FaUser } from "react-icons/fa";
+import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaLock, FaDisease, FaUser, FaPhone } from "react-icons/fa";
 import { IoIosAddCircle, IoMdSwitch } from "react-icons/io";
 import logo from "../../assets/brri.png";
 import useLogout from "../../Hook/useLogout";
 import { AuthContext } from "../context/AuthProvider";
 import { TbReport } from "react-icons/tb";
 import { GoArrowSwitch } from "react-icons/go";
+import { WiSmallCraftAdvisory } from "react-icons/wi";
 
 const Sidebar = () => {
   const { logout, loading } = useLogout();
@@ -120,12 +121,27 @@ const Sidebar = () => {
           </div>
         )} */}
         {(rolePermission && rolePermission["Diseases List"]) && (
+          <Link to="/advisory" onClick={() => setIsslider(false)}>
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/advisory") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <WiSmallCraftAdvisory className="mr-3 text-lg" /> {isHidden ? "" : "Advisory"}
+            </button>
+          </Link>
+        )}
+        {(rolePermission && rolePermission["Diseases List"]) && (
+          <Link to="/call-center" onClick={() => setIsslider(false)}>
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/call-center") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <FaPhone className="mr-3 text-lg" /> {isHidden ? "" : "Call Center"}
+            </button>
+          </Link>
+        )}
+        {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/diseases-survey" onClick={() => setIsslider(false)}>
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/diseases-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
               <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Disease Survey"}
             </button>
           </Link>
         )}
+
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/growth-stage-survey" onClick={() => setIsslider(false)}>
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>

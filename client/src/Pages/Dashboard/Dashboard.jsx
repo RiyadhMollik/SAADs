@@ -5,6 +5,7 @@ import './CustomCalendar.css';
 import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText, Leaf, Newspaper, Microscope, ShieldCheck } from 'lucide-react';
 import { AuthContext } from '../../Components/context/AuthProvider';
 import { use } from 'react';
+import RegionMap from '../../Components/RegionMap/RegionMap';
 
 const Dashboard = () => {
   const { rolePermission } = useContext(AuthContext);
@@ -196,7 +197,6 @@ const Dashboard = () => {
           <p className="text-sm text-gray-500">Total Progressive Farmer</p>
         </div>
       </div>
-
     </div>
   );
 };

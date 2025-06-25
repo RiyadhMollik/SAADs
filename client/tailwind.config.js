@@ -8,6 +8,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Fira Sans"', 'sans-serif'],
+        nikos: ["'Nikos'", "sans-serif"],
       },
       fontWeight: {
         extralight: '200',

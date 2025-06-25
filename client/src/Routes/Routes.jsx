@@ -48,6 +48,9 @@ import Profile from "../Pages/Profile/Profile";
 import DiseasesSurvey from "../Pages/DiseasesSurvey/DiseasesSurvey";
 import GrowthStageSurvey from "../Pages/GrowthStageSurvey/GrowthStageSurvey";
 import InsectPests from "../Pages/InsectPests/InsectPests";
+import RegionMap from "../Components/RegionMap/RegionMap";
+import AdvisoryPage from "../Pages/AdvisoryPage/AdvisoryPage";
+import CallCenter from "../Pages/CallCenter/CallCenter";
 
 export const router = createBrowserRouter([
   {
@@ -214,6 +217,18 @@ export const router = createBrowserRouter([
       {
         path: "/insect-pests",
         element: <InsectPests/> , 
+      },  
+      {
+        path: "/advisory",
+        element: <RegionMap/> , 
+      },  
+      {
+        path: "/advisory-send",
+        element: <AdvisoryPage/> , 
+      },  
+      {
+        path: "/call-center",
+        element: <CallCenter/> , 
       },  
       
         
