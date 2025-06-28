@@ -274,7 +274,7 @@ const Profile = () => {
         if (!formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchDistrict = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch district data");
                 const data = await response.json();
                 setDistricts(data.sort((a, b) => a.localeCompare(b)));
@@ -289,7 +289,7 @@ const Profile = () => {
         if (!formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchUpazila = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch upazila data");
                 const data = await response.json();
                 setUpazilas(data.sort((a, b) => a.localeCompare(b)));
@@ -304,7 +304,7 @@ const Profile = () => {
         if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchUnion = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch union data");
                 const data = await response.json();
                 setUnions(data.sort((a, b) => a.localeCompare(b)));
@@ -319,7 +319,7 @@ const Profile = () => {
         if (!formData.union || !formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchBlock = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch block data");
                 const data = await response.json();
                 setBlock(data.sort((a, b) => a.localeCompare(b)));
@@ -641,7 +641,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value=""
                                 onChange={handleHotspotSelect}
-                                required
+                                
                             >
                                 <option value="">Select Hotspot</option>
                                 {hotspot.map(h => (
@@ -656,7 +656,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.region}
                                 onChange={handleChange}
-                                required
+                                
                             >
                                 <option value="">Select Region</option>
                                 {regions.map(region => (
@@ -671,7 +671,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.division}
                                 onChange={handleChange}
-                                required
+                                
                             >
                                 <option value="">Select Division</option>
                                 {divisions.map(division => (
@@ -686,7 +686,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.district}
                                 onChange={handleChange}
-                                required
+                                
                             >
                                 <option value="">Select District</option>
                                 {districts.map(district => (
@@ -701,7 +701,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.upazila}
                                 onChange={handleChange}
-                                required
+                                
                             >
                                 <option value="">Select Upazila</option>
                                 {upazilas.map(upazila => (
@@ -716,7 +716,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.union}
                                 onChange={handleChange}
-                                required
+                                
                             >
                                 <option value="">Select Union</option>
                                 {unions.map(union => (
@@ -731,7 +731,7 @@ const Profile = () => {
                                 className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={formData.block}
                                 onChange={handleChange}
-                                required
+                                
                             >
                                 <option value="">Select Block</option>
                                 {block.map(b => (

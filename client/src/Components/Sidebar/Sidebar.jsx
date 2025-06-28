@@ -144,7 +144,7 @@ const Sidebar = () => {
 
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/growth-stage-survey" onClick={() => setIsslider(false)}>
-            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+            <button className={`flex items-center w-full px-2 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
               <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Growth Stage Survey"}
             </button>
           </Link>

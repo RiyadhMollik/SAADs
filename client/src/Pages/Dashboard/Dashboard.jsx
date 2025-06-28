@@ -4,12 +4,13 @@ import 'react-calendar/dist/Calendar.css';
 import './CustomCalendar.css';
 import { FilePlus, FileMinus, User, Car, Truck, AlertTriangle, CheckCircle, BarChart2, Users, UserPlus, Tractor, AlertCircle, FileText, Leaf, Newspaper, Microscope, ShieldCheck } from 'lucide-react';
 import { AuthContext } from '../../Components/context/AuthProvider';
-import { use } from 'react';
-import RegionMap from '../../Components/RegionMap/RegionMap';
+import { useNavigate } from 'react-router-dom';
+
 
 const Dashboard = () => {
   const { rolePermission } = useContext(AuthContext);
   const [data, setData] = useState({});
+  const navigate = useNavigate();
   const [value, onChange] = useState(new Date());
   const formattedDate = value.toLocaleDateString('en-GB', {
     day: '2-digit',
@@ -27,6 +28,9 @@ const Dashboard = () => {
     }
     fetchData();
   }, [])
+  const connectPage = (link) => {
+     navigate(link);
+  }
   return (
     <div className="bg-gray-100 min-h-screen p-6">
       {/* Top Section */}
@@ -143,49 +147,49 @@ const Dashboard = () => {
           <p className="text-sm text-gray-500">Total Registration</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/saao-registration')}>
           <Car className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalSAAO}</p>
           <p className="text-sm text-gray-500">Total SAAO</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/farmer-registration')}>
           <Tractor className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalFarmer}</p>
           <p className="text-sm text-gray-500">Total Farmer</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/send-feedback')}>
           <AlertCircle className="mx-auto mb-2 text-red-500" size={32} />
           <p className="text-2xl font-bold text-red-500">{data?.totalFeedback}</p>
           <p className="text-sm text-gray-500">Total Feedback</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/uao-registration')}>
           <User className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalUAO}</p>
           <p className="text-sm text-gray-500">Total UAO</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/admin-registration')}>
           <ShieldCheck className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalDD}</p>
           <p className="text-sm text-gray-500">Total DD</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/ad-registration')}>
           <User className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalAD || 0}</p>
           <p className="text-sm text-gray-500">Total AD</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/scientist-registration')}>
           <Microscope className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalScientists || 0}</p>
           <p className="text-sm text-gray-500">Total Scientists</p>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg text-center" onClick={() => connectPage('/journalists-registration')}>
           <Newspaper className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalJournalists || 0}</p>
           <p className="text-sm text-gray-500">Total Journalists</p>

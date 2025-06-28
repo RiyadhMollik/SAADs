@@ -114,6 +114,7 @@ const FarmerRegistration = () => {
             return 0;
           });
         }
+        console.log(sortedFarmers);
 
         setFarmerList(sortedFarmers);
         setPagination({
@@ -142,13 +143,15 @@ const FarmerRegistration = () => {
   const initialColumns = [
     { name: "ID", visible: true },
     { name: "Name", visible: true },
-    { name: "Father's Name / Spouse Name", visible: true },
+    { name: "Father's Name", visible: true },
+    { name: "Spouse Name", visible: true },
     { name: "Gender", visible: true },
     // { name: "Date of Birth", visible: true },
     { name: "Age", visible: true },
     { name: "Mobile Number", visible: true },
     { name: "National ID", visible: true },
     { name: "WhatsApp Number", visible: true },
+    { name: "Imo Number", visible: true },
     { name: "Alternate Contact", visible: true },
     { name: "Relationship with Farmer", visible: true },
     { name: "Education Status", visible: true },
@@ -206,6 +209,7 @@ const FarmerRegistration = () => {
       name: "",
       fatherName: "",
       gender: "",
+      imoNumber: "",
       // dateOfBirth: "",
       age: "",
       mobileNumber: "",
@@ -330,6 +334,7 @@ const FarmerRegistration = () => {
     setFormData({
       name: farmer.name || "",
       fatherName: farmer.fatherName || "",
+      spouseName: farmer.spouseName || "",
       gender: farmer.gender || "",
       // dateOfBirth: farmer.dateOfBirth || "",
       age: farmer.age || calculateAge(farmer.dateOfBirth) || "",
@@ -342,11 +347,13 @@ const FarmerRegistration = () => {
       eduOther: farmer.educationStatus === "other" ? farmer.educationStatus : "",
       village: farmer.village || "",
       farmSize: farmer.farmSize || "",
+      imoNumber: farmer.imoNumber || "",
       fertilizerUsage: farmer.fertilizerUsage || "",
       TSPUsage: farmer.TSPUsage || "",
       MoPUsage: farmer.MoPUsage || "",
       ZincUsage: farmer.ZincUsage || "",
       GypsumUsage: farmer.GypsumUsage || "",
+      dapUsage: farmer.dapUsage || "",
       majorDiseases: farmer.majorDiseases || "",
       majorInsects: farmer.majorInsects || "",
       progressiveFarmer: farmer.progressiveFarmer || "",
@@ -445,13 +452,15 @@ const FarmerRegistration = () => {
   const columnKeyMap = {
     ID: "id",
     Name: "name",
-    "Father's Name / Spouse Name": "fatherName",
+    "Father's Name": "fatherName",
+    "Spouse Name": "spouseName",
     Gender: "gender",
     // "Date of Birth": "dateOfBirth",
     Age: "age",
     "Mobile Number": "mobileNumber",
     "National ID": "nationalId",
     "WhatsApp Number": "whatsappNumber",
+    "Imo Number": "imoNumber",
     "Alternate Contact": "alternateContact",
     "Education Status": "educationStatus",
     Village: "village",
@@ -793,13 +802,15 @@ const FarmerRegistration = () => {
                               ? index + 1
                               : (pagination.currentPage - 1) * rowsPerPage + index + 1)}
                           {col.name === "Name" && farmer.name}
-                          {col.name === "Father's Name / Spouse Name" && farmer.fatherName}
+                          {col.name === "Father's Name" && farmer.fatherName}
+                          {col.name === "Spouse Name" && farmer.spouseName}
                           {col.name === "Gender" && farmer.gender}
                           {/* {col.name === "Date of Birth" && farmer.dateOfBirth} */}
                           {col.name === "Age" && farmer.age}
                           {col.name === "Mobile Number" && farmer.mobileNumber}
                           {col.name === "National ID" && farmer.nationalId}
                           {col.name === "WhatsApp Number" && farmer.whatsappNumber}
+                          {col.name === "Imo Number" && farmer.imoNumber}
                           {col.name === "Alternate Contact" && farmer.alternateContact}
                           {col.name === "Relationship with Farmer" && farmer.alternateContactRelation}
                           {col.name === "Education Status" &&
@@ -934,7 +945,7 @@ const FarmerRegistration = () => {
                     required
                   />
                   <label className="block mt-4">
-                    Father's Name / Spouse Name  <span className="text-red-500">*</span>
+                    Father's Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -944,6 +955,17 @@ const FarmerRegistration = () => {
                     value={formData.fatherName}
                     onChange={handleChange}
                     required
+                  />
+                  <label className="block mt-4">
+                    Spouse Name
+                  </label>
+                  <input
+                    type="text"
+                    name="spouseName"
+                    placeholder=""
+                    className="border w-full p-2 rounded"
+                    value={formData.spouseName}
+                    onChange={handleChange}
                   />
                   <label className="block mt-4">
                     Gender <span className="text-red-500">*</span>
@@ -1024,6 +1046,23 @@ const FarmerRegistration = () => {
                     placeholder=""
                     className="border w-full p-2 rounded"
                     value={formData.whatsappNumber}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (/^\d{0,11}$/.test(value)) {
+                        handleChange(e);
+                      }
+                    }}
+                    pattern="[0-9]{11}"
+                    minLength="11"
+                    maxLength="11"
+                  />
+                  <label className="block mt-4">IMO Number</label>
+                  <input
+                    type="tel"
+                    name="imoNumber"
+                    placeholder=""
+                    className="border w-full p-2 rounded"
+                    value={formData.imoNumber}
                     onChange={(e) => {
                       const value = e.target.value;
                       if (/^\d{0,11}$/.test(value)) {
@@ -1164,6 +1203,15 @@ const FarmerRegistration = () => {
                         placeholder=""
                         className="border w-full p-2 rounded"
                         value={formData.ZincUsage}
+                        onChange={handleChange}
+                      /></div>
+                    <div><label className="block mt-4">Total DAP Uses(kg/bigha)</label>
+                      <input
+                        type="number"
+                        name="dapUsage"
+                        placeholder=""
+                        className="border w-full p-2 rounded"
+                        value={formData.dapUsage}
                         onChange={handleChange}
                       /></div>
                   </div>
