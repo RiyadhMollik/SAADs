@@ -238,8 +238,9 @@ const User = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map((user) => (
+          {filteredUsers.map((user , index) => (
             <tr key={user.id} className="bg-gray-50">
+              <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
               <td className="px-4 py-2 border border-gray-300">{user.name}</td>
               <td className="px-4 py-2 border border-gray-300">{user.mobileNumber}</td>
               <td className="px-4 py-2 border border-gray-300">{user.role}</td>

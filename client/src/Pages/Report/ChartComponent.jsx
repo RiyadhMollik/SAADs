@@ -19,13 +19,16 @@ ChartJS.register(
   Legend
 );
 
-const ChartComponent = () => {
-  const data = {
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+const ChartComponent = ({ data, locationType }) => {
+  // Calculate max value for y-axis (rounded up to nearest 10)
+  const maxCount = data.length > 0 ? Math.ceil(Math.max(...data.map(item => item.count)) / 10) * 10 : 90;
+
+  const chartData = {
+    labels: data.map(item => item[locationType] || 'Unknown'),
     datasets: [
       {
-        label: 'My First Dataset',
-        data: [65, 59, 80, 81, 56, 55, 40],
+        label: `Number of Farmers by ${locationType.charAt(0).toUpperCase() + locationType.slice(1)}`,
+        data: data.map(item => item.count),
         backgroundColor: [
           'rgba(255, 182, 193, 0.8)', // Light Pink
           'rgba(255, 218, 185, 0.8)', // Peach
@@ -44,7 +47,7 @@ const ChartComponent = () => {
     scales: {
       y: {
         beginAtZero: true,
-        max: 90,
+        max: maxCount,
         ticks: {
           stepSize: 10,
         },
@@ -57,13 +60,24 @@ const ChartComponent = () => {
       tooltip: {
         enabled: true,
       },
+      title: {
+        display: true,
+        text: `Farmer Distribution by ${locationType.charAt(0).toUpperCase() + locationType.slice(1)}`,
+        font: {
+          size: 24,
+          weight: 'bold',
+        },
+        padding: {
+          top: 10,
+          bottom: 20,
+        },
+      },
     },
   };
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold text-center mb-4">Monthly Data Histogram</h1>
-      <Bar data={data} options={options} />
+      <Bar data={chartData} options={options} />
     </div>
   );
 };

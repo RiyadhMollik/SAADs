@@ -175,6 +175,9 @@ const Sidebar = () => {
               {(rolePermission && rolePermission["Feedback Table"]) && (
                 <li><Link onClick={() => setIsslider(false)} to="/field-report" className="hover:text-green-700">Field Monitoring Reports</Link></li>
               )}
+              {(rolePermission && rolePermission["Feedback Table"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/saao-report" className="hover:text-green-700">SAAO Reports</Link></li>
+              )}
             </ul>
           </div>
         )}

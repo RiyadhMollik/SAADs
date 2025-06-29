@@ -51,6 +51,7 @@ import InsectPests from "../Pages/InsectPests/InsectPests";
 import RegionMap from "../Components/RegionMap/RegionMap";
 import AdvisoryPage from "../Pages/AdvisoryPage/AdvisoryPage";
 import CallCenter from "../Pages/CallCenter/CallCenter";
+import SaaoUserReport from "../Pages/Report/SaaoUserReport";
 
 export const router = createBrowserRouter([
   {
@@ -229,6 +230,10 @@ export const router = createBrowserRouter([
       {
         path: "/call-center",
         element: <CallCenter/> , 
+      },  
+      {
+        path: "/saao-report",
+        element: <SaaoUserReport/> , 
       },  
       
         
