@@ -225,7 +225,7 @@ function SaaoUserReport() {
     return (
         <div className="p-4 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">SAAO User Report ({totalCount} Farmers)</h1>
+                <h1 className="text-2xl font-bold">SAAO User Report</h1>
                 <button
                     onClick={handleExportPDF}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
