@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, LineController } from 'chart.js';
-import ChartComponent from './ChartComponent';
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Legend,
+    LineController
+} from 'chart.js';
 
-// Register the necessary components including LineController
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -11,31 +19,28 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    LineController // Add LineController to the registration
+    LineController
 );
 
 const Report = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortOrder, setSortOrder] = useState('asc');
-    const [activeTab, setActiveTab] = useState('table'); // "table" or "graph"
+    const [activeTab, setActiveTab] = useState('table');
     const [SAAOList, setSAAOList] = useState([]);
-    const chartRef = useRef(null); // Reference to the chart
-    const chartInstanceRef = useRef(null); // To store the chart instance
-    const [selectedOption, setSelectedOption] = useState(""); // For storing selected option
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false); // To toggle the dropdown
+    const [selectedOption, setSelectedOption] = useState("");
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(false);
-    // Fetch SAAO list
+    const chartRef = useRef(null);
+    const chartInstanceRef = useRef(null);
+
     const fetchSAAOs = async () => {
         try {
             const response = await fetch("https://iinms.brri.gov.bd/api/farmers/farmers/role/saao");
             if (response.ok) {
-                const data = await response.json();
-                console.log(data);
-                setSAAOList(data.data);
-            } else {
-                throw new Error("Failed to fetch SAAOs");
-            }
+                const result = await response.json();
+                setSAAOList(result.data);
+            } else throw new Error("Failed to fetch SAAOs");
         } catch (error) {
             console.error("Error:", error);
         }
@@ -44,17 +49,16 @@ const Report = () => {
     useEffect(() => {
         fetchSAAOs();
     }, []);
+
     useEffect(() => {
         const fetchData = async () => {
+            if (!selectedOption?.id) return;
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/stats/${selectedOption?.id}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/stats/${selectedOption.id}`);
                 if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                    setData(data);
-                } else {
-                    throw new Error("Failed to fetch data");
-                }
+                    const result = await response.json();
+                    setData(result);
+                } else throw new Error("Failed to fetch data");
             } catch (error) {
                 console.error("Error:", error);
             }
@@ -62,123 +66,101 @@ const Report = () => {
         fetchData();
     }, [selectedOption, refresh]);
 
-
-    console.log(selectedOption);
-
-    // Filter options based on search term
     const filteredOptions = SAAOList.filter(option =>
-        option.name.toLowerCase().includes(searchTerm.toLowerCase()) || option.mobileNumber.toLowerCase().includes(searchTerm.toLowerCase())
+        option.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        option.mobileNumber.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     const handleSelect = (option) => {
         setSelectedOption(option);
-        setSearchTerm(option.name + " - " + option.mobileNumber);
+        setSearchTerm(`${option.name} - ${option.mobileNumber}`);
         setIsDropdownOpen(false);
         setData([]);
         setRefresh(!refresh);
     };
 
-    // Sample data for the table
+    const sortedData = [...data].sort((a, b) => sortOrder === 'asc' ? a.age - b.age : b.age - a.age);
+    const toggleSortOrder = () => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
 
+    const labels = data.map(item => item.date);
+    const values = data.map(item => item.totalEntries);
 
-    // Sorting the table data
-    const sortedData = [...data].sort((a, b) => {
-        if (sortOrder === 'asc') {
-            return a.age - b.age;
-        }
-        return b.age - a.age;
-    });
-
-    // Toggle sort order
-    const toggleSortOrder = () => {
-        setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-    };
-    const lebels = data.map((item) => item.date);
-    const values = data.map((item) => item.totalEntries);
-    // Graph data (simple example using Chart.js)
     const chartData = {
-        labels: lebels,
+        labels,
         datasets: [
             {
-                label: 'Total Entries',
+                label: '',
                 data: values,
                 fill: false,
                 borderColor: 'rgba(75,192,192,1)',
-                tension: 0.1,
+                tension: 0.3,
+                pointBackgroundColor: 'rgba(75,192,192,1)',
+                pointRadius: 4,
             },
         ],
     };
 
-    // Destroy the previous chart when switching tabs or unmounting
-    useEffect(() => {
-        return () => {
-            if (chartInstanceRef.current) {
-                chartInstanceRef.current.destroy(); // Destroy the existing chart
-            }
-        };
-    }, [activeTab]);
+    const chartOptions = {
+        responsive: true,
+        scales: {
+            x: { title: { display: true, text: 'Date' } },
+            y: { title: { display: true, text: 'Number of Farmer' } },
+        },
+        plugins: {
+            legend: {
+                display: false,
+                position: 'top',
+            },
+        },
+    };
 
-    // Create chart when the graph tab is active
     useEffect(() => {
         if (activeTab === 'graph' && chartRef.current) {
-            if (chartInstanceRef.current) {
-                chartInstanceRef.current.destroy(); // Destroy previous chart instance if exists
-            }
-
+            if (chartInstanceRef.current) chartInstanceRef.current.destroy();
             chartInstanceRef.current = new ChartJS(chartRef.current, {
-                type: 'line', // Chart type
-                data: chartData, // Chart data
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Date',
-                            },
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Entries',
-                            },
-                        },
-                    },
-                },
+                type: 'line',
+                data: chartData,
+                options: chartOptions,
             });
         }
 
         return () => {
-            // Cleanup chart when unmounting or switching tabs
-            if (chartInstanceRef.current) {
-                chartInstanceRef.current.destroy();
-            }
+            if (chartInstanceRef.current) chartInstanceRef.current.destroy();
         };
-    }, [activeTab]);
+    }, [activeTab, data]);
+
+    const downloadChart = () => {
+        if (chartInstanceRef.current) {
+            const link = document.createElement('a');
+            link.download = 'saao_report_chart.png';
+            link.href = chartInstanceRef.current.toBase64Image();
+            link.click();
+        }
+    };
 
     return (
-        <div className="container mx-auto p-4">
-            <div className='flex flex-col md:flex-row lg:flex-row gap-5  justify-center items-center'>
-                <div className="relative w-full md:w-1/3 lg:w-1/3 mt-2">
+        <div className="container mx-auto p-6 bg-white shadow rounded-lg">
+            <div className="flex flex-col lg:flex-row gap-6 items-center mb-6">
+                {/* Search Dropdown */}
+                <div className="relative w-full lg:w-1/3">
                     <input
                         type="text"
-                        placeholder="Search..."
-                        className="w-full p-2 border border-gray-300 rounded-md"
+                        placeholder="Search SAAO by name or mobile..."
+                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        onClick={() => setIsDropdownOpen(!isDropdownOpen)} // Toggle dropdown on click
+                        onClick={() => setIsDropdownOpen(true)}
                     />
-                    {/* Dropdown list */}
                     {isDropdownOpen && (
-                        <div className="absolute top-10 w-full max-h-60 overflow-y-auto border border-gray-300 bg-white rounded-md shadow-lg">
+                        <div className="absolute top-11 left-0 right-0 bg-white shadow-lg border rounded max-h-60 overflow-y-auto z-10">
                             {filteredOptions.length === 0 ? (
-                                <div className="p-2 text-gray-500">No results found</div>
+                                <div className="p-3 text-gray-500">No results found</div>
                             ) : (
-                                filteredOptions.map((option, index) => (
+                                filteredOptions.map((option, i) => (
                                     <div
-                                        key={index}
-                                        onClick={() => handleSelect(option)} // Set option on click
-                                        className="cursor-pointer p-2 hover:bg-gray-200"
+                                        key={i}
+                                        onClick={() => handleSelect(option)}
+                                        className="p-3 hover:bg-blue-100 cursor-pointer"
                                     >
                                         {option.name} - {option.mobileNumber}
                                     </div>
@@ -187,85 +169,84 @@ const Report = () => {
                         </div>
                     )}
                 </div>
-                <div className="flex flex-col md:flex-row justify-center items-center gap-4 mb-4 w-full md:w-2/3 lg:w-2/3 ">
-                    <div className=' w-full'>
-                        <label className="block mb-1 font-medium">Start Date</label>
-                        <input
-                            type="date"
-                            // value={startDateTime}
-                            // onChange={(e) => setStartDateTime(e.target.value)}
-                            className="border px-3 py-2 rounded w-full"
-                        />
+
+                {/* Date Filter */}
+                <div className="flex flex-col md:flex-row gap-4 w-full lg:w-2/3">
+                    <div className="w-full">
+                        <label className="text-sm font-medium">Start Date</label>
+                        <input type="date" className="w-full p-2 border rounded" />
                     </div>
-                    <div className=' w-full'>
-                        <label className="block mb-1 font-medium">End Date</label>
-                        <input
-                            type="date"
-                            // value={endDateTime}
-                            // onChange={(e) => setEndDateTime(e.target.value)}
-                            className="border px-3 py-2 rounded w-full"
-                        />
+                    <div className="w-full">
+                        <label className="text-sm font-medium">End Date</label>
+                        <input type="date" className="w-full p-2 border rounded" />
                     </div>
-                    <button
-                        // onClick={fetchTemperatureData}
-                        className="self-end w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                    >
+                    <button className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded mt-2 md:mt-6">
                         Filter
                     </button>
                 </div>
             </div>
-            {/* Input field as the first option */}
 
-
-            {/* Tab Buttons */}
-            <div className="flex mb-4 w-full">
+            {/* Tabs */}
+            <div className="flex mb-4 border rounded overflow-hidden">
                 <button
-                    className={`px-4 w-full py-2 ${activeTab === 'table' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    className={`w-1/2 py-2 font-semibold ${activeTab === 'table' ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
                     onClick={() => setActiveTab('table')}
                 >
-                    Table
+                    Table View
                 </button>
                 <button
-                    className={`px-4 w-full py-2 ${activeTab === 'graph' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                    className={`w-1/2 py-2 font-semibold ${activeTab === 'graph' ? 'bg-blue-600 text-white' : 'bg-gray-100'}`}
                     onClick={() => setActiveTab('graph')}
                 >
-                    Graph
+                    Graph View
                 </button>
             </div>
 
             {/* Table Tab */}
             {activeTab === 'table' && (
-                <div>
-                    {/* Table */}
-                    <table className="min-w-full border-collapse">
-                        <thead>
+                <div className="overflow-x-auto">
+                    <table className="w-full table-auto border border-collapse">
+                        <thead className="bg-gray-200">
                             <tr>
                                 <th className="px-4 py-2 border">Date</th>
-                                <th className="px-4 py-2 border">Total Entries
-                                    <button onClick={toggleSortOrder} className="ml-2">
-                                        {sortOrder === 'asc' ? '↑' : '↓'}
+                                <th className="px-4 py-2 border">
+                                    Total Entries
+                                    <button onClick={toggleSortOrder} className="ml-2 text-sm text-blue-500">
+                                        {sortOrder === 'asc' ? '▲' : '▼'}
                                     </button>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            {sortedData.map((item) => (
-                                <tr key={item.id} className='text-center'>
+                            {sortedData.map((item, index) => (
+                                <tr key={index} className="text-center">
                                     <td className="px-4 py-2 border">{item.date}</td>
                                     <td className="px-4 py-2 border">{item.totalEntries}</td>
                                 </tr>
                             ))}
-                            <tr className='text-center bg-slate-200'>
+                            <tr className="text-center bg-blue-100 font-semibold">
                                 <td className="px-4 py-2 border">TOTAL</td>
-                                <td className="px-4 py-2 border">{sortedData.reduce((sum, item) => sum + item.totalEntries, 0)}</td>
+                                <td className="px-4 py-2 border">
+                                    {sortedData.reduce((sum, item) => sum + item.totalEntries, 0)}
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             )}
+
             {/* Graph Tab */}
             {activeTab === 'graph' && (
-                <div className="mt-4">
+                <div className="mt-6 bg-gray-50 p-4 rounded shadow-md">
+                    <div className="flex justify-between mb-4">
+                        <h3 className="text-lg font-bold text-gray-700">Entries Over Time</h3>
+                        <button
+                            onClick={downloadChart}
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                        >
+                            Download Chart
+                        </button>
+                    </div>
                     <canvas ref={chartRef} />
                 </div>
             )}

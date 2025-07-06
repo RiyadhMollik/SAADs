@@ -21,7 +21,8 @@ function FieldMonitoringReports() {
     district: '',
     upazila: '',
     union: '',
-    date: '',
+    startDate: '',
+    endDate: '',
   });
 
   const API_URL = 'https://iinms.brri.gov.bd/api';
@@ -32,7 +33,6 @@ function FieldMonitoringReports() {
     if (selectedValue && !selectedHotspots.includes(selectedValue)) {
       const updatedHotspots = [...selectedHotspots, selectedValue];
       setSelectedHotspots(updatedHotspots);
-      setFormData({ ...formData, hotspot: updatedHotspots });
     }
   };
 
@@ -40,28 +40,26 @@ function FieldMonitoringReports() {
   const handleDelete = (valueToDelete) => {
     const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
     setSelectedHotspots(updatedHotspot);
-    setFormData({ ...formData, hotspot: updatedHotspot });
   };
 
   // Fetch block counts
   useEffect(() => {
-    const fetchBlockCounts = async () => {
-      const { date, upazila, union, hotspot } = formData;
-      if (!date || (!upazila && !union)) return;
+    const { startDate, endDate, upazila, union } = formData;
+    if (!startDate || !endDate || (!upazila && !union)) return;
 
+    const fetchBlockCounts = async () => {
       setLoading(true);
       setError(null);
       try {
         const response = await axios.get(`${API_URL}/reports/block-wise-counts`, {
           params: {
-            date,
+            startDate,
+            endDate,
             ...(upazila && { upazila }),
             ...(union && { union }),
-            ...(hotspot && hotspot.length > 0 && { hotspots: hotspot.join(',') }),
+            // ...(selectedHotspots.length > 0 && { hotspots: selectedHotspots.join(',') }),
           },
         });
-        console.log(response);
-        
         setChartData(response.data.data || []);
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to fetch block counts');
@@ -72,9 +70,9 @@ function FieldMonitoringReports() {
     };
 
     fetchBlockCounts();
-  }, [formData.date, formData.upazila, formData.union, formData.hotspot]);
+  }, [formData.startDate, formData.endDate, formData.upazila, formData.union , selectedHotspots]);
 
-  // Fetch hotspots
+  // Fetch dropdown data
   useEffect(() => {
     const fetchHotspots = async () => {
       try {
@@ -85,14 +83,11 @@ function FieldMonitoringReports() {
         console.error('Error fetching hotspots:', error);
       }
     };
-
     fetchHotspots();
   }, []);
 
-  // Fetch regions
   useEffect(() => {
     if (!selectedHotspots.length) return;
-
     const fetchRegions = async () => {
       try {
         const res = await fetch(`${API_URL}/data/regions?hotspot=${selectedHotspots.join(',')}`);
@@ -102,15 +97,12 @@ function FieldMonitoringReports() {
         console.error('Error fetching region data:', error);
       }
     };
-
     fetchRegions();
   }, [selectedHotspots]);
 
-  // Fetch divisions
   useEffect(() => {
     const { region } = formData;
     if (!region || !selectedHotspots.length) return;
-
     const fetchDivisions = async () => {
       try {
         const res = await fetch(`${API_URL}/data/divisions?region=${region}&hotspot=${selectedHotspots.join(',')}`);
@@ -120,15 +112,12 @@ function FieldMonitoringReports() {
         console.error('Error fetching division data:', error);
       }
     };
-
     fetchDivisions();
   }, [formData.region, selectedHotspots]);
 
-  // Fetch districts
   useEffect(() => {
     const { division, region } = formData;
     if (!division || !region || !selectedHotspots.length) return;
-
     const fetchDistricts = async () => {
       try {
         const res = await fetch(`${API_URL}/data/districts?division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
@@ -138,15 +127,12 @@ function FieldMonitoringReports() {
         console.error('Error fetching district data:', error);
       }
     };
-
     fetchDistricts();
   }, [formData.division, formData.region, selectedHotspots]);
 
-  // Fetch upazilas
   useEffect(() => {
     const { district, division, region } = formData;
     if (!district || !division || !region || !selectedHotspots.length) return;
-
     const fetchUpazilas = async () => {
       try {
         const res = await fetch(`${API_URL}/data/upazilas?district=${district}&division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
@@ -156,15 +142,12 @@ function FieldMonitoringReports() {
         console.error('Error fetching upazila data:', error);
       }
     };
-
     fetchUpazilas();
   }, [formData.district, formData.division, formData.region, selectedHotspots]);
 
-  // Fetch unions
   useEffect(() => {
     const { upazila, district, division, region } = formData;
     if (!upazila || !district || !division || !region || !selectedHotspots.length) return;
-
     const fetchUnions = async () => {
       try {
         const res = await fetch(`${API_URL}/data/unions?upazila=${upazila}&district=${district}&division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
@@ -174,15 +157,12 @@ function FieldMonitoringReports() {
         console.error('Error fetching union data:', error);
       }
     };
-
     fetchUnions();
   }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
 
-  // Fetch blocks
   useEffect(() => {
     const { union, upazila, district, division, region } = formData;
     if (!union || !upazila || !district || !division || !region || !selectedHotspots.length) return;
-
     const fetchBlocks = async () => {
       try {
         const res = await fetch(`${API_URL}/data/blocks?union=${union}&upazila=${upazila}&district=${district}&division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
@@ -192,7 +172,6 @@ function FieldMonitoringReports() {
         console.error('Error fetching block data:', error);
       }
     };
-
     fetchBlocks();
   }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
 
@@ -202,9 +181,16 @@ function FieldMonitoringReports() {
         <input
           type="date"
           className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.date}
-          onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-          max={new Date().toISOString().split('T')[0]} // Prevent future dates
+          value={formData.startDate}
+          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+          max={new Date().toISOString().split('T')[0]}
+        />
+        <input
+          type="date"
+          className="border w-full p-2 rounded-md shadow-md h-10"
+          value={formData.endDate}
+          onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+          max={new Date().toISOString().split('T')[0]}
         />
         <div className="flex flex-col">
           <div className="flex flex-wrap gap-2 mb-2">
@@ -296,9 +282,11 @@ function FieldMonitoringReports() {
           ))}
         </select>
       </div>
+
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
       {error && <p className="text-red-500 mt-4">{error}</p>}
-      <div className="mt-4">
+
+      <div className="mt-6">
         <ChartComponent data={chartData} locationType="block" />
       </div>
     </div>

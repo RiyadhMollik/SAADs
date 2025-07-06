@@ -3,6 +3,7 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from '/logo.png';
+
 function SaaoUserReport() {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -35,11 +36,10 @@ function SaaoUserReport() {
         fetchUserCounts();
     }, []);
 
-    // Search functionality
+    // Search and filter
     useEffect(() => {
         let result = [...data];
 
-        // Apply search
         if (searchTerm) {
             result = result.filter(user =>
                 Object.values(user).some(val =>
@@ -48,7 +48,6 @@ function SaaoUserReport() {
             );
         }
 
-        // Apply hotspot filter
         if (selectedHotspot) {
             result = result.filter(user => {
                 const hotspotList = Array.isArray(user.hotspot)
@@ -62,7 +61,6 @@ function SaaoUserReport() {
                             }
                         })()
                         : [];
-
                 return hotspotList.includes(selectedHotspot);
             });
         }
@@ -115,8 +113,69 @@ function SaaoUserReport() {
         )
     ];
 
+    // CSV export
+    const handleExportCSV = () => {
+        try {
+            const headers = [
+                'ID', 'Name', 'Role', 'Hotspot', 'Region', 'Division', 'District',
+                'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer'
+            ];
+            
+            const csvData = filteredData.map(user => {
+                const hotspot = Array.isArray(user.hotspot)
+                    ? user.hotspot.join(', ')
+                    : typeof user.hotspot === 'string'
+                        ? (() => {
+                            try {
+                                return JSON.parse(user.hotspot).join(', ');
+                            } catch {
+                                return user.hotspot || '-';
+                            }
+                        })()
+                        : '-';
 
-    // PDF export
+                return [
+                    user.id || '-',
+                    user.name || '-',
+                    user.role || '-',
+                    hotspot,
+                    user.region || '-',
+                    user.division || '-',
+                    user.district || '-',
+                    user.upazila || '-',
+                    user.union || '-',
+                    user.block || '-',
+                    user.mobileNumber || '-',
+                    user.farmerCount || 0
+                ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(',');
+            });
+
+            // Add total count row
+            csvData.push([
+                '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount
+            ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(','));
+
+            const csvContent = [
+                headers.map(header => `"${header}"`).join(','),
+                ...csvData
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'saao-user-report.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error("CSV export failed:", error);
+            alert("Failed to export CSV. Please try again.");
+        }
+    };
+
+    // PDF export (updated columns)
     const handleExportPDF = () => {
         try {
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -137,34 +196,46 @@ function SaaoUserReport() {
                 hour12: true,
             });
 
-            // Prepare table data
             const headers = [
-                '#', 'Name', 'Role', 'Mobile Number', 'Farmer Count',
-                'Region', 'Block', 'Union', 'Upazila', 'District', 'Division', 'Hotspot'
+                'ID', 'Name', 'Role', 'Hotspot', 'Region', 'Division', 'District',
+                'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer'
             ];
-            const tableData = filteredData.map((user, index) => [
-                index + 1,
-                user.name || '',
-                user.role || '',
-                user.mobileNumber || '',
-                user.farmerCount || 0,
+            const tableData = filteredData.map(user => [
+                user.id || '-',
+                user.name || '-',
+                user.role || '-',
+                Array.isArray(user.hotspot)
+                    ? user.hotspot.join(', ')
+                    : typeof user.hotspot === 'string'
+                        ? (() => {
+                            try {
+                                return JSON.parse(user.hotspot).join(', ');
+                            } catch {
+                                return user.hotspot || '-';
+                            }
+                        })()
+                        : '-',
                 user.region || '-',
-                user.block || '-',
-                user.union || '-',
-                user.upazila || '-',
-                user.district || '-',
                 user.division || '-',
-                user.hotspot || '-'
+                user.district || '-',
+                user.upazila || '-',
+                user.union || '-',
+                user.block || '-',
+                user.mobileNumber || '-',
+                user.farmerCount || 0
             ]);
 
-            // Calculate equal column width
+            // Add total count row
+            tableData.push([
+                '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount
+            ]);
+
             const equalWidth = (pageWidth - margin * 2) / headers.length;
             const columnStyles = headers.reduce((styles, _, i) => {
                 styles[i] = { cellWidth: equalWidth };
                 return styles;
             }, {});
 
-            // Generate table
             autoTable(doc, {
                 startY: 40,
                 head: [headers],
@@ -189,10 +260,9 @@ function SaaoUserReport() {
                 columnStyles,
                 margin: { top: 40, left: margin, right: margin, bottom: 20 },
                 didDrawPage: (data) => {
-                    // Header (repeated on every page)
                     doc.addImage(logo, 'PNG', margin, 16, 15, 15);
                     doc.setFontSize(12);
-                    doc.setTextColor(50);
+                    doc.setTextColor(50, true);
                     doc.setFont("helvetica", "bold");
                     doc.text("Bangladesh Rice Research Institute (BRRI)", margin + 18, 15);
                     doc.setFontSize(10);
@@ -206,7 +276,6 @@ function SaaoUserReport() {
                     doc.text("Mobile: 09644300300", margin + 18, 35);
                     doc.text(formattedDate, pageWidth - margin, 35, { align: "right" });
 
-                    // Footer
                     const pageCount = doc.internal.getNumberOfPages();
                     doc.setFontSize(8);
                     doc.setTextColor(100);
@@ -226,14 +295,22 @@ function SaaoUserReport() {
         <div className="p-4 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-2xl font-bold">SAAO User Report</h1>
-                <button
-                    onClick={handleExportPDF}
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                    Export to PDF
-                </button>
+                <div className="space-x-2">
+                    <button
+                        onClick={handleExportPDF}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    >
+                        Export to PDF
+                    </button>
+                    <button
+                        onClick={handleExportCSV}
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                    >
+                        Export to CSV
+                    </button>
+                </div>
             </div>
-            {/* Search and Filter */}
+
             <div className="mb-4 flex gap-4">
                 <input
                     type="text"
@@ -247,7 +324,7 @@ function SaaoUserReport() {
                     onChange={(e) => setSelectedHotspot(e.target.value)}
                     className="p-2 border rounded"
                 >
-                    <option value="">All Hotspots</option>
+                    <option value="">Hotspots</option>
                     {uniqueHotspots.map((hotspot) => (
                         <option key={hotspot} value={hotspot}>
                             {hotspot}
@@ -263,13 +340,15 @@ function SaaoUserReport() {
                 <table className="w-full bg-white border rounded-lg shadow-md">
                     <thead>
                         <tr className="bg-gray-100 border-b text-sm">
-                            {['#', 'name', 'role', 'mobileNumber', 'farmerCount', 'region', 'block', 'union', 'upazila', 'district', 'division', 'hotspot'].map((key, index) => (
+                            {['id', 'name', 'role', 'hotspot', 'region', 'division', 'district', 'upazila', 'union', 'block', 'mobileNumber', 'farmerCount'].map((key, index) => (
                                 <th
                                     key={key}
                                     className="p-3 text-left cursor-pointer"
-                                    onClick={() => key !== '#' && handleSort(key)}
+                                    onClick={() => key !== 'id' && handleSort(key)}
                                 >
-                                    {key === '#' ? '#' : key.charAt(0).toUpperCase() + key.slice(1)}
+                                    {key === 'id' ? 'ID' : 
+                                     key === 'farmerCount' ? 'Total Farmer' : 
+                                     key.charAt(0).toUpperCase() + key.slice(1)}
                                     {sortConfig.key === key && (
                                         <span className="ml-1">
                                             {sortConfig.direction === 'asc' ? '↑' : '↓'}
@@ -281,37 +360,43 @@ function SaaoUserReport() {
                     </thead>
                     <tbody>
                         {filteredData.length > 0 ? (
-                            filteredData.map((user, index) => (
-                                <tr key={user.id} className="border-b hover:bg-gray-50 text-sm">
-                                    <td className="p-3">{index + 1}</td>
-                                    <td className="p-3">{user.name}</td>
-                                    <td className="p-3">{user.role}</td>
-                                    <td className="p-3">{user.mobileNumber}</td>
-                                    <td className="p-3">{user.farmerCount}</td>
-                                    <td className="p-3">{user.region || '-'}</td>
-                                    <td className="p-3">{user.block || '-'}</td>
-                                    <td className="p-3">{user.union || '-'}</td>
-                                    <td className="p-3">{user.upazila || '-'}</td>
-                                    <td className="p-3">{user.district || '-'}</td>
-                                    <td className="p-3">{user.division || '-'}</td>
-                                    <td className="p-3">
-                                        {
-                                            (() => {
-                                                try {
-                                                    const h = Array.isArray(user.hotspot)
-                                                        ? user.hotspot
-                                                        : typeof user.hotspot === 'string'
-                                                            ? JSON.parse(user.hotspot)
-                                                            : [];
-                                                    return h.length ? h.join(', ') : '-';
-                                                } catch (e) {
-                                                    return '-';
-                                                }
-                                            })()
-                                        }
-                                    </td>
+                            <>
+                                {filteredData.map((user, index) => (
+                                    <tr key={user.id} className="border-b hover:bg-gray-50 text-sm">
+                                        <td className="p-3">{index + 1}</td>
+                                        <td className="p-3">{user.name || '-'}</td>
+                                        <td className="p-3">{user.role || '-'}</td>
+                                        <td className="p-3">
+                                            {
+                                                (() => {
+                                                    try {
+                                                        const h = Array.isArray(user.hotspot)
+                                                            ? user.hotspot
+                                                            : typeof user.hotspot === 'string'
+                                                                ? JSON.parse(user.hotspot)
+                                                                : [];
+                                                        return h.length ? h.join(', ') : '-';
+                                                    } catch (e) {
+                                                        return '-';
+                                                    }
+                                                })()
+                                            }
+                                        </td>
+                                        <td className="p-3">{user.region || '-'}</td>
+                                        <td className="p-3">{user.division || '-'}</td>
+                                        <td className="p-3">{user.district || '-'}</td>
+                                        <td className="p-3">{user.upazila || '-'}</td>
+                                        <td className="p-3">{user.union || '-'}</td>
+                                        <td className="p-3">{user.block || '-'}</td>
+                                        <td className="p-3">{user.mobileNumber || '-'}</td>
+                                        <td className="p-3">{user.farmerCount || 0}</td>
+                                    </tr>
+                                ))}
+                                <tr className="border-t font-bold">
+                                    <td colSpan="11" className="p-3 text-right">Total:</td>
+                                    <td className="p-3">{totalCount}</td>
                                 </tr>
-                            ))
+                            </>
                         ) : (
                             <tr>
                                 <td colSpan="12" className="p-3 text-center">

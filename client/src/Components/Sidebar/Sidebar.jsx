@@ -170,10 +170,10 @@ const Sidebar = () => {
                 <li><Link onClick={() => setIsslider(false)} to="/report" className="hover:text-green-700">Performance Reports</Link></li>
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
-                <li><Link onClick={() => setIsslider(false)} to="/area-report" className="hover:text-green-700"> Area-wise Reports</Link></li>
+                <li><Link onClick={() => setIsslider(false)} to="/area-report" className="hover:text-green-700"> Area-wise</Link></li>
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
-                <li><Link onClick={() => setIsslider(false)} to="/field-report" className="hover:text-green-700">Field Monitoring Reports</Link></li>
+                <li><Link onClick={() => setIsslider(false)} to="/field-report" className="hover:text-green-700">union wise</Link></li>
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
                 <li><Link onClick={() => setIsslider(false)} to="/saao-report" className="hover:text-green-700">SAAO Reports</Link></li>

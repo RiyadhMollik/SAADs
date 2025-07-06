@@ -87,11 +87,9 @@ const FarmerRegistration = () => {
     }));
   }, [formData.dateOfBirth]);
 
-  const fetchFarmers = async () => {
+  const fetchFarmers = async (url) => {
     try {
-      const response = await fetch(
-        `https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${saaoId}&search=${searchText}`
-      );
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         let sortedFarmers = data.data;
@@ -133,10 +131,18 @@ const FarmerRegistration = () => {
   };
 
   useEffect(() => {
-    if (authUser?.role?.toLowerCase() === "saao") {
-      setSaaoId(authUser.id);
+    if (authUser?.role?.toLowerCase() === "saao" && authUser?.id ) {
+      console.log("saaoId:", saaoId);
+      
+      const url = `https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${authUser?.id}&search=${searchText}`;
+      fetchFarmers(url);
     }
-    fetchFarmers();
+    else if (authUser?.role?.toLowerCase() !== "saao") {
+      console.log("without saaoId");
+      const url = `https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&search=${searchText}`;
+      fetchFarmers(url);
+    }
+    
   }, [page, rowsPerPage, saaoId, authUser?.role, searchText, authUser?.id, sortConfig]);
 
   // Updated columns to match form inputs

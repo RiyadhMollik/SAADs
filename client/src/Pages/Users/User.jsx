@@ -218,6 +218,12 @@ const User = () => {
           <tr>
             <th
               className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
+              // onClick={() => handleSort("name")}
+            >
+              <p className="flex items-center gap-5">#</p>
+            </th>
+            <th
+              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
               onClick={() => handleSort("name")}
             >
               <p className="flex items-center gap-5">Name {getSortIcon("name")}</p>
