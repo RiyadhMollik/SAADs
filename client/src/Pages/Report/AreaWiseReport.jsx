@@ -12,10 +12,9 @@ function AreaWiseReport() {
 
   const locationTypes = ['upazila', 'district', 'division', 'region', 'hotspot'];
 
-  // Fetch data when startDate, endDate, or locationType changes
   useEffect(() => {
     const fetchData = async () => {
-      if (!startDate) return; // Skip fetch if no start date is selected
+      if (!startDate) return; 
       setLoading(true);
       setError(null);
       try {
@@ -45,7 +44,7 @@ function AreaWiseReport() {
             className="border p-2 rounded-md shadow-md"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            max={new Date().toISOString().split('T')[0]} // Prevent future dates
+            max={new Date().toISOString().split('T')[0]} 
           />
         </div>
         <div className="flex flex-col w-full sm:w-1/2">
@@ -55,8 +54,8 @@ function AreaWiseReport() {
             className="border p-2 rounded-md shadow-md"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            max={new Date().toISOString().split('T')[0]} // Prevent future dates
-            min={startDate} // Prevent end date before start date
+            max={new Date().toISOString().split('T')[0]} 
+            min={startDate}
           />
         </div>
         <div className="flex flex-col w-full sm:w-1/2">

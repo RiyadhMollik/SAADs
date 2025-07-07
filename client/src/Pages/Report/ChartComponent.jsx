@@ -50,7 +50,7 @@ const ChartComponent = ({ data, locationType }) => {
         backgroundColor: 'rgba(255, 99, 132, 0.2)',
         borderWidth: 2,
         fill: false,
-        tension: 0.4, // Smooth the line
+        tension: 0.4,
         pointRadius: 3,
       },
     ],
@@ -59,6 +59,7 @@ const ChartComponent = ({ data, locationType }) => {
   const options = {
     indexAxis: 'x',
     responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         title: {
@@ -72,6 +73,9 @@ const ChartComponent = ({ data, locationType }) => {
         ticks: {
           maxRotation: 45,
           minRotation: 0,
+          font: {
+            size: 12,
+          },
         },
       },
       y: {
@@ -87,6 +91,9 @@ const ChartComponent = ({ data, locationType }) => {
         },
         ticks: {
           stepSize: 10,
+          font: {
+            size: 12,
+          },
         },
       },
     },
@@ -122,17 +129,19 @@ const ChartComponent = ({ data, locationType }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold"></h2>
+    <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md max-w-4xl mx-auto">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+        <h2 className="text-lg sm:text-xl font-semibold"></h2>
         <button
           onClick={handleDownload}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-700 text-sm"
         >
           Download PNG
         </button>
       </div>
-      <Bar ref={chartRef} data={chartData} options={options} />
+      <div className="h-64 sm:h-96">
+        <Bar ref={chartRef} data={chartData} options={options} />
+      </div>
     </div>
   );
 };

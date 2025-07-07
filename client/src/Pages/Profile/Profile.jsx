@@ -1216,7 +1216,7 @@ const Profile = () => {
                     <div className="space-y-4">
                         <h4 className="text-lg font-semibold text-gray-700">Farming Information</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="landType" className="block text-sm font-medium text-gray-700">
                                     Land Type
                                 </label>
@@ -1234,8 +1234,23 @@ const Profile = () => {
                                     <option value="low">Low</option>
                                 </select>
                             </div>
-
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
+                                <label htmlFor="plantingMethod" className="block text-sm font-medium text-gray-700">
+                                    Planting Method
+                                </label>
+                                <select
+                                    id="plantingMethod"
+                                    name="plantingMethod"
+                                    className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    value={formData.plantingMethod}
+                                    onChange={handleChange}
+                                >
+                                    <option value="">Select Planting Method</option>
+                                    <option value="directSeeding">Direct Seeding</option>
+                                    <option value="transplanting">Transplanting</option>
+                                </select>
+                            </div>
+                            <div className="col-span-2 md:col-span-1">
                                 <div className="flex flex-wrap gap-2 mb-4">
                                     {selectedMajorCrop.map(crop => (
                                         <div key={crop} className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
@@ -1300,26 +1315,11 @@ const Profile = () => {
                                 </div>
                             )}
 
-                            <div>
-                                <label htmlFor="plantingMethod" className="block text-sm font-medium text-gray-700">
-                                    Planting Method
-                                </label>
-                                <select
-                                    id="plantingMethod"
-                                    name="plantingMethod"
-                                    className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.plantingMethod}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Planting Method</option>
-                                    <option value="directSeeding">Direct Seeding</option>
-                                    <option value="transplanting">Transplanting</option>
-                                </select>
-                            </div>
+
 
                             {/* Transplanting Time Section */}
-                            <div className="space-y-4">
-                                <h5 className="text-sm font-medium text-gray-700">Transplanting Time</h5>
+                            <div className="space-y-4 col-span-2">
+                                <h5 className="text-sm font-bold text-gray-700">Transplanting Period</h5>
                                 {transplantingDates.map((opt, index) => (
                                     <div key={opt.value} className="flex items-center gap-4">
                                         <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
@@ -1354,8 +1354,8 @@ const Profile = () => {
                             </div>
 
                             {/* PI Time Section */}
-                            <div className="space-y-4">
-                                <h5 className="text-sm font-medium text-gray-700">PI Time</h5>
+                            <div className="space-y-4 col-span-2">
+                                <h5 className="text-sm font-bold text-gray-700">PI Period</h5>
                                 {piTimes.map((opt, index) => (
                                     <div key={opt.value} className="flex items-center gap-4">
                                         <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
@@ -1390,8 +1390,8 @@ const Profile = () => {
                             </div>
 
                             {/* Season for Flowering Date Section */}
-                            <div className="space-y-4">
-                                <h5 className="text-sm font-medium text-gray-700">Season for Flowering Date</h5>
+                            <div className="space-y-4 col-span-2">
+                                <h5 className="text-sm font-bold text-gray-700">Flowering Period</h5>
                                 {floweringDates.map((opt, index) => (
                                     <div key={opt.value} className="flex items-center gap-4">
                                         <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
@@ -1426,8 +1426,8 @@ const Profile = () => {
                             </div>
 
                             {/* Expected Harvest Period Section */}
-                            <div className="space-y-4">
-                                <h5 className="text-sm font-medium text-gray-700">Expected Harvest Period</h5>
+                            <div className="space-y-4 col-span-2">
+                                <h5 className="text-sm font-bold text-gray-700">Expected Harvest Period</h5>
                                 {expectedHarvestPeriods.map((opt, index) => (
                                     <div key={opt.value} className="flex items-center gap-4">
                                         <span className="w-12 font-medium capitalize">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
@@ -1462,15 +1462,13 @@ const Profile = () => {
                             </div>
 
                             {/* Season Wise Dominant Varieties Section */}
-                            <div className="space-y-4">
-                                <h5 className="text-sm font-medium text-gray-700">Season Wise Dominant Varieties</h5>
+                            <div className="space-y-4 col-span-2">
+                                <h5 className="text-sm  text-gray-700 font-bold">Season Wise Dominant Varieties</h5>
                                 {selectedSeasonVarieties.map((opt, index) => (
                                     <div key={opt.value} className="flex items-center gap-4">
-                                        <span className="w-24 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
+                                        <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
                                         <div className="flex-1">
-                                            <label htmlFor={`seasonVariety-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                {seasonOptions.find(o => o.value === opt.value)?.label} Variety
-                                            </label>
+                                           
                                             <input
                                                 type="text"
                                                 id={`seasonVariety-${opt.value}`}
@@ -1484,7 +1482,7 @@ const Profile = () => {
                                 ))}
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="irrigationPractices" className="block text-sm font-medium text-gray-700">
                                     Irrigation Practices
                                 </label>
@@ -1519,7 +1517,7 @@ const Profile = () => {
                                 </div>
                             )}
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="irrigationSourceType" className="block text-sm font-medium text-gray-700">
                                     Water Source
                                 </label>
@@ -1537,7 +1535,7 @@ const Profile = () => {
                                 </select>
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
                                     Soil Type
                                 </label>
@@ -1575,7 +1573,7 @@ const Profile = () => {
                                 </div>
                             )}
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="croppingPattern" className="block text-sm font-medium text-gray-700">
                                     Cropping Pattern
                                 </label>
@@ -1590,7 +1588,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <div className="flex flex-wrap gap-2 mb-4">
                                     {selectedClimateExtremes.map(extreme => (
                                         <div key={extreme} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
@@ -1624,7 +1622,7 @@ const Profile = () => {
                                 </select>
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="riceVarieties" className="block text-sm font-medium text-gray-700">
                                     Dominant Rice Varieties
                                 </label>
@@ -1639,7 +1637,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="totalCultivatedArea" className="block text-sm font-medium text-gray-700">
                                     Total Cultivated Area (ha)
                                 </label>
@@ -1654,7 +1652,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="numberOfFarmers" className="block text-sm font-medium text-gray-700">
                                     Number of Farmers
                                 </label>
@@ -1669,7 +1667,7 @@ const Profile = () => {
                                 />
                             </div>
 
-                            <div>
+                            <div className="col-span-2 md:col-span-1">
                                 <label htmlFor="communityInformation" className="block text-sm font-medium text-gray-700">
                                     Community Information
                                 </label>
@@ -1715,14 +1713,14 @@ const Profile = () => {
                             onClick={handleExportPDF}
                             className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
                         >
-                            Download as PDF
+                            PDF
                         </button>
                         <button
                             type="button"
                             onClick={handleExportCSV}
                             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                         >
-                            Download as CSV
+                            CSV
                         </button>
                         <button
                             type="submit"

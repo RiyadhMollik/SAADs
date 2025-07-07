@@ -144,14 +144,14 @@ const Sidebar = () => {
 
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/growth-stage-survey" onClick={() => setIsslider(false)}>
-            <button className={`flex items-center w-full px-2 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+            <button className={`flex items-center w-full px-1 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
               <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Growth Stage Survey"}
             </button>
           </Link>
         )}
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/insect-pests" onClick={() => setIsslider(false)}>
-            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/insect-pests") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+            <button className={`flex items-center w-full px-2 py-2 rounded-lg ${isActive("/insect-pests") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
               <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Insect Pest Survey"}
             </button>
           </Link>
@@ -173,7 +173,7 @@ const Sidebar = () => {
                 <li><Link onClick={() => setIsslider(false)} to="/area-report" className="hover:text-green-700"> Area-wise</Link></li>
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
-                <li><Link onClick={() => setIsslider(false)} to="/field-report" className="hover:text-green-700">union wise</Link></li>
+                <li><Link onClick={() => setIsslider(false)} to="/field-report" className="hover:text-green-700">Union-wise</Link></li>
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
                 <li><Link onClick={() => setIsslider(false)} to="/saao-report" className="hover:text-green-700">SAAO Reports</Link></li>

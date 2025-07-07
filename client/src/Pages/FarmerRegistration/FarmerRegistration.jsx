@@ -334,6 +334,8 @@ const FarmerRegistration = () => {
   };
 
   const handleEdit = (farmer) => {
+    console.log(farmer);
+    
     setIsEdit(true);
     setIsFarmerModalOpen(true);
     setSelectedId(farmer.id);
@@ -343,7 +345,7 @@ const FarmerRegistration = () => {
       spouseName: farmer.spouseName || "",
       gender: farmer.gender || "",
       // dateOfBirth: farmer.dateOfBirth || "",
-      age: farmer.age || calculateAge(farmer.dateOfBirth) || "",
+      age: farmer.age  || "",
       mobileNumber: farmer.mobileNumber || "",
       nationalId: farmer.nationalId || "",
       whatsappNumber: farmer.whatsappNumber || "",

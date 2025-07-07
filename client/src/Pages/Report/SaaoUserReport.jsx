@@ -15,7 +15,6 @@ function SaaoUserReport() {
     const [selectedHotspot, setSelectedHotspot] = useState('');
     const API_URL = 'https://iinms.brri.gov.bd/api';
 
-    // Fetch data
     useEffect(() => {
         const fetchUserCounts = async () => {
             setLoading(true);
@@ -36,7 +35,6 @@ function SaaoUserReport() {
         fetchUserCounts();
     }, []);
 
-    // Search and filter
     useEffect(() => {
         let result = [...data];
 
@@ -66,9 +64,10 @@ function SaaoUserReport() {
         }
 
         setFilteredData(result);
+        const totalCount = result.reduce((total, user) => total + user.farmerCount, 0);
+        setTotalCount(totalCount);
     }, [searchTerm, selectedHotspot, data]);
 
-    // Sort functionality
     const handleSort = (key) => {
         let direction = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -94,7 +93,6 @@ function SaaoUserReport() {
         setFilteredData(sortedData);
     };
 
-    // Get unique hotspots
     const uniqueHotspots = [
         ...new Set(
             data
@@ -113,7 +111,6 @@ function SaaoUserReport() {
         )
     ];
 
-    // CSV export
     const handleExportCSV = () => {
         try {
             const headers = [
@@ -150,7 +147,6 @@ function SaaoUserReport() {
                 ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(',');
             });
 
-            // Add total count row
             csvData.push([
                 '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount
             ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(','));
@@ -175,7 +171,6 @@ function SaaoUserReport() {
         }
     };
 
-    // PDF export (updated columns)
     const handleExportPDF = () => {
         try {
             const doc = new jsPDF('p', 'mm', 'a4');
@@ -225,7 +220,6 @@ function SaaoUserReport() {
                 user.farmerCount || 0
             ]);
 
-            // Add total count row
             tableData.push([
                 '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount
             ]);
@@ -292,37 +286,23 @@ function SaaoUserReport() {
     };
 
     return (
-        <div className="p-4 max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">SAAO User Report</h1>
-                <div className="space-x-2">
-                    <button
-                        onClick={handleExportPDF}
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                    >
-                        Export to PDF
-                    </button>
-                    <button
-                        onClick={handleExportCSV}
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                    >
-                        Export to CSV
-                    </button>
-                </div>
+        <div className="p-2 sm:p-4 max-w-4xl mx-auto">
+            <div className="flex  justify-between items-center mb-2 sm:mb-4 gap-2 sm:gap-4">
+                <h1 className="text-lg sm:text-2xl font-bold">SAAO User Report</h1>
             </div>
 
-            <div className="mb-4 flex gap-4">
+            <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <input
                     type="text"
                     placeholder="Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="p-2 border rounded w-full max-w-md"
+                    className="p-1 sm:p-2 border rounded w-full sm:max-w-md text-sm sm:text-base"
                 />
                 <select
                     value={selectedHotspot}
                     onChange={(e) => setSelectedHotspot(e.target.value)}
-                    className="p-2 border rounded"
+                    className="p-1 sm:p-2 border rounded text-sm sm:text-base"
                 >
                     <option value="">Hotspots</option>
                     {uniqueHotspots.map((hotspot) => (
@@ -333,17 +313,17 @@ function SaaoUserReport() {
                 </select>
             </div>
 
-            {loading && <p className="text-gray-500">Loading...</p>}
-            {error && <p className="text-red-500">{error}</p>}
+            {loading && <p className="text-gray-500 text-sm">Loading...</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <div className="overflow-x-auto">
-                <table className="w-full bg-white border rounded-lg shadow-md">
+                <table className="w-full bg-white border rounded-lg shadow-md text-sm sm:text-base">
                     <thead>
-                        <tr className="bg-gray-100 border-b text-sm">
+                        <tr className="bg-slate-600 text-white border-b capitalize">
                             {['id', 'name', 'role', 'hotspot', 'region', 'division', 'district', 'upazila', 'union', 'block', 'mobileNumber', 'farmerCount'].map((key, index) => (
                                 <th
                                     key={key}
-                                    className="p-3 text-left cursor-pointer"
+                                    className="p-1 sm:p-3 text-left cursor-pointer"
                                     onClick={() => key !== 'id' && handleSort(key)}
                                 >
                                     {key === 'id' ? 'ID' : 
@@ -362,11 +342,11 @@ function SaaoUserReport() {
                         {filteredData.length > 0 ? (
                             <>
                                 {filteredData.map((user, index) => (
-                                    <tr key={user.id} className="border-b hover:bg-gray-50 text-sm">
-                                        <td className="p-3">{index + 1}</td>
-                                        <td className="p-3">{user.name || '-'}</td>
-                                        <td className="p-3">{user.role || '-'}</td>
-                                        <td className="p-3">
+                                    <tr key={user.id} className="border-b hover:bg-gray-50">
+                                        <td className="p-1 sm:p-3">{index + 1}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.name || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.role || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">
                                             {
                                                 (() => {
                                                     try {
@@ -382,24 +362,24 @@ function SaaoUserReport() {
                                                 })()
                                             }
                                         </td>
-                                        <td className="p-3">{user.region || '-'}</td>
-                                        <td className="p-3">{user.division || '-'}</td>
-                                        <td className="p-3">{user.district || '-'}</td>
-                                        <td className="p-3">{user.upazila || '-'}</td>
-                                        <td className="p-3">{user.union || '-'}</td>
-                                        <td className="p-3">{user.block || '-'}</td>
-                                        <td className="p-3">{user.mobileNumber || '-'}</td>
-                                        <td className="p-3">{user.farmerCount || 0}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.region || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.division || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.district || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.upazila || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.union || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.block || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.mobileNumber || '-'}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.farmerCount || 0}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-t font-bold">
-                                    <td colSpan="11" className="p-3 text-right">Total:</td>
-                                    <td className="p-3">{totalCount}</td>
+                                <tr className="border-t font-bold bg-slate-600  text-white">
+                                    <td colSpan="11" className="p-1 sm:p-3 text-right">Total:</td>
+                                    <td className="p-1 sm:p-3">{totalCount}</td>
                                 </tr>
                             </>
                         ) : (
                             <tr>
-                                <td colSpan="12" className="p-3 text-center">
+                                <td colSpan="12" className="p-1 sm:p-3 text-center">
                                     No data available
                                 </td>
                             </tr>
