@@ -126,7 +126,7 @@ const FarmerRegistration = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to fetch farmers. Please try again.");
+      window.replace("/farmer-registration");
     }
   };
 
