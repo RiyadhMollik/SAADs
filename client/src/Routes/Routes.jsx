@@ -52,6 +52,8 @@ import RegionMap from "../Components/RegionMap/RegionMap";
 import AdvisoryPage from "../Pages/AdvisoryPage/AdvisoryPage";
 import CallCenter from "../Pages/CallCenter/CallCenter";
 import SaaoUserReport from "../Pages/Report/SaaoUserReport";
+import FarmerData from "../Pages/FarmerData/FarmerData";
+import CdrTable from "../Pages/CdrTable/CdrTable";
 
 export const router = createBrowserRouter([
   {
@@ -227,14 +229,20 @@ export const router = createBrowserRouter([
         path: "/advisory-send",
         element: <AdvisoryPage/> , 
       },  
-      {
-        path: "/call-center",
-        element: <CallCenter/> , 
-      },  
+       
       {
         path: "/saao-report",
         element: <SaaoUserReport/> , 
       },  
+      {
+        path: "/farmer-data",
+        element: <FarmerData/> , 
+      },  
+      {
+        path: "/call-center",
+        element: <CdrTable/> , 
+      },  
+      
       
         
     ],

@@ -5,7 +5,16 @@
 body {
   @apply font-sans;
 }
+@font-face {
+  font-family: 'Nikosh';
+  src: url('Nikosh.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
+.font-nikosh {
+  font-family: 'Nikosh', sans-serif;
+}
 /* Beautiful Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

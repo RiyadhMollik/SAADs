@@ -57,7 +57,6 @@ function FieldMonitoringReports() {
             endDate,
             ...(upazila && { upazila }),
             ...(union && { union }),
-            // ...(selectedHotspots.length > 0 && { hotspots: selectedHotspots.join(',') }),
           },
         });
         setChartData(response.data.data || []);
@@ -70,7 +69,7 @@ function FieldMonitoringReports() {
     };
 
     fetchBlockCounts();
-  }, [formData.startDate, formData.endDate, formData.upazila, formData.union , selectedHotspots]);
+  }, [formData.startDate, formData.endDate, formData.upazila, formData.union, selectedHotspots]);
 
   // Fetch dropdown data
   useEffect(() => {
@@ -177,111 +176,146 @@ function FieldMonitoringReports() {
 
   return (
     <div className="p-4">
-      <div className="grid md:grid-cols-3 lg:grid-cols-4 grid-cols-1 gap-4">
-        <input
-          type="date"
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.startDate}
-          onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-          max={new Date().toISOString().split('T')[0]}
-        />
-        <input
-          type="date"
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.endDate}
-          onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-          max={new Date().toISOString().split('T')[0]}
-        />
-        <div className="flex flex-col">
-          <div className="flex flex-wrap gap-2 mb-2">
-            {selectedHotspots.map((hotspotName) => (
-              <div key={hotspotName} className="flex items-center bg-gray-200 p-1 rounded">
-                <span>{hotspotName}</span>
-                <button
-                  type="button"
-                  className="ml-2 text-red-500"
-                  onClick={() => handleDelete(hotspotName)}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+        {/* Date Range */}
+        <div className="col-span-1 flex flex-col gap-4 md:flex-row md:items-end">
+          {/* Start Date */}
+          <div className="flex-1 w-1/2">
+            <label htmlFor="startDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Start Date
+            </label>
+            <input
+              type="date"
+              id="startDate"
+              className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
+              value={formData.startDate}
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+              max={new Date().toISOString().split('T')[0]}
+            />
           </div>
-          <select
-            name="hotspot"
-            className="border w-full p-2 rounded-md shadow-md h-10"
-            value=""
-            onChange={handleSelect}
-          >
-            <option value="">Select Hotspot</option>
-            {hotspot?.map((hotspot) => (
-              <option key={hotspot.id} value={hotspot.name}>
-                {hotspot.name}
-              </option>
-            ))}
-          </select>
+
+          {/* End Date */}
+          <div className="flex-1 w-1/2">
+            <label htmlFor="endDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              End Date
+            </label>
+            <input
+              type="date"
+              id="endDate"
+              className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
+              value={formData.endDate}
+              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+              max={new Date().toISOString().split('T')[0]}
+            />
+          </div>
         </div>
-        <select
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.region}
-          onChange={(e) => setFormData({ ...formData, region: e.target.value })}
-        >
-          <option value="">Select Region</option>
-          {regions.map((region) => (
-            <option key={region} value={region}>
-              {region}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.division}
-          onChange={(e) => setFormData({ ...formData, division: e.target.value })}
-        >
-          <option value="">Select Division</option>
-          {divisions.map((division) => (
-            <option key={division} value={division}>
-              {division}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.district}
-          onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-        >
-          <option value="">Select District</option>
-          {districts.map((district) => (
-            <option key={district} value={district}>
-              {district}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.upazila}
-          onChange={(e) => setFormData({ ...formData, upazila: e.target.value })}
-        >
-          <option value="">Select Upazila</option>
-          {upazilas.map((upazila) => (
-            <option key={upazila} value={upazila}>
-              {upazila}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border w-full p-2 rounded-md shadow-md h-10"
-          value={formData.union}
-          onChange={(e) => setFormData({ ...formData, union: e.target.value })}
-        >
-          <option value="">Select Union</option>
-          {unions.map((union) => (
-            <option key={union} value={union}>
-              {union}
-            </option>
-          ))}
-        </select>
+
+        {/* Hotspot Selector */}
+        <div className="col-span-1 row-span-2 ">
+          <label htmlFor="hotspot" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Hotspots
+          </label>
+          <div className="border border-gray-200 rounded-lg bg-white p-4 shadow-sm h-[150px]">
+            {selectedHotspots.length > 0 ? (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {selectedHotspots.map((hotspotName) => (
+                  <div
+                    key={hotspotName}
+                    className="flex items-center bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-sm "
+                  >
+                    <span>{hotspotName}</span>
+                    <button
+                      type="button"
+                      className="ml-2 text-red-600 hover:text-red-800"
+                      onClick={() => handleDelete(hotspotName)}
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-gray-500 text-sm mb-4">No hotspots selected</div>
+            )}
+            <select
+              id="hotspot"
+              className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
+              value=""
+              onChange={handleSelect}
+            >
+              <option value="">Select a Hotspot</option>
+              {hotspot.map((hotspot) => (
+                <option key={hotspot.id} value={hotspot.name}>
+                  {hotspot.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Location Filters */}
+        {[{
+          id: 'region',
+          label: 'Region',
+          options: regions
+        }, {
+          id: 'division',
+          label: 'Division',
+          options: divisions
+        }, {
+          id: 'district',
+          label: 'District',
+          options: districts
+        }, {
+          id: 'upazila',
+          label: 'Upazila',
+          options: upazilas
+        }, {
+          id: 'union',
+          label: 'Union',
+          options: unions
+        }].map(({ id, label, options }) => (
+          <div key={id} className="col-span-1">
+            <label htmlFor={id} className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+              </svg>
+              {label}
+            </label>
+            <select
+              id={id}
+              className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
+              value={formData[id]}
+              onChange={(e) => setFormData({ ...formData, [id]: e.target.value })}
+            >
+              <option value="">Select {label}</option>
+              {options.map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
+            </select>
+          </div>
+        ))}
       </div>
+
 
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
       {error && <p className="text-red-500 mt-4">{error}</p>}

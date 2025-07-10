@@ -510,7 +510,7 @@ const Profile = () => {
                 },
                 (error) => {
                     console.error("Geolocation error:", error);
-                    alert("Failed to get location");
+                    // alert("Failed to get location");
                 }
             );
         } else {
@@ -1165,7 +1165,7 @@ const Profile = () => {
                                 </select>
                             </div>
 
-                            <div className="col-span-1 md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
+                            <div className="flex gap-4 items-center">
                                 <div>
                                     <label htmlFor="lat" className="block text-sm font-medium text-gray-700">
                                         Latitude
@@ -1197,7 +1197,7 @@ const Profile = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 sr-only">
+                                    <label htmlFor="lan" className="block text-sm font-medium text-gray-700">
                                         Get Location
                                     </label>
                                     <button
@@ -1251,20 +1251,6 @@ const Profile = () => {
                                 </select>
                             </div>
                             <div className="col-span-2 md:col-span-1">
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {selectedMajorCrop.map(crop => (
-                                        <div key={crop} className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                                            <span>{crop}</span>
-                                            <button
-                                                type="button"
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                                onClick={() => handleCropDelete(crop)}
-                                            >
-                                                <MdDeleteForever />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
                                 <label htmlFor="majorCrops" className="block text-sm font-medium text-gray-700">
                                     Major Crops
                                 </label>
@@ -1282,6 +1268,25 @@ const Profile = () => {
                                     <option value="vegetables">Vegetables</option>
                                     <option value="others">Others</option>
                                 </select>
+                            </div>
+                            <div className="col-span-2 md:col-span-1">
+                                <label htmlFor="majorCrops" className="block text-sm font-medium text-gray-700">
+                                    Selected Major Crops
+                                </label>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {selectedMajorCrop.map(crop => (
+                                        <div key={crop} className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                                            <span>{crop}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-2 text-red-500 hover:text-red-700"
+                                                onClick={() => handleCropDelete(crop)}
+                                            >
+                                                <MdDeleteForever />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             {isOtherMajorCropOpen && (
@@ -1468,7 +1473,7 @@ const Profile = () => {
                                     <div key={opt.value} className="flex items-center gap-4">
                                         <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
                                         <div className="flex-1">
-                                           
+
                                             <input
                                                 type="text"
                                                 id={`seasonVariety-${opt.value}`}
@@ -1589,20 +1594,7 @@ const Profile = () => {
                             </div>
 
                             <div className="col-span-2 md:col-span-1">
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {selectedClimateExtremes.map(extreme => (
-                                        <div key={extreme} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
-                                            <span>{extreme}</span>
-                                            <button
-                                                type="button"
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                                onClick={() => handleClimateExtremeDelete(extreme)}
-                                            >
-                                                <MdDeleteForever />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
+
                                 <label htmlFor="climateExtremes" className="block text-sm font-medium text-gray-700">
                                     Major Climate Extremes
                                 </label>
@@ -1623,18 +1615,23 @@ const Profile = () => {
                             </div>
 
                             <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="riceVarieties" className="block text-sm font-medium text-gray-700">
-                                    Dominant Rice Varieties
+                                <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
+                                    Selected Major Climate Extremes
                                 </label>
-                                <input
-                                    type="text"
-                                    id="riceVarieties"
-                                    name="riceVarieties"
-                                    placeholder="Dominant Rice Varieties"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.riceVarieties}
-                                    onChange={handleChange}
-                                />
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {selectedClimateExtremes.map(extreme => (
+                                        <div key={extreme} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                                            <span>{extreme}</span>
+                                            <button
+                                                type="button"
+                                                className="ml-2 text-red-500 hover:text-red-700"
+                                                onClick={() => handleClimateExtremeDelete(extreme)}
+                                            >
+                                                <MdDeleteForever />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="col-span-2 md:col-span-1">

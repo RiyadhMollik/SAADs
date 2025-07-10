@@ -7,8 +7,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Fira Sans"', 'sans-serif'],
-        nikos: ["'Nikos'", "sans-serif"],
+        sans: ['Fira Sans', 'sans-serif'],
+        nikosh: ['Nikosh', 'sans-serif'],
       },
       fontWeight: {
         extralight: '200',

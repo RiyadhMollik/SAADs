@@ -111,15 +111,15 @@ const Sidebar = () => {
           </ul>
         </div>
 
-        {/* {(rolePermission && rolePermission["Report"]) && (
+        {(rolePermission && rolePermission["Diseases List"]) && (
           <div>
-            <Link onClick={() => setIsslider(false)} to="/report">
-              <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/report") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-                <TbReport className="mr-3" /> {isHidden ? "" : "Report"}
+            <Link onClick={() => setIsslider(false)} to="/farmer-data">
+              <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/farmer-data") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+                <TbReport className="mr-3" /> {isHidden ? "" : "Farmer Data"}
               </button>
             </Link>
           </div>
-        )} */}
+        )}
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/advisory" onClick={() => setIsslider(false)}>
             <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/advisory") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
