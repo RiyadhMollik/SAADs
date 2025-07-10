@@ -8,7 +8,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Fira Sans', 'sans-serif'],
-        nikosh: ['Nikosh', 'sans-serif'],
+        nikosh: ['Nikosh'],
       },
       fontWeight: {
         extralight: '200',
