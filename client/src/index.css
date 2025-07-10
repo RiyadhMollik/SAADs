@@ -7,7 +7,7 @@ body {
 }
 @font-face {
   font-family: 'Nikosh';
-  src: url('Nikosh.ttf') format('truetype');
+  src: url("/var/www/SAADs/client/public/Nikosh.ttf") format('truetype');
   font-weight: normal;
   font-style: normal;
 }
