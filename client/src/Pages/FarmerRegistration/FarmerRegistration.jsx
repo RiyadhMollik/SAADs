@@ -309,7 +309,7 @@ const FarmerRegistration = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to save farmer. Please try again.");
+      alert("অনুগ্রহ করে নম্বরটি পরিবর্তন করুন, এটি ইতোমধ্যে ব্যবহৃত হয়েছে।");
       setLoading(false);
     }
   };
