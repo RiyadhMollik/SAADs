@@ -54,6 +54,7 @@ import CallCenter from "../Pages/CallCenter/CallCenter";
 import SaaoUserReport from "../Pages/Report/SaaoUserReport";
 import FarmerData from "../Pages/FarmerData/FarmerData";
 import CdrTable from "../Pages/CdrTable/CdrTable";
+import VariablePieChart from "../Pages/Report/VariablePieChart";
 
 export const router = createBrowserRouter([
   {
@@ -196,6 +197,10 @@ export const router = createBrowserRouter([
       {
         path: "/area-report",
         element: <AreaWiseReport/> , 
+      },  
+      {
+        path: "/area-report-pie",
+        element: <VariablePieChart/> , 
       },  
       {
         path: "/field-report",

@@ -44,8 +44,8 @@ function FieldMonitoringReports() {
 
   // Fetch block counts
   useEffect(() => {
-    const { startDate, endDate, upazila, union } = formData;
-    if (!startDate || !endDate || (!upazila && !union)) return;
+    const { startDate, endDate, upazila, union , district } = formData;
+    if (!startDate || !endDate || (!upazila && !union  && !district)) return;
 
     const fetchBlockCounts = async () => {
       setLoading(true);
@@ -57,6 +57,7 @@ function FieldMonitoringReports() {
             endDate,
             ...(upazila && { upazila }),
             ...(union && { union }),
+            ...(district && { district }),
           },
         });
         setChartData(response.data.data || []);
@@ -69,7 +70,7 @@ function FieldMonitoringReports() {
     };
 
     fetchBlockCounts();
-  }, [formData.startDate, formData.endDate, formData.upazila, formData.union, selectedHotspots]);
+  }, [formData.startDate, formData.endDate, formData.upazila, formData.union, selectedHotspots , formData.district]);
 
   // Fetch dropdown data
   useEffect(() => {

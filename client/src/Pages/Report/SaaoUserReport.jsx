@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import logo from '/logo.png';
 
 function SaaoUserReport() {
     const [data, setData] = useState([]);
@@ -117,7 +116,7 @@ function SaaoUserReport() {
                 'ID', 'Name', 'Role', 'Hotspot', 'Region', 'Division', 'District',
                 'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer'
             ];
-            
+
             const csvData = filteredData.map(user => {
                 const hotspot = Array.isArray(user.hotspot)
                     ? user.hotspot.join(', ')
@@ -171,12 +170,29 @@ function SaaoUserReport() {
         }
     };
 
-    const handleExportPDF = () => {
+    const handleExportPDF = async () => {
         try {
             const doc = new jsPDF('p', 'mm', 'a4');
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 12;
+
+            // Preload the logo image as base64
+            let logoBase64 = null;
+            try {
+                const response = await fetch('/logo.png');
+                if (!response.ok) throw new Error('Failed to fetch logo');
+                const blob = await response.blob();
+                logoBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (error) {
+                console.warn('Failed to load logo image:', error);
+                // Proceed without the logo
+            }
 
             doc.setFont(undefined, "normal");
             doc.setFontSize(12);
@@ -195,8 +211,8 @@ function SaaoUserReport() {
                 'ID', 'Name', 'Role', 'Hotspot', 'Region', 'Division', 'District',
                 'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer'
             ];
-            const tableData = filteredData.map(user => [
-                user.id || '-',
+            const tableData = filteredData.map((user, index) => [
+                index + 1 || '-',
                 user.name || '-',
                 user.role || '-',
                 Array.isArray(user.hotspot)
@@ -254,9 +270,16 @@ function SaaoUserReport() {
                 columnStyles,
                 margin: { top: 40, left: margin, right: margin, bottom: 20 },
                 didDrawPage: (data) => {
-                    doc.addImage(logo, 'PNG', margin, 16, 15, 15);
+                    // Add logo only if successfully loaded
+                    if (logoBase64) {
+                        try {
+                            doc.addImage(logoBase64, 'PNG', margin, 16, 15, 15);
+                        } catch (imgError) {
+                            console.warn('Failed to add logo to PDF:', imgError);
+                        }
+                    }
                     doc.setFontSize(12);
-                    doc.setTextColor(50, true);
+                    doc.setTextColor(50);
                     doc.setFont("helvetica", "bold");
                     doc.text("Bangladesh Rice Research Institute (BRRI)", margin + 18, 15);
                     doc.setFontSize(10);
@@ -287,30 +310,48 @@ function SaaoUserReport() {
 
     return (
         <div className="p-2 sm:p-4 max-w-4xl mx-auto">
-            <div className="flex  justify-between items-center mb-2 sm:mb-4 gap-2 sm:gap-4">
+            <div className="flex justify-between items-center mb-2 sm:mb-4 gap-2 sm:gap-4">
                 <h1 className="text-lg sm:text-2xl font-bold">SAAO User Report</h1>
             </div>
 
-            <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row gap-2 sm:gap-4">
-                <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="p-1 sm:p-2 border rounded w-full sm:max-w-md text-sm sm:text-base"
-                />
-                <select
-                    value={selectedHotspot}
-                    onChange={(e) => setSelectedHotspot(e.target.value)}
-                    className="p-1 sm:p-2 border rounded text-sm sm:text-base"
-                >
-                    <option value="">Hotspots</option>
-                    {uniqueHotspots.map((hotspot) => (
-                        <option key={hotspot} value={hotspot}>
-                            {hotspot}
-                        </option>
-                    ))}
-                </select>
+            <div className="mb-2 sm:mb-4 flex flex-col sm:flex-row gap-2 sm:gap-4 items-start sm:items-center md:justify-between">
+                <div className='flex gap-2 sm:gap-4'>
+                    <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="p-1 sm:p-2 border rounded w-full sm:max-w-md text-sm sm:text-base"
+                    />
+                    <select
+                        value={selectedHotspot}
+                        onChange={(e) => setSelectedHotspot(e.target.value)}
+                        className="p-1 sm:p-2 border rounded text-sm sm:text-base"
+                    >
+                        <option value="">Hotspots</option>
+                        {uniqueHotspots.map((hotspot) => (
+                            <option key={hotspot} value={hotspot}>
+                                {hotspot}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="flex gap-2 sm:gap-4">
+                    <button
+                        onClick={handleExportCSV}
+                        className="p-1 sm:p-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm sm:text-base"
+                        aria-label="Export report to CSV"
+                    >
+                        CSV
+                    </button>
+                    <button
+                        onClick={handleExportPDF}
+                        className="p-1 sm:p-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm sm:text-base"
+                        aria-label="Export report to PDF"
+                    >
+                        PDF
+                    </button>
+                </div>
             </div>
 
             {loading && <p className="text-gray-500 text-sm">Loading...</p>}
@@ -320,15 +361,15 @@ function SaaoUserReport() {
                 <table className="w-full bg-white border rounded-lg shadow-md text-sm sm:text-base">
                     <thead>
                         <tr className="bg-slate-600 text-white border-b capitalize">
-                            {['id', 'name', 'role', 'hotspot', 'region', 'division', 'district', 'upazila', 'union', 'block', 'mobileNumber', 'farmerCount'].map((key, index) => (
+                            {['id', 'name', 'role', 'hotspot', 'region', 'division', 'district', 'upazila', 'union', 'block', 'mobileNumber', 'farmerCount'].map((key) => (
                                 <th
                                     key={key}
                                     className="p-1 sm:p-3 text-left cursor-pointer"
                                     onClick={() => key !== 'id' && handleSort(key)}
                                 >
-                                    {key === 'id' ? 'ID' : 
-                                     key === 'farmerCount' ? 'Total Farmer' : 
-                                     key.charAt(0).toUpperCase() + key.slice(1)}
+                                    {key === 'id' ? 'ID' :
+                                        key === 'farmerCount' ? 'Total Farmer' :
+                                            key.charAt(0).toUpperCase() + key.slice(1)}
                                     {sortConfig.key === key && (
                                         <span className="ml-1">
                                             {sortConfig.direction === 'asc' ? '↑' : '↓'}
@@ -372,7 +413,7 @@ function SaaoUserReport() {
                                         <td className="p-1 sm:p-3 capitalize">{user.farmerCount || 0}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-t font-bold bg-slate-600  text-white">
+                                <tr className="border-t font-bold bg-slate-600 text-white">
                                     <td colSpan="11" className="p-1 sm:p-3 text-right">Total:</td>
                                     <td className="p-1 sm:p-3">{totalCount}</td>
                                 </tr>

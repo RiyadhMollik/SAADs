@@ -5,12 +5,12 @@ import ChartComponent from './ChartComponent';
 function AreaWiseReport() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [locationType, setLocationType] = useState('upazila');
+  const [locationType, setLocationType] = useState('union');
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const locationTypes = ['upazila', 'district', 'division', 'region', 'hotspot'];
+  const locationTypes = ['union', 'upazila', 'district', 'division', 'region', 'hotspot'];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -61,7 +61,7 @@ function AreaWiseReport() {
         <div className="flex flex-col w-full sm:w-1/2">
           <label className="text-sm text-gray-600 mb-1">Location Type</label>
           <select
-            className="border p-2 rounded-md shadow-md"
+            className="border p-2 h-[42px] rounded-md shadow-md"
             value={locationType}
             onChange={(e) => setLocationType(e.target.value)}
           >

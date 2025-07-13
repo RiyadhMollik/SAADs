@@ -27,6 +27,8 @@
     "dom-to-image-more": "^3.6.0",
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
+    "highcharts": "^12.3.0",
+    "highcharts-react-official": "^3.2.2",
     "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
     "jodit-react": "^5.2.19",

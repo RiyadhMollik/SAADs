@@ -1165,9 +1165,9 @@ const FarmerRegistration = () => {
                     value={formData.farmSize}
                     onChange={handleChange}
                   />
-                  <div className="flex flex-col md:flex-row lg:flex-row gap-2 text-center">
+                  <div className="flex flex-col md:flex-row lg:flex-row gap-2 text-start">
                     <div>
-                      <label className="block mt-4">Total Urea Uses (kg/bigha)</label>
+                      <label className="block mt-4">Total Urea Uses <span className="text-sm"> (kg/bigha)</span></label>
                       <input
                         type="number"
                         name="fertilizerUsage"
@@ -1177,7 +1177,7 @@ const FarmerRegistration = () => {
                         onChange={handleChange}
                       />
                     </div>
-                    <div><label className="block mt-4">Total TSP Uses (kg/bigha)</label>
+                    <div><label className="block mt-4">Total TSP Uses <span className="text-sm"> (kg/bigha)</span></label>
                       <input
                         type="number"
                         name="TSPUsage"
@@ -1186,7 +1186,7 @@ const FarmerRegistration = () => {
                         value={formData.TSPUsage}
                         onChange={handleChange}
                       /></div>
-                    <div><label className="block mt-4">Total MoP Uses (kg/bigha)</label>
+                    <div><label className="block mt-4">Total MoP Uses <span className="text-sm"> (kg/bigha)</span></label>
                       <input
                         type="number"
                         name="MoPUsage"
@@ -1195,7 +1195,7 @@ const FarmerRegistration = () => {
                         value={formData.MoPUsage}
                         onChange={handleChange}
                       /></div>
-                    <div><label className="block mt-4">Total Gypsum Uses (kg/bigha)</label>
+                    <div><label className="block mt-4">Total Gypsum Uses <span className="text-sm"> (kg/bigha)</span></label>
                       <input
                         type="number"
                         name="GypsumUsage"
@@ -1204,7 +1204,7 @@ const FarmerRegistration = () => {
                         value={formData.GypsumUsage}
                         onChange={handleChange}
                       /></div>
-                    <div><label className="block mt-4">Total Zinc Uses (kg/bigha)</label>
+                    <div><label className="block mt-4">Total Zinc Uses <span className="text-sm"> (kg/bigha)</span></label>
                       <input
                         type="number"
                         name="ZincUsage"
@@ -1213,7 +1213,7 @@ const FarmerRegistration = () => {
                         value={formData.ZincUsage}
                         onChange={handleChange}
                       /></div>
-                    <div><label className="block mt-4">Total DAP Uses(kg/bigha)</label>
+                    <div><label className="block mt-4">Total DAP Uses <span className="text-sm"> (kg/bigha)</span></label>
                       <input
                         type="number"
                         name="dapUsage"

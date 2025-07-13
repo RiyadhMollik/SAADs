@@ -10,6 +10,9 @@ import {
     Legend,
     LineController
 } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 ChartJS.register(
     CategoryScale,
@@ -19,7 +22,8 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    LineController
+    LineController,
+    ChartDataLabels
 );
 
 const Report = () => {
@@ -31,6 +35,8 @@ const Report = () => {
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [data, setData] = useState([]);
     const [refresh, setRefresh] = useState(false);
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
 
@@ -54,7 +60,7 @@ const Report = () => {
         const fetchData = async () => {
             if (!selectedOption?.id) return;
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/stats/${selectedOption.id}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/stats/${selectedOption.id}?startDate=${startDate}&endDate=${endDate}`);
                 if (response.ok) {
                     const result = await response.json();
                     setData(result);
@@ -79,11 +85,25 @@ const Report = () => {
         setRefresh(!refresh);
     };
 
+    const handleFilter = () => {
+        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+            alert('Start date cannot be after end date');
+            return;
+        }
+        setRefresh(!refresh);
+    };
+
     const sortedData = [...data].sort((a, b) => sortOrder === 'asc' ? a.age - b.age : b.age - a.age);
     const toggleSortOrder = () => setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
 
     const labels = data.map(item => item.date);
     const values = data.map(item => item.totalEntries);
+
+    const calculateStepSize = (values) => {
+        if (!values.length) return 1;
+        const max = Math.max(...values);
+        return Math.ceil(max / 5);
+    };
 
     const chartData = {
         labels,
@@ -93,9 +113,10 @@ const Report = () => {
                 data: values,
                 fill: false,
                 borderColor: 'rgba(75,192,192,1)',
+                borderWidth: 1,
                 tension: 0.3,
                 pointBackgroundColor: 'rgba(75,192,192,1)',
-                pointRadius: 4,
+                pointRadius: 3,
             },
         ],
     };
@@ -104,17 +125,36 @@ const Report = () => {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-            x: { 
+            x: {
                 title: { display: true, text: 'Date', font: { size: 12 } },
                 ticks: { font: { size: 10 }, maxRotation: 90, minRotation: 90 }
             },
-            y: { 
+            y: {
                 title: { display: true, text: 'Number of Farmers', font: { size: 12 } },
-                ticks: { font: { size: 10 } }
+                ticks: {
+                    font: { size: 10 },
+                    stepSize: calculateStepSize(values),
+                    beginAtZero: true,
+                },
+                grid: {
+                    drawTicks: true,
+                },
             },
         },
         plugins: {
             legend: { display: false },
+            datalabels: {
+                display: false,
+                anchor: 'end',
+                align: 'start',
+                offset: 6,
+                font: {
+                    size: 12,
+                    weight: 'bold'
+                },
+                color: '#333',
+                formatter: (value) => value
+            }
         },
     };
 
@@ -125,6 +165,7 @@ const Report = () => {
                 type: 'line',
                 data: chartData,
                 options: chartOptions,
+                plugins: [ChartDataLabels]
             });
         }
 
@@ -140,6 +181,155 @@ const Report = () => {
             link.download = 'saao_report_chart.png';
             link.href = chartInstanceRef.current.toBase64Image();
             link.click();
+        }
+    };
+
+    const handleExportCSV = () => {
+        try {
+            const headers = ['Date', 'Total Entries'];
+            const csvData = sortedData.map(item => [
+                item.date || '-',
+                item.totalEntries || 0
+            ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(','));
+
+            csvData.push([
+                'TOTAL',
+                sortedData.reduce((sum, item) => sum + item.totalEntries, 0)
+            ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(','));
+
+            const csvContent = [
+                headers.map(header => `"${header}"`).join(','),
+                ...csvData
+            ].join('\n');
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'saao_report.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('CSV export failed:', error);
+            alert('Failed to export CSV. Please try again.');
+        }
+    };
+
+    const handleExportPDF = async () => {
+        try {
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 12;
+
+            // Preload the logo image as base64
+            let logoBase64 = null;
+            try {
+                const response = await fetch('/logo.png');
+                if (!response.ok) throw new Error('Failed to fetch logo');
+                const blob = await response.blob();
+                logoBase64 = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                });
+            } catch (error){
+                console.warn('Failed to load logo image:', error);
+                // Proceed without the logo
+            }
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(12);
+            const date = new Date();
+            const formattedDate = date.toLocaleString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true,
+            });
+
+            const headers = ['Date', 'Total Entries'];
+            const tableData = sortedData.map(item => [
+                item.date || '-',
+                item.totalEntries || 0
+            ]);
+
+            tableData.push([
+                'TOTAL',
+                sortedData.reduce((sum, item) => sum + item.totalEntries, 0)
+            ]);
+
+            const equalWidth = (pageWidth - margin * 2) / headers.length;
+            const columnStyles = headers.reduce((styles, _, i) => {
+                styles[i] = { cellWidth: equalWidth };
+                return styles;
+            }, {});
+
+            autoTable(doc, {
+                startY: 40,
+                head: [headers],
+                body: tableData,
+                theme: 'grid',
+                styles: {
+                    font: "helvetica",
+                    fontSize: 8,
+                    cellPadding: 2,
+                    textColor: [50, 50, 50],
+                    overflow: 'linebreak',
+                },
+                headStyles: {
+                    fillColor: [41, 128, 185],
+                    textColor: 255,
+                    fontStyle: 'bold',
+                    halign: 'center',
+                },
+                alternateRowStyles: {
+                    fillColor: [245, 245, 245],
+                },
+                columnStyles,
+                margin: { top: 40, left: margin, right: margin, bottom: 20 },
+                didDrawPage: (data) => {
+                    // Add logo only if successfully loaded
+                    if (logoBase64) {
+                        try {
+                            doc.addImage(logoBase64, 'PNG', margin, 16, 15, 15);
+                        } catch (imgError) {
+                            console.warn('Failed to add logo to PDF:', imgError);
+                        }
+                    }
+                    doc.setFontSize(12);
+                    doc.setTextColor(50);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Bangladesh Rice Research Institute (BRRI)", margin + (logoBase64 ? 18 : 0), 15);
+                    doc.setFontSize(10);
+                    doc.setTextColor(100);
+                    doc.text("Gazipur-1701", margin + (logoBase64 ? 18 : 0), 20);
+                    doc.text("Contact Agromet Lab", margin + (logoBase64 ? 18 : 0), 25);
+                    doc.setFontSize(10);
+                    doc.setTextColor(50);
+                    doc.setFont("helvetica", "normal");
+                    doc.text("Email: info.brriagromet@gmail.com", margin + (logoBase64 ? 18 : 0), 30);
+                    doc.text("Mobile: 09644300300", margin + (logoBase64 ? 18 : 0), 35);
+                    doc.text(formattedDate, pageWidth - margin, 35, { align: "right" });
+
+                    const pageCount = doc.internal.getNumberOfPages();
+                    doc.setFontSize(8);
+                    doc.setTextColor(100);
+                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - 12, { align: "center" });
+                    doc.text("© 2025 Smart Agro-Advisory Dissemination System.", margin, pageHeight - 6);
+                },
+            });
+
+            doc.save("saao_report.pdf");
+        } catch (error) {
+            console.error("PDF export failed:", error);
+            alert("Failed to export PDF. Please try again.");
         }
     };
 
@@ -175,31 +365,61 @@ const Report = () => {
                     )}
                 </div>
 
-                {/* Date Filter */}
-                <div className="flex flex-col sm:flex-row gap-4">
+                {/* Date Filter and Export Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                     <div className="w-full">
                         <label className="text-xs font-medium">Start Date</label>
-                        <input type="date" className="w-full p-2 border rounded text-sm" />
+                        <input
+                            type="date"
+                            className="w-full p-2 border rounded text-sm"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
                     </div>
                     <div className="w-full">
                         <label className="text-xs font-medium">End Date</label>
-                        <input type="date" className="w-full p-2 border rounded text-sm" />
+                        <input
+                            type="date"
+                            className="w-full p-2 border rounded text-sm"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
                     </div>
-                    <button className="w-full sm:w-auto bg-[#166534] hover:bg-green-700 text-white px-4 py-2 h-10 mt-6 rounded text-sm">
-                        Filter
-                    </button>
+                    <div className="flex gap-2 sm:gap-4 w-full sm:w-auto mt-6 sm:mt-0">
+                        <button
+                            onClick={handleFilter}
+                            className="w-full mt-6 sm:w-auto bg-[#166534] hover:bg-green-700 text-white px-4 py-2 h-10 rounded text-sm"
+                            aria-label="Apply date filter"
+                        >
+                            Filter
+                        </button>
+                        <button
+                            onClick={handleExportCSV}
+                            className="w-full mt-6 sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 h-10 rounded text-sm"
+                            aria-label="Export table to CSV"
+                        >
+                             CSV
+                        </button>
+                        <button
+                            onClick={handleExportPDF}
+                            className="w-full mt-6 sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 h-10 rounded text-sm"
+                            aria-label="Export table to PDF"
+                        >
+                           PDF
+                        </button>
+                    </div>
                 </div>
 
                 {/* Tabs */}
                 <div className="flex border rounded overflow-hidden">
                     <button
-                        className={`flex-1 py-2 font-semibold text-sm ${activeTab === 'table' ? 'bg-slate-600  text-white' : 'bg-gray-100'}`}
+                        className={`flex-1 py-2 font-semibold text-sm ${activeTab === 'table' ? 'bg-slate-600 text-white' : 'bg-gray-100'}`}
                         onClick={() => setActiveTab('table')}
                     >
                         Table
                     </button>
                     <button
-                        className={`flex-1 py-2 font-semibold text-sm ${activeTab === 'graph' ? 'bg-slate-600  text-white' : 'bg-gray-100'}`}
+                        className={`flex-1 py-2 font-semibold text-sm ${activeTab === 'graph' ? 'bg-slate-600 text-white' : 'bg-gray-100'}`}
                         onClick={() => setActiveTab('graph')}
                     >
                         Graph
@@ -241,17 +461,18 @@ const Report = () => {
 
                 {/* Graph Tab */}
                 {activeTab === 'graph' && (
-                    <div className="mt-4 sm:mt-6  rounded shadow-md">
+                    <div className="mt-4 sm:mt-6 rounded shadow-md">
                         <div className="flex justify-between items-center mb-4 px-4">
                             <h3 className="text-base sm:text-lg font-bold text-gray-700">Entries Over Time</h3>
                             <button
                                 onClick={downloadChart}
                                 className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 sm:px-4 sm:py-2 rounded text-sm"
+                                aria-label="Download chart as PNG"
                             >
                                 Download
                             </button>
                         </div>
-                        <div className="h-64 sm:h-80">
+                        <div className="h-64 sm:h-80 p-2">
                             <canvas ref={chartRef} />
                         </div>
                     </div>

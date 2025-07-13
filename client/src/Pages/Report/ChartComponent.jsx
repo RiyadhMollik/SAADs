@@ -11,7 +11,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(
   CategoryScale,
@@ -21,15 +20,17 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend,
-  ChartDataLabels
+  Legend
 );
 
 const ChartComponent = ({ data, locationType }) => {
   const chartRef = useRef(null);
 
-  const maxCount =
-    data.length > 0 ? Math.ceil(Math.max(...data.map((item) => item.count)) / 10) * 10 : 90;
+  // Calculate max value and steps for evenly spaced Y-axis
+  const maxValue = data.length > 0 ? Math.max(...data.map((item) => item.count)) : 0;
+  const divisions = 5; // You can set this to 6 if preferred
+  const stepSize = Math.ceil(maxValue / divisions);
+  const suggestedMax = stepSize * divisions;
 
   const chartData = {
     labels: data.map((item) => item[locationType] || 'Unknown'),
@@ -38,20 +39,9 @@ const ChartComponent = ({ data, locationType }) => {
         type: 'bar',
         label: 'Number of Farmers',
         data: data.map((item) => item.count),
-        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: '#2caffe',
+        borderColor: '#2caffe',
         borderWidth: 1,
-      },
-      {
-        type: 'line',
-        label: 'Trend Line',
-        data: data.map((item) => item.count),
-        borderColor: 'rgba(255, 99, 132, 1)',
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4,
-        pointRadius: 3,
       },
     ],
   };
@@ -62,17 +52,9 @@ const ChartComponent = ({ data, locationType }) => {
     maintainAspectRatio: false,
     scales: {
       x: {
-        title: {
-          display: true,
-          text: locationType.charAt(0).toUpperCase() + locationType.slice(1),
-          font: {
-            size: 16,
-            weight: 'bold',
-          },
-        },
         ticks: {
-          maxRotation: 45,
-          minRotation: 0,
+          maxRotation: 90,
+          minRotation: 90,
           font: {
             size: 12,
           },
@@ -80,19 +62,19 @@ const ChartComponent = ({ data, locationType }) => {
       },
       y: {
         beginAtZero: true,
-        max: maxCount,
+        max: suggestedMax,
+        ticks: {
+          stepSize: stepSize,
+          count: divisions + 1,
+          font: {
+            size: 12,
+          },
+        },
         title: {
           display: true,
           text: 'Number of Farmers',
           font: {
-            size: 16,
-            weight: 'bold',
-          },
-        },
-        ticks: {
-          stepSize: 10,
-          font: {
-            size: 12,
+            size: 14,
           },
         },
       },
@@ -100,16 +82,22 @@ const ChartComponent = ({ data, locationType }) => {
     plugins: {
       legend: {
         display: false,
-        position: 'top',
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          label: function (context) {
+            const label = context.dataset.label || '';
+            const value = context.parsed.y || 0;
+            return `${label}: ${value}`;
+          },
+        },
       },
       title: {
         display: true,
-        text: `Farmer Distribution by ${locationType.charAt(0).toUpperCase() + locationType.slice(1)}`,
+        text: `Number of Farmers by ${locationType.charAt(0).toUpperCase() + locationType.slice(1)}`,
         font: {
-          size: 22,
+          size: 16,
           weight: 'bold',
         },
         padding: {
@@ -117,6 +105,9 @@ const ChartComponent = ({ data, locationType }) => {
           bottom: 20,
         },
         color: '#333',
+      },
+      datalabels: {
+        display: false,
       },
     },
   };
@@ -136,7 +127,7 @@ const ChartComponent = ({ data, locationType }) => {
           onClick={handleDownload}
           className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-700 text-sm"
         >
-          Download PNG
+          Download
         </button>
       </div>
       <div className="h-64 sm:h-96">
