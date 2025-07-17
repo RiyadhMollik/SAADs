@@ -309,7 +309,7 @@ function SaaoUserReport() {
     };
 
     return (
-        <div className="p-2 sm:p-4 max-w-4xl mx-auto">
+        <div className="p-2 sm:p-4 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-2 sm:mb-4 gap-2 sm:gap-4">
                 <h1 className="text-lg sm:text-2xl font-bold">SAAO User Report</h1>
             </div>
