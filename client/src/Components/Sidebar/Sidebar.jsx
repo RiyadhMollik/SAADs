@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { RxCross2 } from "react-icons/rx";
-import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaLock, FaDisease, FaUser, FaPhone } from "react-icons/fa";
+import { FaTachometerAlt, FaCloudSun, FaWater, FaSignOutAlt, FaClipboardList, FaCogs, FaArchive, FaComments, FaInfoCircle, FaPumpSoap, FaSeedling, FaCloud, FaLeaf, FaTint, FaGasPump, FaLock, FaDisease, FaUser, FaPhone, FaBug, FaNotesMedical } from "react-icons/fa";
 import { IoIosAddCircle, IoMdSwitch } from "react-icons/io";
 import logo from "../../assets/brri.png";
 import useLogout from "../../Hook/useLogout";
@@ -114,8 +114,8 @@ const Sidebar = () => {
         {(rolePermission && rolePermission["Diseases List"]) && (
           <div>
             <Link onClick={() => setIsslider(false)} to="/farmer-data">
-              <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/farmer-data") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-                <TbReport className="mr-3" /> {isHidden ? "" : "Farmer Data"}
+              <button className={`flex items-center w-full px-1 py-2 rounded-lg ${isActive("/farmer-data") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+                <TbReport className="mr-2" /> {isHidden ? "" : "WABAS Validation Data"}
               </button>
             </Link>
           </div>
@@ -136,23 +136,41 @@ const Sidebar = () => {
         )}
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/diseases-survey" onClick={() => setIsslider(false)}>
-            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/diseases-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Disease Survey"}
+            <button
+              className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/diseases-survey")
+                  ? "bg-green-700 text-white"
+                  : "bg-gray-100 hover:bg-green-700 hover:text-white"
+                }`}
+            >
+              <FaNotesMedical className="mr-3 text-lg" />{" "}
+              {isHidden ? "" : "Disease Survey"}
             </button>
           </Link>
         )}
 
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/growth-stage-survey" onClick={() => setIsslider(false)}>
-            <button className={`flex items-center w-full px-1 py-2 rounded-lg ${isActive("/growth-stage-survey") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Growth Stage Survey"}
+            <button
+              className={`flex items-center w-full px-1 py-2 rounded-lg ${isActive("/growth-stage-survey")
+                  ? "bg-green-700 text-white"
+                  : "bg-gray-100 hover:bg-green-700 hover:text-white"
+                }`}
+            >
+              <FaSeedling className="mr-3 text-lg" />{" "}
+              {isHidden ? "" : "Growth Stage Survey"}
             </button>
           </Link>
         )}
+
         {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/insect-pests" onClick={() => setIsslider(false)}>
-            <button className={`flex items-center w-full px-2 py-2 rounded-lg ${isActive("/insect-pests") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
-              <FaDisease className="mr-3 text-lg" /> {isHidden ? "" : "Insect Pest Survey"}
+            <button
+              className={`flex items-center w-full px-2 py-2 rounded-lg ${isActive("/insect-pests")
+                  ? "bg-green-700 text-white"
+                  : "bg-gray-100 hover:bg-green-700 hover:text-white"
+                }`}
+            >
+              <FaBug className="mr-3 text-lg" /> {isHidden ? "" : "Insect Pest Survey"}
             </button>
           </Link>
         )}

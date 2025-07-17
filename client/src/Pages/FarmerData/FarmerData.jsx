@@ -3,12 +3,12 @@ import { useState } from "react";
 const FarmerData = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [formData, setFormData] = useState({
-    irrigation: [], // For seedbed irrigation entries
-    fertilizer: [], // For fertilizer entries
-    herbicide: [], // For herbicide entries
-    pesticide: [], // For pesticide entries
-    fungicide: [], // For fungicide entries
-    other: {}, // For other single-entry fields
+    irrigation: [],
+    fertilizer: [],
+    herbicide: [],
+    pesticide: [],
+    fungicide: [],
+    other: {},
   });
   const [selectedUser, setSelectedUser] = useState("");
   const [tempEntry, setTempEntry] = useState({
@@ -115,7 +115,7 @@ const FarmerData = () => {
       // Herbicide fields handled separately
       // Pesticide fields handled separately
       // Fungicide fields handled separately
-      "মোট খরচ (টাকা)",
+      // "মোট খরচ (টাকা)",
     ],
     [
       "তারিখ",
@@ -272,6 +272,27 @@ const FarmerData = () => {
   const getInputType = (field) => {
     return field.includes("তারিখ") ? "date" : "text";
   };
+const convertToBanglaNumber = (number) => {
+  const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return number.toString().split('').map(d => banglaDigits[parseInt(d)] ?? d).join('');
+};
+
+const banglaMonths = [
+  "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
+  "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"
+];
+
+const formatBanglaDate = (isoDate) => {
+  if (!isoDate) return "";
+  const [year, month, day] = isoDate.split("-");
+  return (
+    convertToBanglaNumber(day) +
+    " " +
+    banglaMonths[parseInt(month, 10) - 1] +
+    " " +
+    convertToBanglaNumber(year)
+  );
+};
 
   // Rendering multi-entry section
   const renderMultiEntrySection = (category, tabIndex) => {
@@ -287,9 +308,18 @@ const FarmerData = () => {
 
     return (
       <div className="mb-6 p-4 bg-white rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-2 font-nikosh">
-          {headlines[tabIndex]} - নতুন এন্ট্রি যোগ করুন
-        </h3>
+        <div className="flex justify-between">
+          <h3 className="text-lg font-semibold mb-2 font-nikosh">
+            {headlines[tabIndex] === "বীজতলা তৈরিতে সেচ প্রদানের খরচ (টাকা)" ? " সেচ ব্যবস্থাপনা" : headlines[tabIndex]  } - নতুন তথ্য যোগ করুন
+          </h3>
+          <button
+            className="mt-2  bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 font-nikosh"
+            onClick={() => addEntry(category)}
+          >
+            {/* তথ্য যোগ করুন */}
+            যোগ করুন
+          </button>
+        </div>
         {multiEntryFields[category].map((field, index) => (
           <div key={index} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1 font-nikosh">
@@ -302,45 +332,57 @@ const FarmerData = () => {
               onChange={(e) =>
                 handleTempEntryChange(category, field.key, e.target.value)
               }
-              placeholder={field.type === "text" ? `প্রবেশ করান ${field.label}` : ""}
+              placeholder={field.type === "text" ? `` : ""}
             />
           </div>
         ))}
-        <button
-          className="mt-2 w-full bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 font-nikosh"
-          onClick={() => addEntry(category)}
-        >
-          এন্ট্রি যোগ করুন
-        </button>
         {formData[category].length > 0 && (
           <div className="mt-4">
             <h4 className="text-md font-semibold mb-2 font-nikosh">
-              সংরক্ষিত এন্ট্রিগুলো
+              প্রদত্ত তথ্যসমূহ
             </h4>
-            {formData[category].map((entry, index) => (
-              <div
-                key={index}
-                className="flex justify-between items-center p-2 border-b border-gray-200"
-              >
-                <div>
-                  {Object.entries(entry).map(([key, value]) => (
-                    <p key={key} className="text-sm font-nikosh">
-                      {multiEntryFields[category].find((f) => f.key === key)
-                        ?.label}
-                      : {value}
-                    </p>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border border-gray-300 text-sm font-nikosh">
+                <thead>
+                  <tr className="bg-gray-100">
+                    {multiEntryFields[category].map((field) => (
+                      <th
+                        key={field.key}
+                        className="border border-gray-300 px-3 py-2 text-left"
+                      >
+                        {field.label}
+                      </th>
+                    ))}
+                    <th className="border border-gray-300 px-3 py-2 text-left">অ্যাকশন</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {formData[category].map((entry, index) => (
+                    <tr key={index} className="border-t border-gray-200">
+                      {multiEntryFields[category].map((field) => (
+                        <td
+                          key={field.key}
+                          className="border border-gray-200 px-3 py-1"
+                        >
+                          {entry[field.key] || ""}
+                        </td>
+                      ))}
+                      <td className="border border-gray-200 px-3 py-1">
+                        <button
+                          className="text-red-500 hover:text-red-700 font-nikosh"
+                          onClick={() => removeEntry(category, index)}
+                        >
+                          মুছুন
+                        </button>
+                      </td>
+                    </tr>
                   ))}
-                </div>
-                <button
-                  className="text-red-500 hover:text-red-700 font-nikosh"
-                  onClick={() => removeEntry(category, index)}
-                >
-                  মুছুন
-                </button>
-              </div>
-            ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
+
       </div>
     );
   };
@@ -375,11 +417,10 @@ const FarmerData = () => {
         {headlines.map((headline, index) => (
           <button
             key={index}
-            className={`py-2 px-4 text-sm font-medium font-nikosh ${
-              activeTab === index
-                ? "border-b-2 border-blue-500 text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }`}
+            className={`py-2 px-4 text-sm font-medium font-nikosh ${activeTab === index
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600 hover:text-blue-600"
+              }`}
             onClick={() => setActiveTab(index)}
           >
             {headline}
@@ -399,7 +440,7 @@ const FarmerData = () => {
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 font-nikosh focus:ring-blue-500"
               value={formData.other[field] || ""}
               onChange={(e) => handleInputChange(field, e.target.value)}
-              placeholder={getInputType(field) === "text" ? `প্রবেশ করান ${field}` : ""}
+              placeholder={getInputType(field) === "text" ? `` : ""}
             />
           </div>
         ))}
@@ -409,6 +450,16 @@ const FarmerData = () => {
         {renderMultiEntrySection("pesticide", 7)}
         {renderMultiEntrySection("fungicide", 8)}
         {/* Save button */}
+        <label className="block text-sm font-medium text-gray-700 mb-1 font-nikosh">
+          বীজতলা তৈরি ও ব্যবস্থাপনায়
+ মোট খরচ (টাকা)
+        </label>
+        <input
+          type="number"
+          disabled
+          className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 font-nikosh focus:ring-blue-500"
+          
+        />
         <button
           className="mt-4 font-nikosh w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           onClick={handleSave}

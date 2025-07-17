@@ -87,8 +87,8 @@ const CdrTable = () => {
                 <th className="px-3 py-2">Dst. Channel</th>
                 <th className="px-3 py-2">Status</th>
                 <th className="px-3 py-2">Duration</th>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Address</th>
+                <th className="px-3 py-2">Location</th>
+                <th className="px-3 py-2">Problem</th>
               </tr>
             </thead>
             <tbody>

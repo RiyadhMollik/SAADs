@@ -525,7 +525,7 @@ const Profile = () => {
                 ...authUser.RegistedUser,
                 hotspot: authUser.RegistedUser.hotspot || []
             }));
-            setSelectedHotspots(authUser.RegistedUser.hotspot || []);
+            setSelectedHotspots(authUser.RegistedUser?.hotspot?.split(", ") || []);
             setSelectedMajorCrop(authUser.RegistedUser?.majorCrops?.split(", ") || []);
             setSelectedClimateExtremes(authUser.RegistedUser?.climateExtremes?.split(", ") || []);
             setSelectedId(authUser.RegistedUser.id);
@@ -1008,7 +1008,7 @@ const Profile = () => {
                         <h4 className="text-lg font-semibold text-gray-700">Location Information</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="col-span-1 md:col-span-2 flex flex-wrap gap-2 mb-4">
-                                {selectedHotspots.map(hotspotName => (
+                                {selectedHotspots?.map(hotspotName => (
                                     <div
                                         key={hotspotName}
                                         className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
