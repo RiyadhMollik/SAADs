@@ -71,7 +71,7 @@ const SAAORegistration = () => {
     const fetchUnion = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}region=${formData.region}&hotspot=${selectedHotspots}`
+          `https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
         );
         if (!response.ok) throw new Error("Failed to fetch union data");
         const data = await response.json();
@@ -88,7 +88,7 @@ const SAAORegistration = () => {
     const fetchBlock = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}region=${formData.region}&hotspot=${selectedHotspots}`
+          `https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
         );
         if (!response.ok) throw new Error("Failed to fetch block data");
         const data = await response.json();
@@ -105,7 +105,7 @@ const SAAORegistration = () => {
     const fetchUpazila = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}region=${formData.region}&hotspot=${selectedHotspots}`
+          `https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
         );
         if (!response.ok) throw new Error("Failed to fetch upazila data");
         const data = await response.json();
@@ -139,7 +139,7 @@ const SAAORegistration = () => {
     const fetchDistrict = async () => {
       try {
         const response = await fetch(
-          `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots}`
+          `https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots}`
         );
         if (!response.ok) throw new Error("Failed to fetch district data");
         const data = await response.json();
