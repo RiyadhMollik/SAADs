@@ -55,6 +55,7 @@ import SaaoUserReport from "../Pages/Report/SaaoUserReport";
 import FarmerData from "../Pages/FarmerData/FarmerData";
 import CdrTable from "../Pages/CdrTable/CdrTable";
 import VariablePieChart from "../Pages/Report/VariablePieChart";
+import Notification from "../Pages/Profile/notification";
 
 export const router = createBrowserRouter([
   {
@@ -271,5 +272,9 @@ export const router = createBrowserRouter([
   {
     path: "/model-analysis",
     element: <MLModel/> , 
+  },  
+  {
+    path: "/notification",
+    element: <Notification/> , 
   },  
 ]);
