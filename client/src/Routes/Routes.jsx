@@ -55,7 +55,7 @@ import SaaoUserReport from "../Pages/Report/SaaoUserReport";
 import FarmerData from "../Pages/FarmerData/FarmerData";
 import CdrTable from "../Pages/CdrTable/CdrTable";
 import VariablePieChart from "../Pages/Report/VariablePieChart";
-import Notification from "../Pages/Profile/notification";
+import Notification from "../Pages/Profile/Notification";
 
 export const router = createBrowserRouter([
   {
