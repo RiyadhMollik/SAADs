@@ -1229,495 +1229,497 @@ const Profile = () => {
                     </div>
 
                     {/* Farming Information Section */}
-                    <div className="space-y-4">
-                        <h4 className="text-lg font-semibold text-gray-700">Farming Information</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="landType" className="block text-sm font-medium text-gray-700">
-                                    Land Type
-                                </label>
-                                <select
-                                    id="landType"
-                                    name="landType"
-                                    className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.landType}
-                                    onChange={handleChange}
-                                    required
-                                >
-                                    <option value="">Select Land Type</option>
-                                    <option value="high">High</option>
-                                    <option value="medium">Medium</option>
-                                    <option value="low">Low</option>
-                                </select>
-                            </div>
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="plantingMethod" className="block text-sm font-medium text-gray-700">
-                                    Planting Method
-                                </label>
-                                <select
-                                    id="plantingMethod"
-                                    name="plantingMethod"
-                                    className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.plantingMethod}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Planting Method</option>
-                                    <option value="directSeeding">Direct Seeding</option>
-                                    <option value="transplanting">Transplanting</option>
-                                </select>
-                            </div>
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="majorCrops" className="block text-sm font-medium text-gray-700">
-                                    Major Crops
-                                </label>
-                                <select
-                                    id="majorCrops"
-                                    name="majorCrops"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value=""
-                                    onChange={handleCropSelect}
-                                >
-                                    <option value="">Select Major Crops</option>
-                                    <option value="rice">Rice</option>
-                                    <option value="wheat">Wheat</option>
-                                    <option value="maize">Maize</option>
-                                    <option value="vegetables">Vegetables</option>
-                                    <option value="others">Others</option>
-                                </select>
-                            </div>
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="majorCrops" className="block text-sm font-medium text-gray-700">
-                                    Selected Major Crops
-                                </label>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {selectedMajorCrop.map(crop => (
-                                        <div key={crop} className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                                            <span>{crop}</span>
+                    {authUser.role === "saao" && 
+                        <div className="space-y-4">
+                            <h4 className="text-lg font-semibold text-gray-700">Farming Information</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="landType" className="block text-sm font-medium text-gray-700">
+                                        Land Type
+                                    </label>
+                                    <select
+                                        id="landType"
+                                        name="landType"
+                                        className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.landType}
+                                        onChange={handleChange}
+                                        required
+                                    >
+                                        <option value="">Select Land Type</option>
+                                        <option value="high">High</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="low">Low</option>
+                                    </select>
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="plantingMethod" className="block text-sm font-medium text-gray-700">
+                                        Planting Method
+                                    </label>
+                                    <select
+                                        id="plantingMethod"
+                                        name="plantingMethod"
+                                        className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.plantingMethod}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Planting Method</option>
+                                        <option value="directSeeding">Direct Seeding</option>
+                                        <option value="transplanting">Transplanting</option>
+                                    </select>
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="majorCrops" className="block text-sm font-medium text-gray-700">
+                                        Major Crops
+                                    </label>
+                                    <select
+                                        id="majorCrops"
+                                        name="majorCrops"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value=""
+                                        onChange={handleCropSelect}
+                                    >
+                                        <option value="">Select Major Crops</option>
+                                        <option value="rice">Rice</option>
+                                        <option value="wheat">Wheat</option>
+                                        <option value="maize">Maize</option>
+                                        <option value="vegetables">Vegetables</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                </div>
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="majorCrops" className="block text-sm font-medium text-gray-700">
+                                        Selected Major Crops
+                                    </label>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {selectedMajorCrop.map(crop => (
+                                            <div key={crop} className="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
+                                                <span>{crop}</span>
+                                                <button
+                                                    type="button"
+                                                    className="ml-2 text-red-500 hover:text-red-700"
+                                                    onClick={() => handleCropDelete(crop)}
+                                                >
+                                                    <MdDeleteForever />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {isOtherMajorCropOpen && (
+                                    <div className="col-span-2 flex gap-2">
+                                        <div className="flex-1">
+                                            <label htmlFor="otherMajorCrop" className="block text-sm font-medium text-gray-700">
+                                                Other Crop
+                                            </label>
+                                            <input
+                                                type="text"
+                                                id="otherMajorCrop"
+                                                name="otherMajorCrop"
+                                                placeholder="Enter Other Crop"
+                                                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                value={selectedMajorCropOthers}
+                                                onChange={(e) => setSelectedMajorCropOthers(e.target.value)}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 sr-only">
+                                                Add Crop
+                                            </label>
                                             <button
                                                 type="button"
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                                onClick={() => handleCropDelete(crop)}
+                                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                                                onClick={handleAddOtherCrop}
                                             >
-                                                <MdDeleteForever />
+                                                Add Crop
                                             </button>
+                                        </div>
+                                    </div>
+                                )}
+
+
+
+                                {/* Transplanting Time Section */}
+                                <div className="space-y-4 col-span-2">
+                                    <h5 className="text-sm font-bold text-gray-700">Transplanting Period</h5>
+                                    {transplantingDates.map((opt, index) => (
+                                        <div key={opt.value} className="flex items-center gap-4">
+                                            <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
+                                            <div className="flex-1 grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label htmlFor={`transplantingFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        From
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`transplantingFrom-${opt.value}`}
+                                                        value={opt.fromDate}
+                                                        onChange={(e) => handleTransplantingDateChange(index, 'fromDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor={`transplantingTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        To
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`transplantingTo-${opt.value}`}
+                                                        value={opt.toDate}
+                                                        onChange={(e) => handleTransplantingDateChange(index, 'toDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
-                            </div>
 
-                            {isOtherMajorCropOpen && (
-                                <div className="col-span-2 flex gap-2">
-                                    <div className="flex-1">
-                                        <label htmlFor="otherMajorCrop" className="block text-sm font-medium text-gray-700">
-                                            Other Crop
+                                {/* PI Time Section */}
+                                <div className="space-y-4 col-span-2">
+                                    <h5 className="text-sm font-bold text-gray-700">PI Period</h5>
+                                    {piTimes.map((opt, index) => (
+                                        <div key={opt.value} className="flex items-center gap-4">
+                                            <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
+                                            <div className="flex-1 grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label htmlFor={`piTimeFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        From
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`piTimeFrom-${opt.value}`}
+                                                        value={opt.fromDate}
+                                                        onChange={(e) => handlePiTimeChange(index, 'fromDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor={`piTimeTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        To
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`piTimeTo-${opt.value}`}
+                                                        value={opt.toDate}
+                                                        onChange={(e) => handlePiTimeChange(index, 'toDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Season for Flowering Date Section */}
+                                <div className="space-y-4 col-span-2">
+                                    <h5 className="text-sm font-bold text-gray-700">Flowering Period</h5>
+                                    {floweringDates.map((opt, index) => (
+                                        <div key={opt.value} className="flex items-center gap-4">
+                                            <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
+                                            <div className="flex-1 grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label htmlFor={`floweringFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        From
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`floweringFrom-${opt.value}`}
+                                                        value={opt.fromDate}
+                                                        onChange={(e) => handleFloweringDateChange(index, 'fromDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor={`floweringTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        To
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`floweringTo-${opt.value}`}
+                                                        value={opt.toDate}
+                                                        onChange={(e) => handleFloweringDateChange(index, 'toDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Expected Harvest Period Section */}
+                                <div className="space-y-4 col-span-2">
+                                    <h5 className="text-sm font-bold text-gray-700">Expected Harvest Period</h5>
+                                    {expectedHarvestPeriods.map((opt, index) => (
+                                        <div key={opt.value} className="flex items-center gap-4">
+                                            <span className="w-12 font-medium capitalize">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
+                                            <div className="flex-1 grid grid-cols-2 gap-2">
+                                                <div>
+                                                    <label htmlFor={`harvestFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        From
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`harvestFrom-${opt.value}`}
+                                                        value={opt.fromDate}
+                                                        onChange={(e) => handleExpectedHarvestDateChange(index, 'fromDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label htmlFor={`harvestTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
+                                                        To
+                                                    </label>
+                                                    <input
+                                                        type="date"
+                                                        id={`harvestTo-${opt.value}`}
+                                                        value={opt.toDate}
+                                                        onChange={(e) => handleExpectedHarvestDateChange(index, 'toDate', e.target.value)}
+                                                        className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Season Wise Dominant Varieties Section */}
+                                <div className="space-y-4 col-span-2">
+                                    <h5 className="text-sm  text-gray-700 font-bold">Season Wise Dominant Varieties</h5>
+                                    {selectedSeasonVarieties.map((opt, index) => (
+                                        <div key={opt.value} className="flex items-center gap-4">
+                                            <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
+                                            <div className="flex-1">
+
+                                                <input
+                                                    type="text"
+                                                    id={`seasonVariety-${opt.value}`}
+                                                    placeholder="Enter variety"
+                                                    value={opt.input}
+                                                    onChange={(e) => handleSeasonVarietyInputChange(index, e.target.value)}
+                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="irrigationPractices" className="block text-sm font-medium text-gray-700">
+                                        Irrigation Practices
+                                    </label>
+                                    <select
+                                        id="irrigationPractices"
+                                        name="irrigationPractices"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.irrigationPractices}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Irrigation Practices</option>
+                                        <option value="AWD">AWD</option>
+                                        <option value="continuousFlooding">Continuous Flooding</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                </div>
+
+                                {formData.irrigationPractices === "others" && (
+                                    <div>
+                                        <label htmlFor="irrigationPracticesOthers" className="block text-sm font-medium text-gray-700">
+                                            Other Irrigation Practices
                                         </label>
                                         <input
                                             type="text"
-                                            id="otherMajorCrop"
-                                            name="otherMajorCrop"
-                                            placeholder="Enter Other Crop"
+                                            id="irrigationPracticesOthers"
+                                            name="irrigationPracticesOthers"
+                                            placeholder="Other Irrigation Practices"
                                             className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            value={selectedMajorCropOthers}
-                                            onChange={(e) => setSelectedMajorCropOthers(e.target.value)}
+                                            value={irrigationPracticesOthers}
+                                            onChange={(e) => setIrrigationPracticesOthers(e.target.value)}
                                         />
                                     </div>
+                                )}
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="irrigationSourceType" className="block text-sm font-medium text-gray-700">
+                                        Water Source
+                                    </label>
+                                    <select
+                                        id="irrigationSourceType"
+                                        name="irrigationSourceType"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.irrigationSourceType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Water Source</option>
+                                        <option value="surface">Surface_LLP</option>
+                                        <option value="GroundWaterShallow">Ground Water_Shallow</option>
+                                        <option value="GroundWaterDeep">Ground Water_Deep</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
+                                        Soil Type
+                                    </label>
+                                    <select
+                                        id="soilType"
+                                        name="soilType"
+                                        className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.soilType}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Soil Type</option>
+                                        <option value="clay">Clay</option>
+                                        <option value="clayLoam">Clay Loam</option>
+                                        <option value="sandy">Sandy</option>
+                                        <option value="silt">Silt</option>
+                                        <option value="sandyLoam">Sandy Loam</option>
+                                        <option value="others">Others</option>
+                                    </select>
+                                </div>
+
+                                {formData.soilType === "others" && (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 sr-only">
-                                            Add Crop
+                                        <label htmlFor="otherSoilType" className="block text-sm font-medium text-gray-700">
+                                            Other Soil Type
                                         </label>
-                                        <button
-                                            type="button"
-                                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-                                            onClick={handleAddOtherCrop}
-                                        >
-                                            Add Crop
-                                        </button>
+                                        <input
+                                            type="text"
+                                            id="otherSoilType"
+                                            name="otherSoilType"
+                                            placeholder="Other Soil Type"
+                                            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={otherSoilType}
+                                            onChange={(e) => setOtherSoilType(e.target.value)}
+                                        />
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-
-
-                            {/* Transplanting Time Section */}
-                            <div className="space-y-4 col-span-2">
-                                <h5 className="text-sm font-bold text-gray-700">Transplanting Period</h5>
-                                {transplantingDates.map((opt, index) => (
-                                    <div key={opt.value} className="flex items-center gap-4">
-                                        <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
-                                        <div className="flex-1 grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label htmlFor={`transplantingFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    From
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`transplantingFrom-${opt.value}`}
-                                                    value={opt.fromDate}
-                                                    onChange={(e) => handleTransplantingDateChange(index, 'fromDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor={`transplantingTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    To
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`transplantingTo-${opt.value}`}
-                                                    value={opt.toDate}
-                                                    onChange={(e) => handleTransplantingDateChange(index, 'toDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* PI Time Section */}
-                            <div className="space-y-4 col-span-2">
-                                <h5 className="text-sm font-bold text-gray-700">PI Period</h5>
-                                {piTimes.map((opt, index) => (
-                                    <div key={opt.value} className="flex items-center gap-4">
-                                        <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
-                                        <div className="flex-1 grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label htmlFor={`piTimeFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    From
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`piTimeFrom-${opt.value}`}
-                                                    value={opt.fromDate}
-                                                    onChange={(e) => handlePiTimeChange(index, 'fromDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor={`piTimeTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    To
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`piTimeTo-${opt.value}`}
-                                                    value={opt.toDate}
-                                                    onChange={(e) => handlePiTimeChange(index, 'toDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Season for Flowering Date Section */}
-                            <div className="space-y-4 col-span-2">
-                                <h5 className="text-sm font-bold text-gray-700">Flowering Period</h5>
-                                {floweringDates.map((opt, index) => (
-                                    <div key={opt.value} className="flex items-center gap-4">
-                                        <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
-                                        <div className="flex-1 grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label htmlFor={`floweringFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    From
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`floweringFrom-${opt.value}`}
-                                                    value={opt.fromDate}
-                                                    onChange={(e) => handleFloweringDateChange(index, 'fromDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor={`floweringTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    To
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`floweringTo-${opt.value}`}
-                                                    value={opt.toDate}
-                                                    onChange={(e) => handleFloweringDateChange(index, 'toDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Expected Harvest Period Section */}
-                            <div className="space-y-4 col-span-2">
-                                <h5 className="text-sm font-bold text-gray-700">Expected Harvest Period</h5>
-                                {expectedHarvestPeriods.map((opt, index) => (
-                                    <div key={opt.value} className="flex items-center gap-4">
-                                        <span className="w-12 font-medium capitalize">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
-                                        <div className="flex-1 grid grid-cols-2 gap-2">
-                                            <div>
-                                                <label htmlFor={`harvestFrom-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    From
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`harvestFrom-${opt.value}`}
-                                                    value={opt.fromDate}
-                                                    onChange={(e) => handleExpectedHarvestDateChange(index, 'fromDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label htmlFor={`harvestTo-${opt.value}`} className="block text-sm font-medium text-gray-700">
-                                                    To
-                                                </label>
-                                                <input
-                                                    type="date"
-                                                    id={`harvestTo-${opt.value}`}
-                                                    value={opt.toDate}
-                                                    onChange={(e) => handleExpectedHarvestDateChange(index, 'toDate', e.target.value)}
-                                                    className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Season Wise Dominant Varieties Section */}
-                            <div className="space-y-4 col-span-2">
-                                <h5 className="text-sm  text-gray-700 font-bold">Season Wise Dominant Varieties</h5>
-                                {selectedSeasonVarieties.map((opt, index) => (
-                                    <div key={opt.value} className="flex items-center gap-4">
-                                        <span className="w-12 font-medium">{seasonOptions.find(o => o.value === opt.value)?.label || opt.value}</span>
-                                        <div className="flex-1">
-
-                                            <input
-                                                type="text"
-                                                id={`seasonVariety-${opt.value}`}
-                                                placeholder="Enter variety"
-                                                value={opt.input}
-                                                onChange={(e) => handleSeasonVarietyInputChange(index, e.target.value)}
-                                                className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="irrigationPractices" className="block text-sm font-medium text-gray-700">
-                                    Irrigation Practices
-                                </label>
-                                <select
-                                    id="irrigationPractices"
-                                    name="irrigationPractices"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.irrigationPractices}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Irrigation Practices</option>
-                                    <option value="AWD">AWD</option>
-                                    <option value="continuousFlooding">Continuous Flooding</option>
-                                    <option value="others">Others</option>
-                                </select>
-                            </div>
-
-                            {formData.irrigationPractices === "others" && (
-                                <div>
-                                    <label htmlFor="irrigationPracticesOthers" className="block text-sm font-medium text-gray-700">
-                                        Other Irrigation Practices
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="croppingPattern" className="block text-sm font-medium text-gray-700">
+                                        Cropping Pattern
                                     </label>
                                     <input
                                         type="text"
-                                        id="irrigationPracticesOthers"
-                                        name="irrigationPracticesOthers"
-                                        placeholder="Other Irrigation Practices"
-                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={irrigationPracticesOthers}
-                                        onChange={(e) => setIrrigationPracticesOthers(e.target.value)}
-                                    />
-                                </div>
-                            )}
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="irrigationSourceType" className="block text-sm font-medium text-gray-700">
-                                    Water Source
-                                </label>
-                                <select
-                                    id="irrigationSourceType"
-                                    name="irrigationSourceType"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.irrigationSourceType}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Water Source</option>
-                                    <option value="surface">Surface_LLP</option>
-                                    <option value="GroundWaterShallow">Ground Water_Shallow</option>
-                                    <option value="GroundWaterDeep">Ground Water_Deep</option>
-                                </select>
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
-                                    Soil Type
-                                </label>
-                                <select
-                                    id="soilType"
-                                    name="soilType"
-                                    className="w-full p-3 h-11 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.soilType}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Soil Type</option>
-                                    <option value="clay">Clay</option>
-                                    <option value="clayLoam">Clay Loam</option>
-                                    <option value="sandy">Sandy</option>
-                                    <option value="silt">Silt</option>
-                                    <option value="sandyLoam">Sandy Loam</option>
-                                    <option value="others">Others</option>
-                                </select>
-                            </div>
-
-                            {formData.soilType === "others" && (
-                                <div>
-                                    <label htmlFor="otherSoilType" className="block text-sm font-medium text-gray-700">
-                                        Other Soil Type
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="otherSoilType"
-                                        name="otherSoilType"
-                                        placeholder="Other Soil Type"
-                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={otherSoilType}
-                                        onChange={(e) => setOtherSoilType(e.target.value)}
-                                    />
-                                </div>
-                            )}
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="croppingPattern" className="block text-sm font-medium text-gray-700">
-                                    Cropping Pattern
-                                </label>
-                                <input
-                                    type="text"
-                                    id="croppingPattern"
-                                    name="croppingPattern"
-                                    placeholder="Cropping Pattern"
-                                    className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.croppingPattern}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-
-                                <label htmlFor="climateExtremes" className="block text-sm font-medium text-gray-700">
-                                    Major Climate Extremes
-                                </label>
-                                <select
-                                    id="climateExtremes"
-                                    name="climateExtremes"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value=""
-                                    onChange={handleClimateExtremeSelect}
-                                >
-                                    <option value="">Select Major Climate Extremes</option>
-                                    {climateExtremeOptions.map(opt => (
-                                        <option key={opt.value} value={opt.value}>
-                                            {opt.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
-                                    Selected Major Climate Extremes
-                                </label>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {selectedClimateExtremes.map(extreme => (
-                                        <div key={extreme} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
-                                            <span>{extreme}</span>
-                                            <button
-                                                type="button"
-                                                className="ml-2 text-red-500 hover:text-red-700"
-                                                onClick={() => handleClimateExtremeDelete(extreme)}
-                                            >
-                                                <MdDeleteForever />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="totalCultivatedArea" className="block text-sm font-medium text-gray-700">
-                                    Total Cultivated Area (ha)
-                                </label>
-                                <input
-                                    type="text"
-                                    id="totalCultivatedArea"
-                                    name="totalCultivatedArea"
-                                    placeholder="Total Cultivated Area (ha)"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.totalCultivatedArea}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="numberOfFarmers" className="block text-sm font-medium text-gray-700">
-                                    Number of Farmers
-                                </label>
-                                <input
-                                    type="text"
-                                    id="numberOfFarmers"
-                                    name="numberOfFarmers"
-                                    placeholder="Number of Farmers"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.numberOfFarmers}
-                                    onChange={handleChange}
-                                />
-                            </div>
-
-                            <div className="col-span-2 md:col-span-1">
-                                <label htmlFor="communityInformation" className="block text-sm font-medium text-gray-700">
-                                    Community Information
-                                </label>
-                                <select
-                                    id="communityInformation"
-                                    name="communityInformation"
-                                    className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    value={formData.communityInformation}
-                                    onChange={handleChange}
-                                >
-                                    <option value="">Select Community Information</option>
-                                    <option value="Farmer Group">Farmer Group</option>
-                                    <option value="Farmer Field School">Farmer Field School</option>
-                                    <option value="Agromet School">Agromet School</option>
-                                    <option value="None">None</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
-
-                            {formData.communityInformation === "Other" && (
-                                <div>
-                                    <label htmlFor="farmerGroupName" className="block text-sm font-medium text-gray-700">
-                                        Farmer Group Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="farmerGroupName"
-                                        name="farmerGroupName"
-                                        placeholder="Farmer Group Name"
-                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        value={formData.farmerGroupName}
+                                        id="croppingPattern"
+                                        name="croppingPattern"
+                                        placeholder="Cropping Pattern"
+                                        className="w-full h-11 p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.croppingPattern}
                                         onChange={handleChange}
                                     />
                                 </div>
-                            )}
+
+                                <div className="col-span-2 md:col-span-1">
+
+                                    <label htmlFor="climateExtremes" className="block text-sm font-medium text-gray-700">
+                                        Major Climate Extremes
+                                    </label>
+                                    <select
+                                        id="climateExtremes"
+                                        name="climateExtremes"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value=""
+                                        onChange={handleClimateExtremeSelect}
+                                    >
+                                        <option value="">Select Major Climate Extremes</option>
+                                        {climateExtremeOptions.map(opt => (
+                                            <option key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
+                                        Selected Major Climate Extremes
+                                    </label>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {selectedClimateExtremes.map(extreme => (
+                                            <div key={extreme} className="flex items-center bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                                                <span>{extreme}</span>
+                                                <button
+                                                    type="button"
+                                                    className="ml-2 text-red-500 hover:text-red-700"
+                                                    onClick={() => handleClimateExtremeDelete(extreme)}
+                                                >
+                                                    <MdDeleteForever />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="totalCultivatedArea" className="block text-sm font-medium text-gray-700">
+                                        Total Cultivated Area (ha)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="totalCultivatedArea"
+                                        name="totalCultivatedArea"
+                                        placeholder="Total Cultivated Area (ha)"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.totalCultivatedArea}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="numberOfFarmers" className="block text-sm font-medium text-gray-700">
+                                        Number of Farmers
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="numberOfFarmers"
+                                        name="numberOfFarmers"
+                                        placeholder="Number of Farmers"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.numberOfFarmers}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+
+                                <div className="col-span-2 md:col-span-1">
+                                    <label htmlFor="communityInformation" className="block text-sm font-medium text-gray-700">
+                                        Community Information
+                                    </label>
+                                    <select
+                                        id="communityInformation"
+                                        name="communityInformation"
+                                        className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        value={formData.communityInformation}
+                                        onChange={handleChange}
+                                    >
+                                        <option value="">Select Community Information</option>
+                                        <option value="Farmer Group">Farmer Group</option>
+                                        <option value="Farmer Field School">Farmer Field School</option>
+                                        <option value="Agromet School">Agromet School</option>
+                                        <option value="None">None</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                {formData.communityInformation === "Other" && (
+                                    <div>
+                                        <label htmlFor="farmerGroupName" className="block text-sm font-medium text-gray-700">
+                                            Farmer Group Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="farmerGroupName"
+                                            name="farmerGroupName"
+                                            placeholder="Farmer Group Name"
+                                            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            value={formData.farmerGroupName}
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    }
 
                     {/* Buttons */}
                     <div className="flex justify-end gap-4">
