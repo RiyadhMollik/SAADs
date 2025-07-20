@@ -97,31 +97,31 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
         setNaturalEnemies(updated);
     };
     const transplantingOptions = [
-        { label: "Green leafhopper", value: "Green leafhopper" },
-        { label: "White leafhopper", value: "White leafhopper" },
-        { label: "Short horned Grasshopper", value: "Short horned Grasshopper" },
-        { label: "Long horned Grasshopper", value: "Long horned Grasshopper" },
-        { label: "Long horned Cricket", value: "Long horned Cricket" },
-        { label: "Yellow Stemborer", value: "Yellow Stemborer" },
-        { label: "White Stemborer", value: "White Stemborer" },
-        { label: "Leaf roller", value: "Leaf roller" },
-        { label: "Caseworm", value: "Caseworm" },
-        { label: "Brown Planthopper (BPH)", value: "Brown Planthopper (BPH)" },
-        { label: "White backed planthopper (WBPH)", value: "White backed planthopper (WBPH)" },
+        { label: "Stemborer", value: " Stemborer" },
         { label: "Gallmidge", value: "Gallmidge" },
         { label: "Rice hispa", value: "Rice hispa" },
+        { label: "Whorl maggot", value: "Whorl maggot" },
+        { label: "Rice Leaf roller", value: "Rice Leaf roller" },
+        { label: "Grasshopper", value: "Grasshopper" },
+        { label: "Long horned Cricket", value: "Long horned Cricket" },
+        { label: "Green leafhopper", value: "Green leafhopper" },
+        { label: "Thrips", value: "Thrips" },
+        { label: "Caseworm", value: "Caseworm" },
+        { label: "Brown Planthopper (BPH)", value: "Brown Planthopper (BPH)" },
+        { label: "Mealy bug", value: "Mealy bug" },
         { label: "Rice bug", value: "Rice bug" },
+        { label: "Rice ear cutting caterpillar", value: "Rice ear cutting caterpillar" },
     ];
     const naturalEnemyOptions = [
         { label: "Spider", value: "Spider" },
         { label: "Damsel fly", value: "Damsel fly" },
         { label: "Dragon fly", value: "Dragon fly" },
-        { label: "Lady bird beetle (adult)", value: "Lady bird beetle (adult)" },
-        { label: "Lady bird beetle (Grub)", value: "Lady bird beetle (Grub)" },
+        { label: "Lady bird beetle", value: "Lady bird beetle" },
         { label: "Carabid beetle", value: "Carabid beetle" },
         { label: "Staphylinid beetle", value: "Staphylinid beetle" },
         { label: "Tiger beetle", value: "Tiger beetle" },
         { label: "Parasitic wasps", value: "Parasitic wasps" },
+        { label: "Green Mirid Bugs", value: "Green Mirid Bugs" },
     ];
 
     // Remove insect entry
@@ -664,7 +664,7 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
                                         <option value="stink_bug">Stink bug</option>
                                         <option value="scotinophara_bug">Scotinophara bug</option>
                                         <option value="rice_hispa">Rice hispa</option>
-                                    </select> 
+                                    </select>
                                     <select
                                         name="insectPests"
                                         className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -525,7 +525,23 @@ const Profile = () => {
                 ...authUser.RegistedUser,
                 hotspot: authUser.RegistedUser.hotspot || []
             }));
-            setSelectedHotspots(authUser.RegistedUser?.hotspot?.split(", ") || []);
+            const hotspotRaw = authUser.RegistedUser?.hotspot;
+
+            let hotspots = [];
+
+            if (typeof hotspotRaw === "string") {
+                try {
+                    // Try parsing JSON string
+                    hotspots = JSON.parse(hotspotRaw);
+                } catch {
+                    // Fallback: if parsing fails, split by comma (if expected)
+                    hotspots = hotspotRaw.split(", ");
+                }
+            } else if (Array.isArray(hotspotRaw)) {
+                hotspots = hotspotRaw;
+            }
+
+            setSelectedHotspots(hotspots || [])
             setSelectedMajorCrop(authUser.RegistedUser?.majorCrops?.split(", ") || []);
             setSelectedClimateExtremes(authUser.RegistedUser?.climateExtremes?.split(", ") || []);
             setSelectedId(authUser.RegistedUser.id);
@@ -591,7 +607,7 @@ const Profile = () => {
         if (!formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchDistrict = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/districts?division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch district data");
                 const data = await response.json();
                 setDistricts(data.sort((a, b) => a.localeCompare(b)));
@@ -606,7 +622,7 @@ const Profile = () => {
         if (!formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchUpazila = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/upazilas?district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch upazila data");
                 const data = await response.json();
                 setUpazilas(data.sort((a, b) => a.localeCompare(b)));
@@ -621,7 +637,7 @@ const Profile = () => {
         if (!formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchUnion = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/unions?upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch union data");
                 const data = await response.json();
                 setUnions(data.sort((a, b) => a.localeCompare(b)));
@@ -636,7 +652,7 @@ const Profile = () => {
         if (!formData.union || !formData.upazila || !formData.district || !formData.division || !formData.region || !selectedHotspots.length) return;
         const fetchBlock = async () => {
             try {
-                const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}®ion=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
+                const response = await fetch(`https://iinms.brri.gov.bd/api/data/blocks?union=${formData.union}&upazila=${formData.upazila}&district=${formData.district}&division=${formData.division}&region=${formData.region}&hotspot=${selectedHotspots.join(',')}`);
                 if (!response.ok) throw new Error("Failed to fetch block data");
                 const data = await response.json();
                 setBlock(data.sort((a, b) => a.localeCompare(b)));

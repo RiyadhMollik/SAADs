@@ -12,14 +12,32 @@ function SaaoUserReport() {
     const [searchTerm, setSearchTerm] = useState('');
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [selectedHotspot, setSelectedHotspot] = useState('');
+    const [roles, setRoles] = useState([]);
     const API_URL = 'https://iinms.brri.gov.bd/api';
 
+    // Fetch all hotspots
+    const fetchRoles = async () => {
+        try {
+            const response = await axios.get(`${API_URL}/hotspots`);
+            const data = response.data.reverse();
+            setRoles(data);
+        } catch (error) {
+            console.error("Error fetching hotspots:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
     useEffect(() => {
         const fetchUserCounts = async () => {
             setLoading(true);
             setError(null);
             try {
-                const response = await axios.get(`${API_URL}/reports/saao-user-counts`);
+                const queryParams = new URLSearchParams();
+                if (selectedHotspot) queryParams.append('hotspot', selectedHotspot);
+
+                const response = await axios.get(`${API_URL}/reports/saao-user-counts?${queryParams}`);
                 setData(response.data.data || []);
                 setFilteredData(response.data.data || []);
                 setTotalCount(response.data.totalFarmerCount || 0);
@@ -31,8 +49,9 @@ function SaaoUserReport() {
                 setLoading(false);
             }
         };
+
         fetchUserCounts();
-    }, []);
+    }, [selectedHotspot]);
 
     useEffect(() => {
         let result = [...data];
@@ -45,27 +64,10 @@ function SaaoUserReport() {
             );
         }
 
-        if (selectedHotspot) {
-            result = result.filter(user => {
-                const hotspotList = Array.isArray(user.hotspot)
-                    ? user.hotspot
-                    : typeof user.hotspot === 'string'
-                        ? (() => {
-                            try {
-                                return JSON.parse(user.hotspot);
-                            } catch {
-                                return [];
-                            }
-                        })()
-                        : [];
-                return hotspotList.includes(selectedHotspot);
-            });
-        }
-
         setFilteredData(result);
-        const totalCount = result.reduce((total, user) => total + user.farmerCount, 0);
-        setTotalCount(totalCount);
-    }, [searchTerm, selectedHotspot, data]);
+        const total = result.reduce((sum, item) => sum + item.farmerCount, 0);
+        setTotalCount(total);
+    }, [searchTerm, data]);
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -92,29 +94,11 @@ function SaaoUserReport() {
         setFilteredData(sortedData);
     };
 
-    const uniqueHotspots = [
-        ...new Set(
-            data
-                .flatMap(user => {
-                    if (Array.isArray(user.hotspot)) return user.hotspot;
-                    if (typeof user.hotspot === 'string') {
-                        try {
-                            return JSON.parse(user.hotspot);
-                        } catch {
-                            return [];
-                        }
-                    }
-                    return [];
-                })
-                .filter(Boolean)
-        )
-    ];
-
     const handleExportCSV = () => {
         try {
             const headers = [
                 'ID', 'Name', 'Role', 'Hotspot', 'Region', 'Division', 'District',
-                'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer'
+                'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer', 'With Nid', 'Without Nid'
             ];
 
             const csvData = filteredData.map(user => {
@@ -142,12 +126,14 @@ function SaaoUserReport() {
                     user.union || '-',
                     user.block || '-',
                     user.mobileNumber || '-',
-                    user.farmerCount || 0
+                    user.farmerCount || 0,
+                    user.withNationalIdCount || 0,
+                    user.withoutNationalIdCount || 0
                 ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(',');
             });
 
             csvData.push([
-                '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount
+                '', '', '', '', '', '', '', '', '', '','','', 'Total:', totalCount
             ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(','));
 
             const csvContent = [
@@ -177,11 +163,9 @@ function SaaoUserReport() {
             const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 12;
 
-            // Preload the logo image as base64
             let logoBase64 = null;
             try {
                 const response = await fetch('/logo.png');
-                if (!response.ok) throw new Error('Failed to fetch logo');
                 const blob = await response.blob();
                 logoBase64 = await new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -191,13 +175,11 @@ function SaaoUserReport() {
                 });
             } catch (error) {
                 console.warn('Failed to load logo image:', error);
-                // Proceed without the logo
             }
 
             doc.setFont(undefined, "normal");
             doc.setFontSize(12);
-            const date = new Date();
-            const formattedDate = date.toLocaleString('en-US', {
+            const date = new Date().toLocaleString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
@@ -209,23 +191,25 @@ function SaaoUserReport() {
 
             const headers = [
                 'ID', 'Name', 'Role', 'Hotspot', 'Region', 'Division', 'District',
-                'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer'
+                'Upazila', 'Union', 'Block', 'Mobile Number', 'Total Farmer', 'With Nid', 'Without Nid'
             ];
+
             const tableData = filteredData.map((user, index) => [
-                index + 1 || '-',
+                index + 1,
                 user.name || '-',
                 user.role || '-',
-                Array.isArray(user.hotspot)
-                    ? user.hotspot.join(', ')
-                    : typeof user.hotspot === 'string'
-                        ? (() => {
-                            try {
-                                return JSON.parse(user.hotspot).join(', ');
-                            } catch {
-                                return user.hotspot || '-';
-                            }
-                        })()
-                        : '-',
+                (() => {
+                    try {
+                        const h = Array.isArray(user.hotspot)
+                            ? user.hotspot
+                            : typeof user.hotspot === 'string'
+                                ? JSON.parse(user.hotspot)
+                                : [];
+                        return h.length ? h.join(', ') : '-';
+                    } catch {
+                        return '-';
+                    }
+                })(),
                 user.region || '-',
                 user.division || '-',
                 user.district || '-',
@@ -233,17 +217,17 @@ function SaaoUserReport() {
                 user.union || '-',
                 user.block || '-',
                 user.mobileNumber || '-',
-                user.farmerCount || 0
+                user.farmerCount || 0,
+                user.withNationalIdCount || 0,
+                user.withoutNationalIdCount || 0
             ]);
 
-            tableData.push([
-                '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount
-            ]);
+            tableData.push(['', '', '', '', '', '', '', '', '', '','','', 'Total:', totalCount]);
 
             const equalWidth = (pageWidth - margin * 2) / headers.length;
-            const columnStyles = headers.reduce((styles, _, i) => {
-                styles[i] = { cellWidth: equalWidth };
-                return styles;
+            const columnStyles = headers.reduce((acc, _, i) => {
+                acc[i] = { cellWidth: equalWidth };
+                return acc;
             }, {});
 
             autoTable(doc, {
@@ -270,14 +254,14 @@ function SaaoUserReport() {
                 columnStyles,
                 margin: { top: 40, left: margin, right: margin, bottom: 20 },
                 didDrawPage: (data) => {
-                    // Add logo only if successfully loaded
                     if (logoBase64) {
                         try {
                             doc.addImage(logoBase64, 'PNG', margin, 16, 15, 15);
-                        } catch (imgError) {
-                            console.warn('Failed to add logo to PDF:', imgError);
+                        } catch (err) {
+                            console.warn('Logo rendering failed:', err);
                         }
                     }
+
                     doc.setFontSize(12);
                     doc.setTextColor(50);
                     doc.setFont("helvetica", "bold");
@@ -286,17 +270,15 @@ function SaaoUserReport() {
                     doc.setTextColor(100);
                     doc.text("Gazipur-1701", margin + 18, 20);
                     doc.text("Contact Agromet Lab", margin + 18, 25);
-                    doc.setFontSize(10);
-                    doc.setTextColor(50);
                     doc.setFont(undefined, "normal");
+                    doc.setTextColor(50);
                     doc.text("Email: info.brriagromet@gmail.com", margin + 18, 30);
                     doc.text("Mobile: 09644300300", margin + 18, 35);
-                    doc.text(formattedDate, pageWidth - margin, 35, { align: "right" });
+                    doc.text(date, pageWidth - margin, 35, { align: "right" });
 
-                    const pageCount = doc.internal.getNumberOfPages();
                     doc.setFontSize(8);
                     doc.setTextColor(100);
-                    doc.text(`Page ${data.pageNumber} of ${pageCount}`, pageWidth / 2, pageHeight - 12, { align: "center" });
+                    doc.text(`Page ${data.pageNumber} of ${doc.internal.getNumberOfPages()}`, pageWidth / 2, pageHeight - 12, { align: "center" });
                     doc.text("© 2025 Smart Agro-Advisory Dissemination System.", margin, pageHeight - 6);
                 },
             });
@@ -309,7 +291,7 @@ function SaaoUserReport() {
     };
 
     return (
-        <div className="p-2 sm:p-4 max-w-6xl mx-auto">
+        <div className="p-2 sm:p-4 max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-2 sm:mb-4 gap-2 sm:gap-4">
                 <h1 className="text-lg sm:text-2xl font-bold">SAAO User Report</h1>
             </div>
@@ -329,10 +311,8 @@ function SaaoUserReport() {
                         className="p-1 sm:p-2 border rounded text-sm sm:text-base"
                     >
                         <option value="">Hotspots</option>
-                        {uniqueHotspots.map((hotspot) => (
-                            <option key={hotspot} value={hotspot}>
-                                {hotspot}
-                            </option>
+                        {roles.map(h => (
+                            <option key={h.id} value={h.name}>{h.name}</option>
                         ))}
                     </select>
                 </div>
@@ -340,14 +320,12 @@ function SaaoUserReport() {
                     <button
                         onClick={handleExportCSV}
                         className="p-1 sm:p-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm sm:text-base"
-                        aria-label="Export report to CSV"
                     >
                         CSV
                     </button>
                     <button
                         onClick={handleExportPDF}
                         className="p-1 sm:p-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm sm:text-base"
-                        aria-label="Export report to PDF"
                     >
                         PDF
                     </button>
@@ -361,7 +339,7 @@ function SaaoUserReport() {
                 <table className="w-full bg-white border rounded-lg shadow-md text-sm sm:text-base">
                     <thead>
                         <tr className="bg-slate-600 text-white border-b capitalize">
-                            {['id', 'name', 'role', 'hotspot', 'region', 'division', 'district', 'upazila', 'union', 'block', 'mobileNumber', 'farmerCount'].map((key) => (
+                            {['id', 'name', 'role', 'hotspot', 'region', 'division', 'district', 'upazila', 'union', 'block', 'mobileNumber', 'farmerCount', 'withNationalIdCount', 'withoutNationalIdCount'].map((key) => (
                                 <th
                                     key={key}
                                     className="p-1 sm:p-3 text-left cursor-pointer"
@@ -369,6 +347,8 @@ function SaaoUserReport() {
                                 >
                                     {key === 'id' ? 'ID' :
                                         key === 'farmerCount' ? 'Total Farmer' :
+                                            key === 'withNationalIdCount' ? 'With National ID' :
+                                                key === 'withoutNationalIdCount' ? 'Without National ID' :
                                             key.charAt(0).toUpperCase() + key.slice(1)}
                                     {sortConfig.key === key && (
                                         <span className="ml-1">
@@ -411,18 +391,18 @@ function SaaoUserReport() {
                                         <td className="p-1 sm:p-3 capitalize">{user.block || '-'}</td>
                                         <td className="p-1 sm:p-3 capitalize">{user.mobileNumber || '-'}</td>
                                         <td className="p-1 sm:p-3 capitalize">{user.farmerCount || 0}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.withNationalIdCount || 0}</td>
+                                        <td className="p-1 sm:p-3 capitalize">{user.withoutNationalIdCount || 0}</td>
                                     </tr>
                                 ))}
                                 <tr className="border-t font-bold bg-slate-600 text-white">
-                                    <td colSpan="11" className="p-1 sm:p-3 text-right">Total:</td>
+                                    <td colSpan="13" className="p-1 sm:p-3 text-right">Total:</td>
                                     <td className="p-1 sm:p-3">{totalCount}</td>
                                 </tr>
                             </>
                         ) : (
                             <tr>
-                                <td colSpan="12" className="p-1 sm:p-3 text-center">
-                                    No data available
-                                </td>
+                                <td colSpan="12" className="p-1 sm:p-3 text-center">No data available</td>
                             </tr>
                         )}
                     </tbody>
