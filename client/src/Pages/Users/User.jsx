@@ -5,21 +5,18 @@ import axios from 'axios';
 
 const User = () => {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [farmers, setFarmers] = useState([]);
-  const [filteredFarmers, setFilteredFarmers] = useState([]);
-  const [filteredRoles, setFilteredRoles] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("add");
   const [currentUser, setCurrentUser] = useState({ id: null, name: "", role: "", password: "", mobileNumber: "", roleId: null });
   const [selectedFarmer, setSelectedFarmer] = useState(null);
   const [searchFarmer, setSearchFarmer] = useState("");
   const [searchRole, setSearchRole] = useState("");
-  const [showFarmerDropdown, setShowFarmerDropdown] = useState(false);
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
+  const [showFarmerDropdown, setShowFarmerDropdown] = useState(false);
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
   const USERS_API_URL = "https://iinms.brri.gov.bd/api/users";
   const ROLES_API_URL = "https://iinms.brri.gov.bd/api/roles";
@@ -31,9 +28,7 @@ const User = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(USERS_API_URL);
-      const data = response.data;
-      setUsers(data);
-      setFilteredUsers(data);
+      setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
     }
@@ -42,31 +37,26 @@ const User = () => {
   const fetchRoles = async () => {
     try {
       const response = await axios.get(ROLES_API_URL);
-      const data = response.data;
-      console.log(data);
-      
-      setRoles(data);
-      setFilteredRoles(data);
+      setRoles(response.data);
     } catch (error) {
       console.error("Error fetching roles:", error);
     }
   };
 
-  const fetchFarmers = async () => {
+  const fetchFarmers = async (query = "") => {
     try {
-      const response = await axios.get(FARMERS_API_URL);
-      const data = response.data;
-      setFarmers(data);
-      setFilteredFarmers(data.slice(0, 5));
+      const response = await axios.get(`${FARMERS_API_URL}?search=${query}`);
+      console.log(response.data);
+      
+      setFarmers(response.data);
     } catch (error) {
       console.error("Error fetching farmers:", error);
     }
   };
-
   useEffect(() => {
     fetchUsers();
     fetchRoles();
-    fetchFarmers();
+    fetchFarmers(); // Initial load (limited to 5 by backend)
   }, []);
 
   const openModal = (type, user = { id: null, name: "", role: "", password: "", mobileNumber: "", roleId: null }) => {
@@ -119,16 +109,11 @@ const User = () => {
     }
   };
 
-  const handleSearch = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchQuery(query);
-    const filtered = users.filter((user) =>
-      user.name.toLowerCase().includes(query) ||
-      user.mobileNumber.toLowerCase().includes(query) ||
-      user.role.toLowerCase().includes(query)
-    );
-    setFilteredUsers(filtered);
-  };
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.mobileNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.role.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -137,7 +122,7 @@ const User = () => {
     }
     setSortConfig({ key, direction });
 
-    const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const sorted = [...users].sort((a, b) => {
       if (key === "name" || key === "mobileNumber" || key === "role") {
         return direction === "asc"
           ? a[key].localeCompare(b[key])
@@ -145,7 +130,8 @@ const User = () => {
       }
       return 0;
     });
-    setFilteredUsers(sortedUsers);
+
+    setUsers(sorted);
   };
 
   const getSortIcon = (key) => {
@@ -154,43 +140,25 @@ const User = () => {
   };
 
   useEffect(() => {
-    if (searchFarmer) {
-      setFilteredFarmers(
-        farmers.filter((farmer) =>
-          farmer.name.toLowerCase().includes(searchFarmer.toLowerCase())
-        )
-      );
+    if (searchFarmer.trim()) {
+      fetchFarmers(searchFarmer.trim());
     } else {
-      setFilteredFarmers(farmers.slice(0, 5));
+      fetchFarmers(); // Load initial 5
     }
-  }, [searchFarmer, farmers]);
+  }, [searchFarmer]);
+
+  const handleClickOutside = (event) => {
+    if (farmerInputRef.current && !farmerInputRef.current.contains(event.target)) {
+      setShowFarmerDropdown(false);
+    }
+    if (roleInputRef.current && !roleInputRef.current.contains(event.target)) {
+      setShowRoleDropdown(false);
+    }
+  };
 
   useEffect(() => {
-    if (searchRole) {
-      setFilteredRoles(
-        roles.filter((role) =>
-          role.name.toLowerCase().includes(searchRole.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredRoles(roles);
-    }
-  }, [searchRole, roles]);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (farmerInputRef.current && !farmerInputRef.current.contains(event.target)) {
-        setShowFarmerDropdown(false);
-      }
-      if (roleInputRef.current && !roleInputRef.current.contains(event.target)) {
-        setShowRoleDropdown(false);
-      }
-    };
-
     document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -201,7 +169,7 @@ const User = () => {
           <input
             type="text"
             value={searchQuery}
-            onChange={handleSearch}
+            onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search users..."
             className="border px-4 py-2 rounded focus:outline-none focus:ring-2"
           />
@@ -216,51 +184,31 @@ const User = () => {
       <table className="w-full border border-gray-300">
         <thead className="bg-gray-100">
           <tr>
-            <th
-              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
-              // onClick={() => handleSort("name")}
-            >
-              <p className="flex items-center gap-5">#</p>
-            </th>
-            <th
-              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
-              onClick={() => handleSort("name")}
-            >
+            <th className="text-left px-4 py-2 border border-gray-300">#</th>
+            <th className="text-left px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("name")}>
               <p className="flex items-center gap-5">Name {getSortIcon("name")}</p>
             </th>
-            <th
-              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
-              onClick={() => handleSort("mobileNumber")}
-            >
+            <th className="text-left px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("mobileNumber")}>
               <p className="flex items-center gap-5">Mobile Number {getSortIcon("mobileNumber")}</p>
             </th>
-            <th
-              className="text-left px-4 py-2 border border-gray-300 cursor-pointer"
-              onClick={() => handleSort("role")}
-            >
+            <th className="text-left px-4 py-2 border border-gray-300 cursor-pointer" onClick={() => handleSort("role")}>
               <p className="flex items-center gap-5">Role {getSortIcon("role")}</p>
             </th>
             <th className="text-left px-4 py-2 border border-gray-300">Action</th>
           </tr>
         </thead>
         <tbody>
-          {filteredUsers.map((user , index) => (
+          {filteredUsers.map((user, index) => (
             <tr key={user.id} className="bg-gray-50">
               <td className="px-4 py-2 border border-gray-300">{index + 1}</td>
               <td className="px-4 py-2 border border-gray-300">{user.name}</td>
               <td className="px-4 py-2 border border-gray-300">{user.mobileNumber}</td>
               <td className="px-4 py-2 border border-gray-300">{user.role}</td>
               <td className="px-4 py-2 border border-gray-300">
-                <button
-                  className="text-blue-500 hover:text-blue-700"
-                  onClick={() => openModal("edit", user)}
-                >
+                <button className="text-blue-500 hover:text-blue-700" onClick={() => openModal("edit", user)}>
                   <FaPen />
                 </button>
-                <button
-                  className="text-red-500 hover:text-red-700 ml-2"
-                  onClick={() => handleDelete(user.id)}
-                >
+                <button className="text-red-500 hover:text-red-700 ml-2" onClick={() => handleDelete(user.id)}>
                   <BiTrash />
                 </button>
               </td>
@@ -269,12 +217,15 @@ const User = () => {
         </tbody>
       </table>
 
+      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start mt-10 z-50">
           <div className="bg-white p-6 rounded shadow-lg w-[500px]">
             <h2 className="text-xl font-bold mb-4">
               {modalType === "add" ? "Add User" : "Edit User"}
             </h2>
+
+            {/* Farmer Search */}
             <div className="mb-4 relative" ref={farmerInputRef}>
               <label className="block text-sm font-medium mb-1">User Name</label>
               <input
@@ -287,10 +238,10 @@ const User = () => {
               />
               {showFarmerDropdown && (
                 <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                  {filteredFarmers.map((farmer) => (
+                  {farmers.map((farmer) => (
                     <li
                       key={farmer.id}
-                      className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
+                      className={`px-3 py-2 hover:bg-gray-100 cursor-pointer capitalize ${
                         selectedFarmer?.name === farmer.name ? "bg-gray-200" : ""
                       }`}
                       onClick={() => {
@@ -303,12 +254,14 @@ const User = () => {
                       {farmer.name} - {farmer.mobileNumber} - {farmer.role}
                     </li>
                   ))}
-                  {filteredFarmers.length === 0 && (
+                  {farmers.length === 0 && (
                     <li className="px-3 py-2 text-gray-500">No farmers found</li>
                   )}
                 </ul>
               )}
             </div>
+
+            {/* Role Search */}
             <div className="mb-4 relative" ref={roleInputRef}>
               <label className="block text-sm font-medium mb-1">Role</label>
               <input
@@ -321,27 +274,28 @@ const User = () => {
               />
               {showRoleDropdown && (
                 <ul className="absolute z-10 bg-white border border-gray-300 w-full rounded shadow-lg max-h-40 overflow-y-auto">
-                  {filteredRoles.map((role) => (
-                    <li
-                      key={role.id}
-                      className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
-                        currentUser.role === role.name ? "bg-gray-200" : ""
-                      }`}
-                      onClick={() => {
-                        setCurrentUser({ ...currentUser, role: role.name, roleId: role.id });
-                        setSearchRole(role.name);
-                        setShowRoleDropdown(false);
-                      }}
-                    >
-                      {role.name}
-                    </li>
-                  ))}
-                  {filteredRoles.length === 0 && (
-                    <li className="px-3 py-2 text-gray-500">No roles found</li>
-                  )}
+                  {roles
+                    .filter((r) => r.name.toLowerCase().includes(searchRole.toLowerCase()))
+                    .map((role) => (
+                      <li
+                        key={role.id}
+                        className={`px-3 py-2 hover:bg-gray-100 cursor-pointer ${
+                          currentUser.role === role.name ? "bg-gray-200" : ""
+                        }`}
+                        onClick={() => {
+                          setCurrentUser({ ...currentUser, role: role.name, roleId: role.id });
+                          setSearchRole(role.name);
+                          setShowRoleDropdown(false);
+                        }}
+                      >
+                        {role.name}
+                      </li>
+                    ))}
                 </ul>
               )}
             </div>
+
+            {/* Password Field */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-1">Password</label>
               <input
@@ -352,19 +306,11 @@ const User = () => {
                 onChange={(e) => setCurrentUser({ ...currentUser, password: e.target.value })}
               />
             </div>
+
+            {/* Modal Buttons */}
             <div className="flex justify-end">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded mr-2 hover:bg-gray-400"
-                onClick={closeModal}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-                onClick={handleSave}
-              >
-                Save
-              </button>
+              <button className="px-4 py-2 bg-gray-300 rounded mr-2 hover:bg-gray-400" onClick={closeModal}>Cancel</button>
+              <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600" onClick={handleSave}>Save</button>
             </div>
           </div>
         </div>

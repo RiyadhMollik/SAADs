@@ -96,7 +96,7 @@ const AEZ = () => {
     };
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
+        <div className="p-6 bg-gray-50 min-h-screen w-[159vh] max-w-[150vh]">
             <div className="flex justify-between">
                 <h1 className="text-3xl font-bold mb-6 text-center text-black">AEZ List</h1>
                 <button

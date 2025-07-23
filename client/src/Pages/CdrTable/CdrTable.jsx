@@ -64,7 +64,7 @@ const CdrTable = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 bg-gray-100 min-h-screen">
+    <div className="container mx-auto p-4 bg-gray-100 min-h-screen max-w-[150vh]">
       <div className="bg-white shadow rounded-lg p-4 overflow-x-auto">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">Call History</h2>
 

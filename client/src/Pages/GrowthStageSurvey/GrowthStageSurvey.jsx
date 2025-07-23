@@ -355,7 +355,7 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[999999] p-2 sm:p-4 bg-gray-600 bg-opacity-50 flex items-center justify-center overflow-y-auto">
+        <div className="fixed max-w-[150vh] inset-0 z-[999999] p-2 sm:p-4 bg-gray-600 bg-opacity-50 flex items-center justify-center overflow-y-auto">
             <div className="bg-white px-4 sm:px-6 py-6 sm:py-8 rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">{isEdit ? 'Edit Data' : 'Add New Data'}</h2>
 

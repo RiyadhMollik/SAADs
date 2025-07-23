@@ -711,7 +711,7 @@ const FarmerRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100">
+    <div className="min-h-screen w-full bg-gray-100 max-w-[150vh]">
       <main className="p-6">
         <div className="container mx-auto bg-white rounded-lg shadow-md p-6">
           <div className="flex justify-between items-center">

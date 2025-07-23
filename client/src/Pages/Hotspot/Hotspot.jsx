@@ -124,7 +124,7 @@ const Hotspot = () => {
     };
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
+        <div className="p-6 bg-gray-50 min-h-screen w-[159vh] max-w-[150vh]">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-center text-black">Hotspot List</h1>
                 <div className="flex gap-4">

@@ -335,7 +335,7 @@ const AdminRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100">
+    <div className="min-h-screen w-full bg-gray-100 max-w-[150vh]">
 
       {/* Main Content */}
       <main className=" md:p-6 lg:p-8">

@@ -1229,7 +1229,7 @@ const Profile = () => {
                     </div>
 
                     {/* Farming Information Section */}
-                    {authUser.role === "SAAO" && 
+                    {authUser.role !== "Agromet Scientists" && 
                         <div className="space-y-4">
                             <h4 className="text-lg font-semibold text-gray-700">Farming Information</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

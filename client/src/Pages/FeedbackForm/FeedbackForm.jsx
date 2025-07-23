@@ -52,7 +52,7 @@ const FeedbackForm = () => {
   };
 
   return (
-    <div className=" min-h-screen w-full flex justify-center bg-gray-100 p-8">
+    <div className="max-w-[150vh] min-h-screen w-full flex justify-center bg-gray-100 p-8">
       <div className="w-full  bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold text-center text-green-800 mb-6">
           Feedback to System Administrator

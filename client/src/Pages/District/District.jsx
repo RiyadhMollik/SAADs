@@ -110,7 +110,7 @@ const District = () => {
     };
 
     return (
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <div className="max-w-[150vh]" style={{ display: "flex", flexDirection: "row" }}>
             <div style={{ padding: "25px", flexGrow: 1, backgroundColor: "#f9fafb" }}>
                 <div className="p-6 bg-gray-50 min-h-screen w-[159vh]">
                     <div className="flex justify-between items-center mb-6">

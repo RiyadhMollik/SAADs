@@ -42,7 +42,7 @@ const FeedbackTable = () => {
 
 
   return (
-    <div className="p-4">
+    <div className="p-4 max-w-[150vh]">
       <h1 className="text-2xl font-bold mb-4">Feedback</h1>
       <div className=" w-full overflow-x-scroll ">
         <table className="border border-gray-300 bg-white w-full">

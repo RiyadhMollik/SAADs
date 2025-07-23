@@ -51,7 +51,7 @@ function CallCenter() {
   const totalAmount = callData.reduce((acc, cur) => acc + cur.amount, 0);
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center">
+    <div className="min-h-screen bg-gray-100 p-6 flex flex-col items-center max-w-[150vh]">
       <div className="bg-white rounded-lg shadow-lg w-full max-w-4xl p-6">
         <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
           Call Center Log

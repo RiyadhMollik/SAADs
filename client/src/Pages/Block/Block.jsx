@@ -263,7 +263,7 @@ const Block = () => {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen max-w-[150vh]">
       <div>
         <div className="p-6 bg-gray-50 min-h-screen w-full">
           <div className="flex justify-between">
