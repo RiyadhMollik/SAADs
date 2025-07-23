@@ -14,7 +14,8 @@ function SaaoUserReport() {
     const [selectedHotspot, setSelectedHotspot] = useState('');
     const [roles, setRoles] = useState([]);
     const API_URL = 'https://iinms.brri.gov.bd/api';
-
+    const [totalWitnNid , setTotalWitnNid] = useState(0);
+    const [totalWithoutNid , setTotalWithoutNid] = useState(0);
     // Fetch all hotspots
     const fetchRoles = async () => {
         try {
@@ -66,6 +67,10 @@ function SaaoUserReport() {
 
         setFilteredData(result);
         const total = result.reduce((sum, item) => sum + item.farmerCount, 0);
+        const totalWithoutNid = result.reduce((sum, item) => sum + item.withoutNationalIdCount, 0);
+        const totalwithNid = result.reduce((sum, item) => sum + item.withNationalIdCount, 0);
+        setTotalWitnNid(totalwithNid);
+        setTotalWithoutNid(totalWithoutNid);
         setTotalCount(total);
     }, [searchTerm, data]);
 
@@ -133,7 +138,7 @@ function SaaoUserReport() {
             });
 
             csvData.push([
-                '', '', '', '', '', '', '', '', '', '','','', 'Total:', totalCount
+                '', '', '', '', '', '', '', '', '', '', 'Total:', totalCount , totalWitnNid, totalWithoutNid
             ].map(field => `"${field.toString().replace(/"/g, '""')}"`).join(','));
 
             const csvContent = [
@@ -222,7 +227,7 @@ function SaaoUserReport() {
                 user.withoutNationalIdCount || 0
             ]);
 
-            tableData.push(['', '', '', '', '', '', '', '', '', '','','', 'Total:', totalCount]);
+            tableData.push(['', '', '', '', '', '', '', '', '', 'Total:', totalCount , totalWitnNid, totalWithoutNid]);
 
             const equalWidth = (pageWidth - margin * 2) / headers.length;
             const columnStyles = headers.reduce((acc, _, i) => {
@@ -396,8 +401,10 @@ function SaaoUserReport() {
                                     </tr>
                                 ))}
                                 <tr className="border-t font-bold bg-slate-600 text-white">
-                                    <td colSpan="13" className="p-1 sm:p-3 text-right">Total:</td>
+                                    <td colSpan="11" className="p-1 sm:p-3 text-right">Total:</td>
                                     <td className="p-1 sm:p-3">{totalCount}</td>
+                                    <td className="p-1 sm:p-3">{totalWitnNid}</td>
+                                    <td className="p-1 sm:p-3">{totalWithoutNid}</td>
                                 </tr>
                             </>
                         ) : (
