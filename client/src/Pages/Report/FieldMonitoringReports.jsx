@@ -179,10 +179,9 @@ function FieldMonitoringReports() {
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
-        {/* Date Range */}
-        <div className="col-span-1 flex flex-col gap-4 md:flex-row md:items-end">
+     
           {/* Start Date */}
-          <div className="flex-1 w-1/2">
+          <div className="flex-1 ">
             <label htmlFor="startDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -201,7 +200,7 @@ function FieldMonitoringReports() {
           </div>
 
           {/* End Date */}
-          <div className="flex-1 w-1/2">
+          <div className="flex-1 ">
             <label htmlFor="endDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -218,10 +217,8 @@ function FieldMonitoringReports() {
               max={new Date().toISOString().split('T')[0]}
             />
           </div>
-        </div>
-
         {/* Hotspot Selector */}
-        <div className="col-span-1 row-span-2 ">
+        <div className="">
           <label htmlFor="hotspot" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
@@ -231,35 +228,12 @@ function FieldMonitoringReports() {
             </svg>
             Hotspots
           </label>
-          <div className="border border-gray-200 rounded-lg bg-white p-4 shadow-sm h-[150px]">
-            {selectedHotspots.length > 0 ? (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {selectedHotspots.map((hotspotName) => (
-                  <div
-                    key={hotspotName}
-                    className="flex items-center bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded-full text-sm "
-                  >
-                    <span>{hotspotName}</span>
-                    <button
-                      type="button"
-                      className="ml-2 text-red-600 hover:text-red-800"
-                      onClick={() => handleDelete(hotspotName)}
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-gray-500 text-sm mb-4">No hotspots selected</div>
-            )}
+          <div className="border border-gray-200 rounded-lg bg-white shadow-sm">
             <select
               id="hotspot"
+              value={selectedHotspots}
               className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
-              value=""
+              
               onChange={handleSelect}
             >
               <option value="">Select a Hotspot</option>

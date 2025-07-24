@@ -477,13 +477,23 @@ const SAAORegistration = () => {
     resetForm();
   };
 
+  const excludedFields = [
+    'gender'
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    let formattedValue = value
-      .replace(/\b(md)\./gi, 'Md.')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
+
+    let formattedValue = value;
+
+    if (!excludedFields.includes(name)) {
+      formattedValue = value
+        .replace(/\b(md)\./gi, 'Md.')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: formattedValue,
@@ -1140,7 +1150,7 @@ const SAAORegistration = () => {
                       className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                       onClick={handleUseMyLocation}
                     >
-                     <CiGps />
+                      <CiGps />
 
                     </button>
                   </div>
