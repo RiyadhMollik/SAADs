@@ -13,6 +13,7 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import axios from 'axios';
 
 ChartJS.register(
     CategoryScale,
@@ -39,28 +40,29 @@ const Report = () => {
     const [endDate, setEndDate] = useState('');
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
-
-    const fetchSAAOs = async () => {
+    const fetchFarmers = async (query = "") => {
         try {
-            const response = await fetch('https://iinms.brri.gov.bd/api/farmers/farmers/role/saao');
-            if (response.ok) {
-                const result = await response.json();
-                setSAAOList(result.data);
-            } else throw new Error('Failed to fetch SAAOs');
+            const response = await axios.get(`https://iinms.brri.gov.bd/api/farmers/farmers?search=${query}&role=saao`);
+            setSAAOList(response.data);
         } catch (error) {
-            console.error('Error:', error);
+            console.error("Error fetching farmers:", error);
         }
     };
-
-    useEffect(() => {
-        fetchSAAOs();
-    }, []);
+      useEffect(() => {
+    if (searchTerm.trim()) {
+      fetchFarmers(searchTerm.trim());
+    } else {
+      fetchFarmers(); 
+    }
+  }, [searchTerm]);
 
     useEffect(() => {
         const fetchData = async () => {
             if (!selectedOption?.id) return;
             try {
                 const response = await fetch(`https://iinms.brri.gov.bd/api/farmers/farmers/stats/${selectedOption.id}?startDate=${startDate}&endDate=${endDate}`);
+                console.log(response);
+
                 if (response.ok) {
                     const result = await response.json();
                     setData(result);
@@ -71,11 +73,6 @@ const Report = () => {
         };
         fetchData();
     }, [selectedOption, refresh]);
-
-    const filteredOptions = SAAOList.filter(option =>
-        option.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        option.mobileNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    );
 
     const handleSelect = (option) => {
         setSelectedOption(option);
@@ -236,7 +233,7 @@ const Report = () => {
                     reader.onerror = reject;
                     reader.readAsDataURL(blob);
                 });
-            } catch (error){
+            } catch (error) {
                 console.warn('Failed to load logo image:', error);
                 // Proceed without the logo
             }
@@ -348,10 +345,10 @@ const Report = () => {
                     />
                     {isDropdownOpen && (
                         <div className="absolute top-10 left-0 right-0 bg-white shadow-lg border rounded max-h-60 overflow-y-auto z-10">
-                            {filteredOptions.length === 0 ? (
+                            {SAAOList.length === 0 ? (
                                 <div className="p-3 text-gray-500 text-sm">No results found</div>
                             ) : (
-                                filteredOptions.map((option, i) => (
+                                SAAOList.map((option, i) => (
                                     <div
                                         key={i}
                                         onClick={() => handleSelect(option)}
@@ -398,14 +395,14 @@ const Report = () => {
                             className="w-full mt-6 sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 h-10 rounded text-sm"
                             aria-label="Export table to CSV"
                         >
-                             CSV
+                            CSV
                         </button>
                         <button
                             onClick={handleExportPDF}
                             className="w-full mt-6 sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2 h-10 rounded text-sm"
                             aria-label="Export table to PDF"
                         >
-                           PDF
+                            PDF
                         </button>
                     </div>
                 </div>
