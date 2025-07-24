@@ -28,17 +28,17 @@ const About = () => {
     },
   ];
   return (
-    <div className="min-h-screen max-w-[150vh] bg-green-50 flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen max-w-full font-book-antiqua  bg-green-50 flex flex-col items-center justify-center p-6">
       <div className=" bg-white shadow-lg rounded-lg p-8">
         <h1 className="text-3xl font-bold text-green-700 text-center mb-6">
           Smart Agro-Advisory Dissemination System
         </h1>
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">          Background and Rationale
         </h2>
-        <p className="text-gray-700 text-lg leading-relaxed mb-6">
+        <p className="text-gray-700 text-lg leading-relaxed mb-6 text-justify">
           Bangladesh, as a predominantly agrarian economy, relies heavily on rice production for food security and livelihood. However, the agriculture sector faces significant challenges due to climate change and unpredictable weather patterns, such as erratic rainfall, heatwaves, droughts, and floods. These challenges are particularly critical for rice, the country’s staple crop, which is highly sensitive to climatic variability.
         </p>
-        <p className="text-gray-700 text-lg leading-relaxed mb-6">
+        <p className="text-gray-700 text-lg leading-relaxed mb-6 text-justify">
           To address these challenges, a location-specific and stage-wise Agromet advisory service is crucial. Such a service can provide farmers with tailored advisories on irrigation, pest management, fertilizer application, and disaster preparedness at various crop growth stages. To implement this effectively, a robust and dynamic web-based and mobile-responsive Farmer’s Information System is required. This digital platform will facilitate data collection, integration, and dissemination, enabling real-time, actionable advisories for rice farmers across Bangladesh.
         </p>
 

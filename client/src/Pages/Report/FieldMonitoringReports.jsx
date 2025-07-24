@@ -4,7 +4,6 @@ import ChartComponent from './ChartComponent';
 
 function FieldMonitoringReports() {
   const [hotspot, setHotspot] = useState([]);
-  const [selectedHotspots, setSelectedHotspots] = useState([]);
   const [regions, setRegions] = useState([]);
   const [divisions, setDivisions] = useState([]);
   const [districts, setDistricts] = useState([]);
@@ -23,29 +22,15 @@ function FieldMonitoringReports() {
     union: '',
     startDate: '',
     endDate: '',
+    hotspot: '', // Added hotspot to formData
   });
 
   const API_URL = 'https://iinms.brri.gov.bd/api';
 
-  // Handle hotspot selection
-  const handleSelect = (e) => {
-    const selectedValue = e.target.value;
-    if (selectedValue && !selectedHotspots.includes(selectedValue)) {
-      const updatedHotspots = [...selectedHotspots, selectedValue];
-      setSelectedHotspots(updatedHotspots);
-    }
-  };
-
-  // Handle hotspot deletion
-  const handleDelete = (valueToDelete) => {
-    const updatedHotspot = selectedHotspots.filter((value) => value !== valueToDelete);
-    setSelectedHotspots(updatedHotspot);
-  };
-
   // Fetch block counts
   useEffect(() => {
-    const { startDate, endDate, upazila, union , district } = formData;
-    if (!startDate || !endDate || (!upazila && !union  && !district)) return;
+    const { startDate, endDate, upazila, union, district, hotspot } = formData;
+    if (!startDate || !endDate || (!upazila && !union && !district) || !hotspot) return;
 
     const fetchBlockCounts = async () => {
       setLoading(true);
@@ -58,6 +43,7 @@ function FieldMonitoringReports() {
             ...(upazila && { upazila }),
             ...(union && { union }),
             ...(district && { district }),
+            hotspot,
           },
         });
         setChartData(response.data.data || []);
@@ -70,7 +56,7 @@ function FieldMonitoringReports() {
     };
 
     fetchBlockCounts();
-  }, [formData.startDate, formData.endDate, formData.upazila, formData.union, selectedHotspots , formData.district]);
+  }, [formData.startDate, formData.endDate, formData.upazila, formData.union, formData.district, formData.hotspot]);
 
   // Fetch dropdown data
   useEffect(() => {
@@ -87,10 +73,10 @@ function FieldMonitoringReports() {
   }, []);
 
   useEffect(() => {
-    if (!selectedHotspots.length) return;
+    if (!formData.hotspot) return;
     const fetchRegions = async () => {
       try {
-        const res = await fetch(`${API_URL}/data/regions?hotspot=${selectedHotspots.join(',')}`);
+        const res = await fetch(`${API_URL}/data/regions?hotspot=${formData.hotspot}`);
         const data = await res.json();
         setRegions(data.sort((a, b) => a.localeCompare(b)));
       } catch (error) {
@@ -98,14 +84,14 @@ function FieldMonitoringReports() {
       }
     };
     fetchRegions();
-  }, [selectedHotspots]);
+  }, [formData.hotspot]);
 
   useEffect(() => {
-    const { region } = formData;
-    if (!region || !selectedHotspots.length) return;
+    const { region, hotspot } = formData;
+    if (!region || !hotspot) return;
     const fetchDivisions = async () => {
       try {
-        const res = await fetch(`${API_URL}/data/divisions?region=${region}&hotspot=${selectedHotspots.join(',')}`);
+        const res = await fetch(`${API_URL}/data/divisions?region=${region}&hotspot=${hotspot}`);
         const data = await res.json();
         setDivisions(data.sort((a, b) => a.localeCompare(b)));
       } catch (error) {
@@ -113,14 +99,14 @@ function FieldMonitoringReports() {
       }
     };
     fetchDivisions();
-  }, [formData.region, selectedHotspots]);
+  }, [formData.region, formData.hotspot]);
 
   useEffect(() => {
-    const { division, region } = formData;
-    if (!division || !region || !selectedHotspots.length) return;
+    const { division, region, hotspot } = formData;
+    if (!division || !region || !hotspot) return;
     const fetchDistricts = async () => {
       try {
-        const res = await fetch(`${API_URL}/data/districts?division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
+        const res = await fetch(`${API_URL}/data/districts?division=${division}&region=${region}&hotspot=${hotspot}`);
         const data = await res.json();
         setDistricts(data.sort((a, b) => a.localeCompare(b)));
       } catch (error) {
@@ -128,14 +114,14 @@ function FieldMonitoringReports() {
       }
     };
     fetchDistricts();
-  }, [formData.division, formData.region, selectedHotspots]);
+  }, [formData.division, formData.region, formData.hotspot]);
 
   useEffect(() => {
-    const { district, division, region } = formData;
-    if (!district || !division || !region || !selectedHotspots.length) return;
+    const { district, division, region, hotspot } = formData;
+    if (!district || !division || !region || !hotspot) return;
     const fetchUpazilas = async () => {
       try {
-        const res = await fetch(`${API_URL}/data/upazilas?district=${district}&division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
+        const res = await fetch(`${API_URL}/data/upazilas?district=${district}&division=${division}&region=${region}&hotspot=${hotspot}`);
         const data = await res.json();
         setUpazilas(data.sort((a, b) => a.localeCompare(b)));
       } catch (error) {
@@ -143,14 +129,14 @@ function FieldMonitoringReports() {
       }
     };
     fetchUpazilas();
-  }, [formData.district, formData.division, formData.region, selectedHotspots]);
+  }, [formData.district, formData.division, formData.region, formData.hotspot]);
 
   useEffect(() => {
-    const { upazila, district, division, region } = formData;
-    if (!upazila || !district || !division || !region || !selectedHotspots.length) return;
+    const { upazila, district, division, region, hotspot } = formData;
+    if (!upazila || !district || !division || !region || !hotspot) return;
     const fetchUnions = async () => {
       try {
-        const res = await fetch(`${API_URL}/data/unions?upazila=${upazila}&district=${district}&division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
+        const res = await fetch(`${API_URL}/data/unions?upazila=${upazila}&district=${district}&division=${division}&region=${region}&hotspot=${hotspot}`);
         const data = await res.json();
         setUnions(data.sort((a, b) => a.localeCompare(b)));
       } catch (error) {
@@ -158,14 +144,14 @@ function FieldMonitoringReports() {
       }
     };
     fetchUnions();
-  }, [formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+  }, [formData.upazila, formData.district, formData.division, formData.region, formData.hotspot]);
 
   useEffect(() => {
-    const { union, upazila, district, division, region } = formData;
-    if (!union || !upazila || !district || !division || !region || !selectedHotspots.length) return;
+    const { union, upazila, district, division, region, hotspot } = formData;
+    if (!union || !upazila || !district || !division || !region || !hotspot) return;
     const fetchBlocks = async () => {
       try {
-        const res = await fetch(`${API_URL}/data/blocks?union=${union}&upazila=${upazila}&district=${district}&division=${division}&region=${region}&hotspot=${selectedHotspots.join(',')}`);
+        const res = await fetch(`${API_URL}/data/blocks?union=${union}&upazila=${upazila}&district=${district}&division=${division}&region=${region}&hotspot=${hotspot}`);
         const data = await res.json();
         setBlocks(data.sort((a, b) => a.localeCompare(b)));
       } catch (error) {
@@ -173,50 +159,49 @@ function FieldMonitoringReports() {
       }
     };
     fetchBlocks();
-  }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, selectedHotspots]);
+  }, [formData.union, formData.upazila, formData.district, formData.division, formData.region, formData.hotspot]);
 
   return (
     <div className="p-4">
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* Start Date */}
+        <div className="flex-1">
+          <label htmlFor="startDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Start Date
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
+            value={formData.startDate}
+            onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+            max={new Date().toISOString().split('T')[0]}
+          />
+        </div>
 
-     
-          {/* Start Date */}
-          <div className="flex-1 ">
-            <label htmlFor="startDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              Start Date
-            </label>
-            <input
-              type="date"
-              id="startDate"
-              className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
-              value={formData.startDate}
-              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-              max={new Date().toISOString().split('T')[0]}
-            />
-          </div>
+        {/* End Date */}
+        <div className="flex-1">
+          <label htmlFor="endDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            End Date
+          </label>
+          <input
+            type="date"
+            id="endDate"
+            className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
+            value={formData.endDate}
+            onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+            max={new Date().toISOString().split('T')[0]}
+          />
+        </div>
 
-          {/* End Date */}
-          <div className="flex-1 ">
-            <label htmlFor="endDate" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              End Date
-            </label>
-            <input
-              type="date"
-              id="endDate"
-              className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
-              value={formData.endDate}
-              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-              max={new Date().toISOString().split('T')[0]}
-            />
-          </div>
         {/* Hotspot Selector */}
         <div className="">
           <label htmlFor="hotspot" className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
@@ -226,15 +211,14 @@ function FieldMonitoringReports() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Hotspots
+            Hotspot
           </label>
           <div className="border border-gray-200 rounded-lg bg-white shadow-sm">
             <select
               id="hotspot"
-              value={selectedHotspots}
+              value={formData.hotspot}
               className="w-full border border-gray-200 p-3 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 h-12"
-              
-              onChange={handleSelect}
+              onChange={(e) => setFormData({ ...formData, hotspot: e.target.value })}
             >
               <option value="">Select a Hotspot</option>
               {hotspot.map((hotspot) => (
@@ -290,7 +274,6 @@ function FieldMonitoringReports() {
           </div>
         ))}
       </div>
-
 
       {loading && <p className="text-gray-500 mt-4">Loading...</p>}
       {error && <p className="text-red-500 mt-4">{error}</p>}

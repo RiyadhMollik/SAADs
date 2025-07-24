@@ -11,7 +11,18 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+/* src/components/FieldMonitoringReports.css */
 
+@font-face {
+  font-family: 'Book Antiqua';
+  src: url('/var/www/SAADs/client/public/bookantiqua.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-book-antiqua {
+  font-family: 'Book Antiqua', sans-serif;
+}
 .font-nikosh {
   font-family: 'Nikosh', sans-serif;
 }

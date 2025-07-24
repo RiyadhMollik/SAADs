@@ -225,7 +225,7 @@ const Block = () => {
         ) || []
       );
     } else {
-      setFilteredUpazilas(data.upazilas?.slice(0, 5) || []);
+      setFilteredUpazilas(data.upazilas || []);
     }
   }, [searchUpazila, data.upazilas]);
 
@@ -237,7 +237,7 @@ const Block = () => {
         ) || []
       );
     } else {
-      setFilteredUnions(data.unions?.slice(0, 5) || []);
+      setFilteredUnions(data.unions  || []);
     }
   }, [searchUnion, data.unions]);
 

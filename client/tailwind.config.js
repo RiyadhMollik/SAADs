@@ -9,12 +9,12 @@ export default {
       fontFamily: {
         sans: ['Fira Sans', 'sans-serif'],
         nikosh: ['Nikosh'],
+        bookantiqua: ['Book Antiqua'],
       },
       fontWeight: {
         extralight: '200',
       },
     },
   },
-  plugins: [
-  ],
+  plugins: [],
 }
