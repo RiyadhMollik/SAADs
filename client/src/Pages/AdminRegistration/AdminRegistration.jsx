@@ -401,7 +401,7 @@ const AdminRegistration = () => {
               </thead>
               <tbody>
                 {filteredAdmins.slice(0, rowsPerPage).map((Admin, index) => (
-                  <tr key={Admin.id}>
+                  <tr className="capitalize" key={Admin.id}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (

@@ -343,7 +343,7 @@ const ADRegistration = () => {
               </thead>
               <tbody>
                 {filteredADs.slice(0, rowsPerPage).map((AD, index) => (
-                  <tr key={AD.id}>
+                  <tr className="capitalize" key={AD.id}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (

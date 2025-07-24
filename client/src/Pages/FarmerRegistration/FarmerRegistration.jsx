@@ -131,9 +131,9 @@ const FarmerRegistration = () => {
   };
 
   useEffect(() => {
-    if (authUser?.role?.toLowerCase() === "saao" && authUser?.id ) {
+    if (authUser?.role?.toLowerCase() === "saao" && authUser?.id) {
       console.log("saaoId:", saaoId);
-      
+
       const url = `https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&saaoId=${authUser?.id}&search=${searchText}`;
       fetchFarmers(url);
     }
@@ -142,7 +142,7 @@ const FarmerRegistration = () => {
       const url = `https://iinms.brri.gov.bd/api/farmers/farmers/role/farmer?page=${page}&limit=${rowsPerPage}&search=${searchText}`;
       fetchFarmers(url);
     }
-    
+
   }, [page, rowsPerPage, saaoId, authUser?.role, searchText, authUser?.id, sortConfig]);
 
   // Updated columns to match form inputs
@@ -161,18 +161,18 @@ const FarmerRegistration = () => {
     { name: "Alternate Contact", visible: true },
     { name: "Relationship with Farmer", visible: true },
     { name: "Education Status", visible: true },
-    { name: "Village", visible: true },
     { name: "Farm Size", visible: true },
     { name: "Total Urea Uses (kg/bigha)", visible: true },
     { name: "Major Diseases", visible: true },
     { name: "Major Insects", visible: true },
     { name: "Progressive Farmer", visible: true },
-    { name: "Region", visible: true },
+    { name: "Village", visible: true },
     { name: "Block", visible: true },
     { name: "Union", visible: true },
     { name: "Upazila", visible: true },
     { name: "District", visible: true },
     { name: "Division", visible: true },
+    { name: "Region", visible: true },
     { name: "Hotspot", visible: true },
     { name: "SAAO", visible: true },
     { name: "Action", visible: true },
@@ -207,8 +207,18 @@ const FarmerRegistration = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let formattedValue = value
+      .replace(/\b(md)\./gi, 'Md.') 
+      .split(' ') 
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) 
+      .join(' '); 
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
   };
+
+
 
   const resetForm = () => {
     setFormData({
@@ -335,7 +345,7 @@ const FarmerRegistration = () => {
 
   const handleEdit = (farmer) => {
     console.log(farmer);
-    
+
     setIsEdit(true);
     setIsFarmerModalOpen(true);
     setSelectedId(farmer.id);
@@ -345,7 +355,7 @@ const FarmerRegistration = () => {
       spouseName: farmer.spouseName || "",
       gender: farmer.gender || "",
       // dateOfBirth: farmer.dateOfBirth || "",
-      age: farmer.age  || "",
+      age: farmer.age || "",
       mobileNumber: farmer.mobileNumber || "",
       nationalId: farmer.nationalId || "",
       whatsappNumber: farmer.whatsappNumber || "",
@@ -732,10 +742,10 @@ const FarmerRegistration = () => {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
             />
-            <div className="flex flex-wrap justify-between md:justify-end space-x-2">
+            <div className="flex justify-between md:justify-end space-x-2">
               <input
                 type="number"
-                className="border rounded px-4 py-2"
+                className="border rounded px-4 py-2 w-20"
                 value={rowsPerPage}
                 onChange={(e) => setRowsPerPage(parseInt(e.target.value) || 10)}
                 min={1}
@@ -796,7 +806,7 @@ const FarmerRegistration = () => {
               </thead>
               <tbody>
                 {farmerList.slice(0, rowsPerPage).map((farmer, index) => (
-                  <tr className="text-sm" key={farmer.id} style={{ height: "50px" }}>
+                  <tr className="text-sm capitalize" key={farmer.id} style={{ height: "50px" }}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col, colIndex) => (
@@ -823,18 +833,18 @@ const FarmerRegistration = () => {
                           {col.name === "Relationship with Farmer" && farmer.alternateContactRelation}
                           {col.name === "Education Status" &&
                             (farmer.educationStatus === "other" ? farmer.eduOther : farmer.educationStatus)}
-                          {col.name === "Village" && farmer.village}
                           {col.name === "Farm Size" && farmer.farmSize}
                           {col.name === "Total Urea Uses (kg/bigha)" && farmer.fertilizerUsage}
                           {col.name === "Major Diseases" && farmer.majorDiseases}
                           {col.name === "Major Insects" && farmer.majorInsects}
                           {col.name === "Progressive Farmer" && farmer.progressiveFarmer}
-                          {col.name === "Region" && farmer.region}
+                          {col.name === "Village" && farmer.village}
                           {col.name === "Block" && farmer.block}
                           {col.name === "Union" && farmer.union}
                           {col.name === "Upazila" && farmer.upazila}
                           {col.name === "District" && farmer.district}
                           {col.name === "Division" && farmer.division}
+                          {col.name === "Region" && farmer.region}
                           {col.name === "Hotspot" && farmer.hotspot}
                           {col.name === "SAAO" && farmer.saaoName}
                           {col.name === "Action" && (
@@ -1338,8 +1348,17 @@ const FarmerRegistration = () => {
                     <option value="yes">Yes</option>
                     <option value="no">No</option>
                   </select>
+                  <label className="block mt-4">Remarks</label>
+                  <input
+                    type="text"
+                    name="remarks"
+                    placeholder="Remarks"
+                    className="border w-full p-2 rounded"
+                    value={formData.remarks}
+                    onChange={handleChange}
+                    required
+                  />
                 </div>
-
                 <div className="flex justify-end mt-4">
                   <button
                     disabled={loading}

@@ -241,7 +241,15 @@ const UAORegistration = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let formattedValue = value
+      .replace(/\b(md)\./gi, 'Md.')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
   };
 
   const nextStep = () => {
@@ -425,7 +433,7 @@ const UAORegistration = () => {
                     {columns
                       .filter((col) => col.visible)
                       .map((col) => (
-                        <td key={col.name} className="border px-4 py-2">
+                        <td key={col.name} className="border px-4 py-2 capitalize">
                           {/* Render UAO data dynamically based on column names */}
                           {col.name === "ID" && index + 1}
                           {col.name === "UAO Name" && UAO.name}

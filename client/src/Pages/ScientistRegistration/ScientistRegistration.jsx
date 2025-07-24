@@ -244,7 +244,15 @@ const ScientistRegistration = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let formattedValue = value
+      .replace(/\b(md)\./gi, 'Md.')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
   };
 
   const resetForm = () => {
@@ -339,7 +347,7 @@ const ScientistRegistration = () => {
     setSelectedId(scientist.id);
     setFormData({
       name: scientist.name || "",
-      designation: scientist.designation || "", 
+      designation: scientist.designation || "",
       hotspot: scientist.hotspot || "",
       region: scientist.region || "",
       division: scientist.division || "",
@@ -420,15 +428,16 @@ const ScientistRegistration = () => {
               </thead>
               <tbody>
                 {scientistList.slice(0, rowsPerPage).map((scientist, rowIndex) => (
-                  <tr key={scientist.id} className="text-sm" style={{ height: "50px" }}>
+                  <tr key={scientist.id} className="text-sm " style={{ height: "50px" }}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col, index) => (
                         <td
                           key={col.name}
-                          className={`border px-4 py-2 ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 10 ? "capitalize" : ""}`}
-                          style={{ width: "150px" }}
+                          className={`border px-4 py-2 ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${[12, 13, 14].includes(index) ? "lowercase" : "capitalize"}`}
+                          style={{ width: "150px", wordBreak: "break-word" }}
                         >
+
                           {col.name === "ID" &&
                             (pagination.currentPage === 1
                               ? rowIndex + 1
@@ -639,7 +648,7 @@ const ScientistRegistration = () => {
                       </option>
                     ))}
                   </select>
-                 
+
                   <select
                     name="gender"
                     className="border w-full p-2 rounded"

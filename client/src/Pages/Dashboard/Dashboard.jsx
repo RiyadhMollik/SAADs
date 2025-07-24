@@ -32,13 +32,12 @@ const Dashboard = () => {
      navigate(link);
   }
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
+    <div className="bg-gray-100">
       {/* Top Section */}
       <div className="flex flex-col md:flex-row lg:flex-row justify-between items-center mb-8">
-        <div className='bg-white rounded-lg px-4 py-3 shadow-lg w-full min-h-[330px]'>
+        <div className='bg-white rounded-lg px-4 py-3 shadow-lg w-full'>
           <p className="text-lg font-semibold mb-4">Quick Links</p>
           <ul className="grid grid-cols-3 gap-4 text-xs text-center">
-
             {
               rolePermission['AD List'] && (
                 <li className="bg-gray-100 rounded-lg py-4">
@@ -127,7 +126,7 @@ const Dashboard = () => {
             </li>
           </ul>
         </div>
-        <div className="calendar-wrapper h-full">
+        <div className="p-o md:p-4 lg:p-4 mt-4">
           <Calendar
             onChange={onChange}
             value={value}
@@ -194,7 +193,6 @@ const Dashboard = () => {
           <p className="text-2xl font-bold text-teal-500">{data?.totalJournalists || 0}</p>
           <p className="text-sm text-gray-500">Total Journalists</p>
         </div>
-
         <div className="bg-white p-6 rounded-lg shadow-lg text-center">
           <Leaf className="mx-auto mb-2 text-teal-500" size={32} />
           <p className="text-2xl font-bold text-teal-500">{data?.totalProgressiveFarmer || 0}</p>
@@ -204,6 +202,5 @@ const Dashboard = () => {
     </div>
   );
 };
-
 export default Dashboard;
 

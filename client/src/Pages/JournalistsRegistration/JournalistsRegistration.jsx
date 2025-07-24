@@ -106,7 +106,15 @@ const JournalistsRegistration = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let formattedValue = value
+      .replace(/\b(md)\./gi, 'Md.')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
   };
 
   const resetForm = () => {

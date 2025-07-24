@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
-import { FaBars, FaEdit, FaTrash } from "react-icons/fa";
+import { FaBars, FaEdit, FaMap, FaTrash } from "react-icons/fa";
 import { ChevronsUpDown } from "lucide-react";
 import { AuthContext, useAuthContext } from "../../Components/context/AuthProvider";
 import { Parser } from "@json2csv/plainjs";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from '/logo.png';
+import { CiGps } from "react-icons/ci";
 
 const SAAORegistration = () => {
   const { rolePermission } = useContext(AuthContext);
@@ -278,7 +279,7 @@ const SAAORegistration = () => {
   // Handle hotspot filter change
   const handleHotspotFilterChange = (e) => {
     setSelectedHotspotFilter(e.target.value);
-    setPage(1); 
+    setPage(1);
   };
 
   // Copy to Clipboard
@@ -478,7 +479,15 @@ const SAAORegistration = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let formattedValue = value
+      .replace(/\b(md)\./gi, 'Md.')
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
+    setFormData(prev => ({
+      ...prev,
+      [name]: formattedValue,
+    }));
   };
 
   const nextStep = () => {
@@ -713,10 +722,10 @@ const SAAORegistration = () => {
                 ))}
               </select>
             </div>
-            <div className="flex flex-wrap justify-center md:justify-end space-x-2">
+            <div className="flex  justify-center md:justify-end space-x-2">
               <input
                 type="number"
-                className="border rounded px-4 py-2"
+                className="border w-20 rounded px-4 py-2"
                 value={rowsPerPage}
                 onChange={(e) => setRowsPerPage(parseInt(e.target.value) || 10)}
                 min={1}
@@ -770,15 +779,14 @@ const SAAORegistration = () => {
               </thead>
               <tbody>
                 {SAAOList.slice(0, rowsPerPage).map((saao, rowIndex) => (
-                  <tr key={saao.id} className="text-sm" style={{ height: "50px" }}>
+                  <tr key={saao.id} className="text-sm capitalize " style={{ height: "50px" }}>
                     {columns
                       .filter((col) => col.visible)
                       .map((col, index) => (
                         <td
                           key={col.name}
-                          className={`border px-4 py-2 ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"
-                            } ${index === 3 ? "capitalize" : ""}`}
-                          style={{ width: index === 0 ? "50px" : "150px" }}
+                          className={`border px-4 py-2 ${index === 0 ? "sticky left-0" : ""} ${rowIndex % 2 === 0 ? "bg-white" : "bg-gray-50"} ${index === 3 ? "capitalize" : ""} ${index === 8 ? "lowercase" : ""} whitespace-normal break-words`}
+                          style={{ wordBreak: "break-word", width: index === 0 ? "50px" : "150px" }}
                         >
                           {col.name === "ID" &&
                             (pagination.currentPage === 1
@@ -1132,11 +1140,12 @@ const SAAORegistration = () => {
                       className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
                       onClick={handleUseMyLocation}
                     >
-                      Use My Location
+                     <CiGps />
+
                     </button>
                   </div>
                 </div>
-                <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
+                {/* <div className={`space-y-4 ${currentStep === 3 ? "" : "hidden"}`}>
                   <h1 className="text-xl">Farming Information</h1>
                   <select
                     name="landType"
@@ -1262,7 +1271,7 @@ const SAAORegistration = () => {
                     value={formData.riceVarieties}
                     onChange={handleChange}
                   />
-                </div>
+                </div> */}
                 <div className="flex justify-between space-x-4 mt-4">
                   <button
                     className={`bg-gray-400 text-white px-4 py-2 rounded ${currentStep === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-500"
@@ -1272,7 +1281,7 @@ const SAAORegistration = () => {
                   >
                     Previous
                   </button>
-                  {currentStep === 3 ? (
+                  {currentStep === 2 ? (
                     <button
                       className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                       onClick={registerSAAO}

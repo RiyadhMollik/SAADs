@@ -352,74 +352,81 @@ const Profile = () => {
 
     const handleExportCSV = () => {
         try {
-            // Prepare CSV content
-            const headers = [
-                "Field,Information"
+            // Define data fields
+            const fields = [
+                "Name", formData.name || 'N/A',
+                "Father's Name", formData.fatherName || 'N/A',
+                "Gender", formData.gender || 'N/A',
+                "Mobile Number", formData.mobileNumber || 'N/A',
+                "WhatsApp Number", formData.whatsappNumber || 'N/A',
+                "Messenger ID", formData.messengerId || 'N/A',
+                "Email", formData.email || 'N/A',
+                "Alternate Contact", formData.alternateContact || 'N/A',
+
+                "Hotspots", selectedHotspots.join(', ') || 'N/A',
+                "Region", formData.region || 'N/A',
+                "Division", formData.division || 'N/A',
+                "District", formData.district || 'N/A',
+                "Upazila", formData.upazila || 'N/A',
+                "Union", formData.union || 'N/A',
+                "Block", formData.block || 'N/A',
+                "Latitude", formData.lat || 'N/A',
+                "Longitude", formData.lan || 'N/A',
+
+                "Land Type", formData.landType || 'N/A',
+                "Major Crops", selectedMajorCrop.join(', ') || 'N/A',
+                "Planting Method", formData.plantingMethod || 'N/A',
+                "Irrigation Practices", formData.irrigationPractices === "others" ? irrigationPracticesOthers : formData.irrigationPractices || 'N/A',
+                "Irrigation Source Type", formData.irrigationSourceType || 'N/A',
+                "Soil Type", formData.soilType === "others" ? otherSoilType : formData.soilType || 'N/A',
+                "Cropping Pattern", formData.croppingPattern || 'N/A',
+                "Climate Extremes", selectedClimateExtremes.join(', ') || 'N/A',
+                "Rice Varieties", formData.riceVarieties || 'N/A',
+                "Total Cultivated Area", formData.totalCultivatedArea || 'N/A',
+                "Number of Farmers", formData.numberOfFarmers || 'N/A',
+                "Community Information", formData.communityInformation === "Other" ? formData.farmerGroupName : formData.communityInformation || 'N/A',
             ];
 
-            const personalInfo = [
-                `Name,${formData.name || 'N/A'}`,
-                `Father's Name,${formData.fatherName || 'N/A'}`,
-                `Gender,${formData.gender || 'N/A'}`,
-                `Mobile Number,${formData.mobileNumber || 'N/A'}`,
-                `WhatsApp Number,${formData.whatsappNumber || 'N/A'}`,
-                `Messenger ID,${formData.messengerId || 'N/A'}`,
-                `Email,${formData.email || 'N/A'}`,
-                `Alternate Contact,${formData.alternateContact || 'N/A'}`,
-            ];
+            // Separate into field names and values
+            const headers = [];
+            const values = [];
 
-            const locationInfo = [
-                `Hotspots,${selectedHotspots.join(', ') || 'N/A'}`,
-                `Region,${formData.region || 'N/A'}`,
-                `Division,${formData.division || 'N/A'}`,
-                `District,${formData.district || 'N/A'}`,
-                `Upazila,${formData.upazila || 'N/A'}`,
-                `Union,${formData.union || 'N/A'}`,
-                `Block,${formData.block || 'N/A'}`,
-                `Latitude,${formData.lat || 'N/A'}`,
-                `Longitude,${formData.lan || 'N/A'}`,
-            ];
+            for (let i = 0; i < fields.length; i += 2) {
+                headers.push(`"${fields[i]}"`);
+                values.push(`"${fields[i + 1]}"`);
+            }
 
-            const farmingInfo = [
-                `Land Type,${formData.landType || 'N/A'}`,
-                `Major Crops,${selectedMajorCrop.join(', ') || 'N/A'}`,
-                `Planting Method,${formData.plantingMethod || 'N/A'}`,
-                `Irrigation Practices,${formData.irrigationPractices === "others" ? irrigationPracticesOthers : formData.irrigationPractices || 'N/A'}`,
-                `Irrigation Source Type,${formData.irrigationSourceType || 'N/A'}`,
-                `Soil Type,${formData.soilType === "others" ? otherSoilType : formData.soilType || 'N/A'}`,
-                `Cropping Pattern,${formData.croppingPattern || 'N/A'}`,
-                `Climate Extremes,${selectedClimateExtremes.join(', ') || 'N/A'}`,
-                `Rice Varieties,${formData.riceVarieties || 'N/A'}`,
-                `Total Cultivated Area,${formData.totalCultivatedArea || 'N/A'}`,
-                `Number of Farmers,${formData.numberOfFarmers || 'N/A'}`,
-                `Community Information,${formData.communityInformation === "Other" ? formData.farmerGroupName : formData.communityInformation || 'N/A'}`,
-            ];
+            // Handle seasonal info
+            const seasonalFields = [];
 
-            const seasonalInfo = [
-                ...selectedSeasonVarieties.map(opt => `${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} Variety,${opt.input || 'N/A'}`),
-                ...transplantingDates.map(opt => `Transplanting ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From,${opt.fromDate || 'N/A'}`),
-                ...transplantingDates.map(opt => `Transplanting ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To,${opt.toDate || 'N/A'}`),
-                ...piTimes.map(opt => `PI Time ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From,${opt.fromDate || 'N/A'}`),
-                ...piTimes.map(opt => `PI Time ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To,${opt.toDate || 'N/A'}`),
-                ...floweringDates.map(opt => `Flowering ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From,${opt.fromDate || 'N/A'}`),
-                ...floweringDates.map(opt => `Flowering ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To,${opt.toDate || 'N/A'}`),
-                ...expectedHarvestPeriods.map(opt => `Harvest ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From,${opt.fromDate || 'N/A'}`),
-                ...expectedHarvestPeriods.map(opt => `Harvest ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To,${opt.toDate || 'N/A'}`),
-            ];
+            selectedSeasonVarieties.forEach(opt => {
+                seasonalFields.push([`${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} Variety`, opt.input || 'N/A']);
+            });
+            transplantingDates.forEach(opt => {
+                seasonalFields.push([`Transplanting ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From`, opt.fromDate || 'N/A']);
+                seasonalFields.push([`Transplanting ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To`, opt.toDate || 'N/A']);
+            });
+            piTimes.forEach(opt => {
+                seasonalFields.push([`PI Time ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From`, opt.fromDate || 'N/A']);
+                seasonalFields.push([`PI Time ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To`, opt.toDate || 'N/A']);
+            });
+            floweringDates.forEach(opt => {
+                seasonalFields.push([`Flowering ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From`, opt.fromDate || 'N/A']);
+                seasonalFields.push([`Flowering ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To`, opt.toDate || 'N/A']);
+            });
+            expectedHarvestPeriods.forEach(opt => {
+                seasonalFields.push([`Harvest ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} From`, opt.fromDate || 'N/A']);
+                seasonalFields.push([`Harvest ${seasonOptions.find(o => o.value === opt.value)?.label || opt.value} To`, opt.toDate || 'N/A']);
+            });
 
-            // Combine all sections with headers
+            seasonalFields.forEach(([field, value]) => {
+                headers.push(`"${field}"`);
+                values.push(`"${value}"`);
+            });
+
             const csvContent = [
-                "Personal Information",
-                ...personalInfo,
-                "",
-                "Location Information",
-                ...locationInfo,
-                "",
-                "Farming Information",
-                ...farmingInfo,
-                "",
-                "Seasonal Information",
-                ...seasonalInfo,
+                headers.join(","),
+                values.join(",")
             ].join("\n");
 
             // Create and download CSV
@@ -1214,7 +1221,7 @@ const Profile = () => {
                                 </div>
                                 <div>
                                     <label htmlFor="lan" className="block text-sm font-medium text-gray-700">
-                                        Get Location
+                                        Location
                                     </label>
                                     <button
                                         type="button"
@@ -1229,7 +1236,7 @@ const Profile = () => {
                     </div>
 
                     {/* Farming Information Section */}
-                    {authUser.role !== "Agromet Scientists" && 
+                    {authUser.role !== "Agromet Scientists" &&
                         <div className="space-y-4">
                             <h4 className="text-lg font-semibold text-gray-700">Farming Information</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1632,8 +1639,8 @@ const Profile = () => {
                                 </div>
 
                                 <div className="col-span-2 md:col-span-1">
-                                    <label htmlFor="soilType" className="block text-sm font-medium text-gray-700">
-                                        Selected Major Climate Extremes
+                                    <label htmlFor="soilType" className="block text-sm font-medium text-white">
+                                        ,,
                                     </label>
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {selectedClimateExtremes.map(extreme => (
