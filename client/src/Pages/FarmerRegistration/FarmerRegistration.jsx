@@ -1370,7 +1370,7 @@ const FarmerRegistration = () => {
                     className="border w-full p-2 rounded"
                     value={formData.remarks}
                     onChange={handleChange}
-                    required
+                    
                   />
                 </div>
                 <div className="flex justify-end mt-4">
