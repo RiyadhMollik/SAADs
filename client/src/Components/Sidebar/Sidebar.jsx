@@ -208,7 +208,7 @@ const Sidebar = () => {
               className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/feedback") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
               onClick={() => toggleMenu("feedback")}
             >
-              <span className="flex items-center"><TbCloudDataConnection  className="mr-3" /> {isHidden ? "" : "Climet Data"}</span>
+              <span className="flex items-center"><TbCloudDataConnection  className="mr-3" /> {isHidden ? "" : "Climate Data"}</span>
               {isHidden ? '' : <IoIosAddCircle />}
             </button>
             <ul className={`mt-2 ${openMenus["feedback"] ? "block" : "hidden"} pl-4 space-y-1`}>
