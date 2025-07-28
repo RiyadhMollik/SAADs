@@ -32,7 +32,7 @@ function App() {
               if (Notification.permission === "granted") {
                 new Notification(title, {
                   body: body,
-                  icon: "/path/to/icon.png", // Optional: replace with your icon path
+                  // icon: "/path/to/icon.png", // Optional: replace with your icon path
                 });
               } else if (Notification.permission !== "denied") {
                 // Request permission if not yet granted or denied
@@ -41,7 +41,7 @@ function App() {
                   if (permission === "granted") {
                     new Notification(title, {
                       body: body,
-                      icon: "/path/to/icon.png", // Optional: replace with your icon path
+                      // icon: "/path/to/icon.png", // Optional: replace with your icon path
                     });
                   }
                 });

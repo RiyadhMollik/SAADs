@@ -56,6 +56,9 @@ import FarmerData from "../Pages/FarmerData/FarmerData";
 import CdrTable from "../Pages/CdrTable/CdrTable";
 import VariablePieChart from "../Pages/Report/VariablePieChart";
 import Notification from "../Pages/Profile/Notification";
+import Station from "../Pages/Station/Station";
+import WeatherStation from "../Pages/WeatherStation/WeatherStation";
+import AAPLStockChart from "../Pages/AAPLStockChart/AAPLStockChart";
 
 export const router = createBrowserRouter([
   {
@@ -247,6 +250,18 @@ export const router = createBrowserRouter([
       {
         path: "/call-center",
         element: <CdrTable/> , 
+      },  
+      {
+        path: "/stations",
+        element: <Station/> , 
+      },  
+      {
+        path: "/weather-stations",
+        element: <WeatherStation/> , 
+      },  
+      {
+        path: "/weather-stations-demo",
+        element: <AAPLStockChart/> , 
       },  
       
       

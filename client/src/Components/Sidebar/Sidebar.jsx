@@ -6,7 +6,7 @@ import { IoIosAddCircle, IoMdSwitch } from "react-icons/io";
 import logo from "../../assets/brri.png";
 import useLogout from "../../Hook/useLogout";
 import { AuthContext } from "../context/AuthProvider";
-import { TbReport } from "react-icons/tb";
+import { TbCloudDataConnection, TbReport } from "react-icons/tb";
 import { GoArrowSwitch } from "react-icons/go";
 import { WiSmallCraftAdvisory } from "react-icons/wi";
 
@@ -198,6 +198,25 @@ const Sidebar = () => {
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
                 <li><Link onClick={() => setIsslider(false)} to="/saao-report" className="hover:text-green-700">SAAO Reports</Link></li>
+              )}
+            </ul>
+          </div>
+        )}
+        {(rolePermission && rolePermission["Feedback"]) && (
+          <div>
+            <button
+              className={`flex items-center justify-between w-full px-4 py-2 rounded-lg ${isActive("/feedback") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}
+              onClick={() => toggleMenu("feedback")}
+            >
+              <span className="flex items-center"><TbCloudDataConnection  className="mr-3" /> {isHidden ? "" : "Climet Data"}</span>
+              {isHidden ? '' : <IoIosAddCircle />}
+            </button>
+            <ul className={`mt-2 ${openMenus["feedback"] ? "block" : "hidden"} pl-4 space-y-1`}>
+              {(rolePermission && rolePermission["Send Feedback"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/cis" className="hover:text-green-700">CIS Form</Link></li>
+              )}
+              {(rolePermission && rolePermission["Feedback Table"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/cis-table" className="hover:text-green-700">CIS Table</Link></li>
               )}
             </ul>
           </div>
