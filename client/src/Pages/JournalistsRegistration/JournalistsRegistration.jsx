@@ -104,13 +104,26 @@ const JournalistsRegistration = () => {
     }
   };
 
+  const excludedFields = [
+    'gender',
+    'messengerId',
+    'email',
+    'emailOfficial',
+  ];
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    let formattedValue = value
-      .replace(/\b(md)\./gi, 'Md.')
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
+
+    let formattedValue = value;
+
+    if (!excludedFields.includes(name)) {
+      formattedValue = value
+        .replace(/\b(md)\./gi, 'Md.')
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: formattedValue,

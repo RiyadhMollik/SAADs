@@ -8,6 +8,201 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import logo from '/logo.png';
 
+// Rice Pest Hill Entry Component
+const RicePestHillEntry = ({ onHillDataChange, initialHillData = [] }) => {
+  const [hills, setHills] = useState(initialHillData);
+  const [currentHill, setCurrentHill] = useState([]);
+  const [mainLabel, setMainLabel] = useState("");
+  const [subLabel, setSubLabel] = useState("");
+  const [value, setValue] = useState("");
+
+  const columns = [
+    { label: "Stem borer", sub: ["No. of tiller/hill", "Egg mass", "DH", "VH"] },
+    { label: "Rice hispa", sub: ["Adult/Grubs", "Grub leaves", "Damage Score"] },
+    { label: "Leaf roller", sub: ["Adult/Larvae", "Larvae leaves"] },
+    { label: "Case worm", sub: ["Adult/Larvae", "Larvae leaves", "Damage Score"] },
+    { label: "GH", sub: ["Adult/Nymph", "Damage Score"] },
+    { label: "LH C", sub: ["Adult/Nymph", "Damage Score"] },
+    { label: "SCP", sub: ["Adult/Larva", "Damage Score"] },
+    { label: "BPH", sub: ["Adult/Nymph", "Damage Score"] },
+    { label: "WBPH", sub: ["Adult/Nymph", "Damage Score"] },
+    { label: "GLH", sub: ["Adult/Nymph", "Damage Score"] },
+    { label: "RB", sub: ["Adult/Nymph", "Damage Score"] },
+    { label: "ECC", sub: ["Adult/Larvae", "Damage"] },
+    { label: "WM/Damage", sub: [] },
+    { label: "Spider", sub: [] },
+    { label: "Dragon/Damsel", sub: [] },
+    { label: "Staphylinid beetle", sub: [] },
+    { label: "LBB", sub: [] },
+    { label: "GMB", sub: [] },
+    { label: "Carabid", sub: [] },
+  ];
+
+  const getSubOptions = () => {
+    const main = columns.find((col) => col.label === mainLabel);
+    return main ? main.sub : [];
+  };
+
+  const handleAddObservation = () => {
+    if (!mainLabel || (getSubOptions().length > 0 && !subLabel) || !value) return;
+
+    setCurrentHill((prev) => [
+      ...prev,
+      { label: mainLabel, subLabel: getSubOptions().length > 0 ? subLabel : "", value }
+    ]);
+
+    // Reset input fields
+    setMainLabel("");
+    setSubLabel("");
+    setValue("");
+  };
+
+  const handleFinishHill = () => {
+    if (currentHill.length === 0) return;
+
+    const newHills = [
+      ...hills,
+      { hillNo: hills.length + 1, observations: currentHill }
+    ];
+    setHills(newHills);
+    setCurrentHill([]); // Reset current hill observations
+    onHillDataChange(newHills); // Notify parent component
+  };
+
+  const handleRemoveHill = (hillIndex) => {
+    const newHills = hills.filter((_, index) => index !== hillIndex);
+    // Renumber hills
+    const renumberedHills = newHills.map((hill, index) => ({
+      ...hill,
+      hillNo: index + 1
+    }));
+    setHills(renumberedHills);
+    onHillDataChange(renumberedHills);
+  };
+
+  return (
+    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-4">
+      <h4 className="text-lg font-semibold mb-3 text-blue-800">Rice Pest Hill Entry</h4>
+      
+      {/* Current Hill Form */}
+      <div className="bg-white p-3 rounded shadow mb-4">
+        <h5 className="text-md font-semibold mb-2 text-gray-700">
+          Current Hill No: {hills.length + 1}
+        </h5>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <select
+            value={mainLabel}
+            onChange={(e) => setMainLabel(e.target.value)}
+            className="border p-2 rounded text-sm"
+          >
+            <option value="">Select Label</option>
+            {columns.map((col) => (
+              <option key={col.label} value={col.label}>
+                {col.label}
+              </option>
+            ))}
+          </select>
+
+          {getSubOptions().length > 0 && (
+            <select
+              value={subLabel}
+              onChange={(e) => setSubLabel(e.target.value)}
+              className="border p-2 rounded text-sm"
+            >
+              <option value="">Select Sub Label</option>
+              {getSubOptions().map((sub) => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <input
+            type="text"
+            placeholder="Value"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            className="border p-2 rounded text-sm"
+          />
+
+          <button
+            onClick={handleAddObservation}
+            className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-sm"
+          >
+            Add Observation
+          </button>
+        </div>
+
+        {currentHill.length > 0 && (
+          <>
+            <h6 className="mt-3 font-semibold text-sm">Current Observations:</h6>
+            <ul className="list-disc pl-5 text-xs mb-3">
+              {currentHill.map((obs, index) => (
+                <li key={index}>
+                  {obs.label} {obs.subLabel && `- ${obs.subLabel}`} : {obs.value}
+                </li>
+              ))}
+            </ul>
+
+            <button
+              onClick={handleFinishHill}
+              className="bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-sm"
+            >
+              Finish Hill & Add Next
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* All Hills Table */}
+      {hills.length > 0 && (
+        <div>
+          <h5 className="text-md font-semibold mb-2 text-gray-700">Hill Observations</h5>
+          <div className="max-h-40 overflow-y-auto">
+            <table className="w-full table-auto border-collapse border border-gray-300 text-xs">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="border border-gray-300 p-1">Hill No</th>
+                  <th className="border border-gray-300 p-1">Observations</th>
+                  <th className="border border-gray-300 p-1">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hills.map((hill, index) => (
+                  <tr key={hill.hillNo}>
+                    <td className="border border-gray-300 p-1 text-center font-bold">
+                      {hill.hillNo}
+                    </td>
+                    <td className="border border-gray-300 p-1">
+                      <ul className="list-disc pl-3">
+                        {hill.observations.map((obs, obsIndex) => (
+                          <li key={obsIndex}>
+                            {obs.label} {obs.subLabel && `- ${obs.subLabel}`} : {obs.value}
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td className="border border-gray-300 p-1 text-center">
+                      <button
+                        onClick={() => handleRemoveHill(index)}
+                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-xs"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
     const [formData, setFormData] = useState(
         initialData || {
@@ -33,7 +228,8 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
             },
             reproductivePhases: {},
             maturity: "",
-            insectEntries: []
+            insectEntries: [],
+            hillData: [] // Add hill data to form data
         }
     );
     const [errors, setErrors] = useState({});
@@ -43,6 +239,15 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [transplantingDates, setTransplantingDates] = useState([]);
     const [naturalEnemies, setNaturalEnemies] = useState([]);
+
+    // Handle hill data changes
+    const handleHillDataChange = (hillData) => {
+        setFormData(prev => ({
+            ...prev,
+            hillData: hillData
+        }));
+    };
+
     // Add new insect entry
     const handleAddInsectEntry = () => {
         setFormData((prev) => ({
@@ -283,7 +488,8 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
             temperature: '',
             rainfall: '',
             relativeHumidity: '',
-            insectEntries: []
+            insectEntries: [],
+            hillData: [] // Reset hill data
         });
         setErrors({});
         setGpsError('');
@@ -293,7 +499,7 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed max-w-[150vh] inset-0 z-[999999] p-2 sm:p-4 bg-gray-600 bg-opacity-50 flex items-center justify-center overflow-y-auto">
+        <div className="fixed w- full inset-0 z-[999999] p-2 sm:p-4 bg-gray-600 bg-opacity-50 flex items-center justify-center overflow-y-auto">
             <div className="bg-white px-4 sm:px-6 py-6 sm:py-8 rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                 <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">{isEdit ? 'Edit Data' : 'Add New Data'}</h2>
 
@@ -699,6 +905,16 @@ const Modal = ({ isOpen, onClose, onSave, initialData, isEdit }) => {
                         ))}
                     </div>
 
+                    {/* Rice Pest Hill Entry Section */}
+                    <div className="mt-6 col-span-2">
+                        <RicePestHillEntry
+                            onHillDataChange={handleHillDataChange}
+                            initialHillData={formData.hillData}
+                        />
+                    </div>
+
+
+
                 </div>
                 <div className="mt-4 sm:mt-6 flex justify-end gap-2 sm:gap-3">
                     <button
@@ -749,6 +965,7 @@ const InsectPests = () => {
         { name: "Rainfall (mm)", visible: true },
         { name: "Relative Humidity (%)", visible: true },
         { name: "Diseases", visible: true },
+        { name: "Hill Data", visible: true },
         { name: "Action", visible: true },
     ];
 
@@ -772,6 +989,7 @@ const InsectPests = () => {
         "Rainfall (mm)": "rainfall",
         "Relative Humidity (%)": "relativeHumidity",
         Diseases: "diseaseEntries",
+        "Hill Data": "hillData",
     };
 
     useEffect(() => {
@@ -814,7 +1032,14 @@ const InsectPests = () => {
             ) ||
         row.diseaseEntries.some((entry) =>
             entry.diseaseName.toLowerCase().includes(searchText.toLowerCase())
-        )
+        ) ||
+        (row.hillData && row.hillData.some((hill) =>
+            hill.observations.some((obs) =>
+                obs.label.toLowerCase().includes(searchText.toLowerCase()) ||
+                (obs.subLabel && obs.subLabel.toLowerCase().includes(searchText.toLowerCase())) ||
+                obs.value.toLowerCase().includes(searchText.toLowerCase())
+            )
+        ))
     );
 
     const sortedData = [...filteredData].sort((a, b) => {
@@ -822,9 +1047,13 @@ const InsectPests = () => {
         const key = columnKeyMap[sortConfig.key];
         let valueA = key === "diseaseEntries"
             ? a[key].map((e) => e.diseaseName).join(', ')
+            : key === "hillData"
+            ? a[key] ? `${a[key].length} hills` : '0 hills'
             : a[key] || '';
         let valueB = key === "diseaseEntries"
             ? b[key].map((e) => e.diseaseName).join(', ')
+            : key === "hillData"
+            ? b[key] ? `${b[key].length} hills` : '0 hills'
             : b[key] || '';
 
         if (sortConfig.key === 'ID' || sortConfig.key === 'Year' || sortConfig.key === 'Age of Seedling' || sortConfig.key === 'Growth Duration' ||
@@ -924,6 +1153,15 @@ const InsectPests = () => {
                                 )
                                 .join('; ');
                         }
+                        if (col.name === "Hill Data") {
+                            return row.hillData && row.hillData.length > 0
+                                ? row.hillData.map((hill) =>
+                                    `Hill ${hill.hillNo}: ${hill.observations.map((obs) =>
+                                        `${obs.label}${obs.subLabel ? ` - ${obs.subLabel}` : ''}: ${obs.value}`
+                                    ).join('; ')}`
+                                ).join(' | ')
+                                : 'No hill data';
+                        }
                         const key = columnKeyMap[col.name];
                         return row[key] || '';
                     })
@@ -956,6 +1194,14 @@ const InsectPests = () => {
                                 `${entry.diseaseName} (Severity: ${entry.diseaseSeverity}, Incident: ${entry.diseasesIncident}%)`
                             )
                             .join('; ');
+                    } else if (col.name === "Hill Data") {
+                        rowData[keyAlias] = row.hillData && row.hillData.length > 0
+                            ? row.hillData.map((hill) =>
+                                `Hill ${hill.hillNo}: ${hill.observations.map((obs) =>
+                                    `${obs.label}${obs.subLabel ? ` - ${obs.subLabel}` : ''}: ${obs.value}`
+                                ).join('; ')}`
+                            ).join(' | ')
+                            : 'No hill data';
                     } else {
                         const key = columnKeyMap[col.name];
                         rowData[keyAlias] = row[key] || '';
@@ -1027,6 +1273,15 @@ const InsectPests = () => {
                                 `${entry.diseaseName} (Severity: ${entry.diseaseSeverity}, Incident: ${entry.diseasesIncident}%)`
                             )
                             .join('; ');
+                    }
+                    if (col.name === "Hill Data") {
+                        return row.hillData && row.hillData.length > 0
+                            ? row.hillData.map((hill) =>
+                                `Hill ${hill.hillNo}: ${hill.observations.map((obs) =>
+                                    `${obs.label}${obs.subLabel ? ` - ${obs.subLabel}` : ''}: ${obs.value}`
+                                ).join('; ')}`
+                            ).join(' | ')
+                            : 'No hill data';
                     }
                     const key = columnKeyMap[col.name];
                     return row[key] || '';
@@ -1107,7 +1362,7 @@ const InsectPests = () => {
                     <div className="flex flex-col md:flex-row items-center justify-between mt-4 w-full space-y-3 md:space-y-0">
                         <input
                             type="text"
-                            placeholder="Search by ID, Year, Season, Site, Variety, or Disease"
+                            placeholder="Search by ID, Year, Season, Site, Variety, Disease, or Hill Data"
                             className="border rounded px-4 py-2 w-full md:w-1/2 lg:w-1/3 text-sm"
                             value={searchText}
                             onChange={(e) => setSearchText(e.target.value)}
@@ -1226,6 +1481,26 @@ const InsectPests = () => {
                                                                         )}
                                                                     </div>
                                                                 ))}
+                                                            </div>
+                                                        )}
+                                                        {col.name === "Hill Data" && (
+                                                            <div className="max-h-32 overflow-y-auto">
+                                                                {row.hillData && row.hillData.length > 0 ? (
+                                                                    row.hillData.map((hill, hillIndex) => (
+                                                                        <div key={hillIndex} className="mb-2 p-2 bg-gray-50 rounded text-xs">
+                                                                            <div className="font-semibold">Hill {hill.hillNo}:</div>
+                                                                            <ul className="list-disc pl-3 mt-1">
+                                                                                {hill.observations.map((obs, obsIndex) => (
+                                                                                    <li key={obsIndex}>
+                                                                                        {obs.label} {obs.subLabel && `- ${obs.subLabel}`} : {obs.value}
+                                                                                    </li>
+                                                                                ))}
+                                                                            </ul>
+                                                                        </div>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="text-gray-500 text-xs">No hill data</span>
+                                                                )}
                                                             </div>
                                                         )}
                                                         {col.name === "Action" && (

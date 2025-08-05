@@ -35,7 +35,7 @@ const WeatherStation = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">Weather Station Dashboard</h1>
         
         <div className="mb-6">

@@ -9,7 +9,7 @@ import { AuthContext } from "../context/AuthProvider";
 import { TbCloudDataConnection, TbReport } from "react-icons/tb";
 import { GoArrowSwitch } from "react-icons/go";
 import { WiSmallCraftAdvisory } from "react-icons/wi";
-
+import { GiNotebook } from "react-icons/gi";
 const Sidebar = () => {
   const { logout, loading } = useLogout();
   const [openMenus, setOpenMenus] = useState({});
@@ -135,6 +135,13 @@ const Sidebar = () => {
           </Link>
         )}
         {(rolePermission && rolePermission["Diseases List"]) && (
+          <Link to="/attendance" onClick={() => setIsslider(false)}>
+            <button className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/attendance") ? "bg-green-700 text-white" : "bg-gray-100 hover:bg-green-700 hover:text-white"}`}>
+              <GiNotebook className="mr-3 text-lg" /> {isHidden ? "" : "Attendance"}
+            </button>
+          </Link>
+        )}
+        {(rolePermission && rolePermission["Diseases List"]) && (
           <Link to="/diseases-survey" onClick={() => setIsslider(false)}>
             <button
               className={`flex items-center w-full px-4 py-2 rounded-lg ${isActive("/diseases-survey")
@@ -198,6 +205,12 @@ const Sidebar = () => {
               )}
               {(rolePermission && rolePermission["Feedback Table"]) && (
                 <li><Link onClick={() => setIsslider(false)} to="/saao-report" className="hover:text-green-700">SAAO Reports</Link></li>
+              )}
+              {(rolePermission && rolePermission["Feedback Table"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/cdr-report" className="hover:text-green-700">Call Center Reports</Link></li>
+              )}
+              {(rolePermission && rolePermission["Feedback Table"]) && (
+                <li><Link onClick={() => setIsslider(false)} to="/weather-stations-report" className="hover:text-green-700">Weather Station Reports</Link></li>
               )}
             </ul>
           </div>

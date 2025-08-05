@@ -59,6 +59,8 @@ import Notification from "../Pages/Profile/Notification";
 import Station from "../Pages/Station/Station";
 import WeatherStation from "../Pages/WeatherStation/WeatherStation";
 import AAPLStockChart from "../Pages/AAPLStockChart/AAPLStockChart";
+import Attendance from "../Pages/Attendance/Attendance";
+import CDRReport from "../Pages/CDRReport/CDRReport";
 
 export const router = createBrowserRouter([
   {
@@ -260,9 +262,17 @@ export const router = createBrowserRouter([
         element: <WeatherStation/> , 
       },  
       {
-        path: "/weather-stations-demo",
+        path: "/weather-stations-report",
         element: <AAPLStockChart/> , 
       },  
+      {
+        path: "/attendance",
+        element: <Attendance/> , 
+      }, 
+       {
+        path: "/cdr-report",
+        element: <CDRReport/> , 
+      },   
       
       
         
