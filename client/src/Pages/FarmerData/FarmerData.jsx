@@ -383,7 +383,6 @@ const FarmerData = () => {
   // Defining headlines (tabs)
   const headlines = [
     "বীজতলা তৈরি ও ব্যবস্থাপনা",
-    "বীজতলা তৈরিতে ব্যবহৃত শ্রমিক (সংখ্যা)",
     "জমি তৈরি ব্যবস্থাপনা পদ্ধতি",
     "আগাছানাশক ব্যবস্থাপনা",
     "আগাছা ব্যবস্থাপনা",
@@ -413,13 +412,6 @@ const FarmerData = () => {
       // Pesticide fields handled separately
       // Fungicide fields handled separately
       // "মোট খরচ (টাকা)",
-    ],
-    [
-      "তারিখ",
-      "শ্রম ঘন্টা (মিনিট)",
-      "সেচ প্রদানে ব্যবহৃত শ্রমিক (সংখ্যা)",
-      "আগাছা দমনে ব্যবহৃত শ্রমিক (সংখ্যা)",
-      "শ্রম ঘন্টা (মিনিট)",
     ],
     [
       "তারিখ",
@@ -538,32 +530,48 @@ const FarmerData = () => {
     irrigation: [
       { label: "বীজতলা তৈরিতে সেচ প্রদানের তারিখ", key: "date", type: "date" },
       { label: "বীজতলা তৈরিতে সেচ প্রদানের খরচ (টাকা)", key: "cost", type: "text" },
+      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     fertilizer: [
       { label: "তারিখ", key: "date", type: "date" },
       { label: "সারের নাম", key: "name", type: "text" },
       { label: "সারের পরিমান (কেজি)", key: "amount", type: "text" },
       { label: "সারের মূল্য (টাকা)", key: "cost", type: "text" },
+      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     herbicide: [
       { label: "তারিখ", key: "date", type: "date" },
       { label: "আগাছানাশকের নাম", key: "name", type: "text" },
       { label: "আগাছানাশকের পরিমান (গ্রাম)", key: "amount", type: "text" },
       { label: "আগাছানাশকের মূল্য (টাকা)", key: "cost", type: "text" },
+      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     pesticide: [
       { label: "তারিখ", key: "date", type: "date" },
       { label: "কীটনাশকের নাম", key: "name", type: "text" },
       { label: "কীটনাশকের পরিমান (গ্রাম)", key: "amount", type: "text" },
       { label: "কীটনাশকের মূল্য (টাকা)", key: "cost", type: "text" },
+      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     fungicide: [
       { label: "তারিখ", key: "date", type: "date" },
       { label: "ছত্রাকনাশকের নাম", key: "name", type: "text" },
       { label: "ছত্রাকনাশকের পরিমান (গ্রাম)", key: "amount", type: "text" },
       { label: "ছত্রাকনাশকের মূল্য (টাকা)", key: "cost", type: "text" },
+      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
   };
+
 
   // Function to determine input type based on field label
   const getInputType = (field) => {
@@ -574,34 +582,42 @@ const FarmerData = () => {
   const calculateTabTotalCost = (tabIndex) => {
     const tabData = formData[tabIndex];
     if (!tabData) return 0;
-
     let totalCost = 0;
-
-    // Calculate cost from single-entry fields (other object)
+    // Calculate cost from single-entry fields
     if (tabData.other) {
       Object.entries(tabData.other).forEach(([field, value]) => {
-        if (field.includes("খরচ") || field.includes("মূল্য") || field.includes("ভাড়া") || field.includes("মুজুরি")) {
+        if (
+          field.includes("খরচ") ||
+          field.includes("মূল্য") ||
+          field.includes("ভাড়া") ||
+          field.includes("মুজুরি")
+        ) {
           const numValue = parseFloat(value) || 0;
           totalCost += numValue;
         }
       });
     }
-
-    // Calculate cost from multi-entry arrays
+    // Multi-entry sections to loop through
     const multiEntryCategories = ['irrigation', 'fertilizer', 'herbicide', 'pesticide', 'fungicide'];
     multiEntryCategories.forEach(category => {
       if (tabData[category] && Array.isArray(tabData[category])) {
         tabData[category].forEach(entry => {
-          if (entry.cost) {
-            const numValue = parseFloat(entry.cost) || 0;
-            totalCost += numValue;
-          }
+          // Add all possible cost-related fields
+          const possibleCostFields = ['cost', 'totalCost', 'laborTotalCost', 'laborCost'];
+
+          possibleCostFields.forEach(field => {
+            if (entry[field]) {
+              const numValue = parseFloat(entry[field]) || 0;
+              totalCost += numValue;
+            }
+          });
         });
       }
     });
 
     return totalCost;
   };
+
   const convertToBanglaNumber = (number) => {
     const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
     return number.toString().split('').map(d => banglaDigits[parseInt(d)] ?? d).join('');
@@ -623,6 +639,17 @@ const FarmerData = () => {
       convertToBanglaNumber(year)
     );
   };
+  const categoryTitleMap = {
+    irrigation: "সেচ প্রদানের",
+    fertilizer: "সারের",
+    herbicide: "আগাছানাশকের",
+    pesticide: "কীটনাশকের",
+    fungicide: "ছত্রাকনাশকের",
+  };
+  const getTitle = (category) => {
+    const banglaTitle = categoryTitleMap[category] || category;
+    return `${banglaTitle} - নতুন তথ্য যোগ করুন`;
+  };
 
   const renderMultiEntrySection = (category, tabIndex) => {
 
@@ -630,7 +657,7 @@ const FarmerData = () => {
       <div className="mb-6 p-4 bg-white rounded-lg shadow">
         <div className="flex justify-between">
           <h3 className="text-lg font-semibold mb-2 font-nikosh">
-            {headlines[tabIndex]} - নতুন তথ্য যোগ করুন
+            <h2 className="text-xl font-bold">{getTitle(category)}</h2>
           </h3>
           <button
             className="mt-2  bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 font-nikosh"
@@ -766,8 +793,8 @@ const FarmerData = () => {
                   <div
                     key={farmer.id}
                     className={`border rounded-lg p-4 cursor-pointer transition-colors ${isSelected
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-blue-300'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 hover:border-blue-300'
                       }`}
                     onClick={() => handleFarmerSelect(farmer)}
                   >
@@ -877,7 +904,7 @@ const FarmerData = () => {
             <select
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-nikosh"
               value={selectedUser}
-  onChange={handleUserChange}
+              onChange={handleUserChange}
             >
               <option value="">কৃষক নির্বাচন করুন</option>
               {selectedFarmers.map((farmer) => (

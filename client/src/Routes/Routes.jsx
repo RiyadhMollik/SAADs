@@ -61,6 +61,7 @@ import WeatherStation from "../Pages/WeatherStation/WeatherStation";
 import AAPLStockChart from "../Pages/AAPLStockChart/AAPLStockChart";
 import Attendance from "../Pages/Attendance/Attendance";
 import CDRReport from "../Pages/CDRReport/CDRReport";
+import UserReport from "../Pages/UserReport/UserReport";
 
 export const router = createBrowserRouter([
   {
@@ -272,6 +273,10 @@ export const router = createBrowserRouter([
        {
         path: "/cdr-report",
         element: <CDRReport/> , 
+      },   
+       {
+        path: "/wabas-report",
+        element: <UserReport/> , 
       },   
       
       
