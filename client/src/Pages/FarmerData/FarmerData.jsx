@@ -384,6 +384,7 @@ const FarmerData = () => {
   const headlines = [
     "বীজতলা তৈরি ও ব্যবস্থাপনা",
     "জমি তৈরি ব্যবস্থাপনা পদ্ধতি",
+    "চারা রোপণ ব্যবস্থাপনা পদ্ধতি",
     "আগাছানাশক ব্যবস্থাপনা",
     "আগাছা ব্যবস্থাপনা",
     "সার ব্যবস্থাপনা",
@@ -428,6 +429,16 @@ const FarmerData = () => {
       "মোট শ্রমিক (সংখ্যা)",
       "মোট শ্রম ঘন্টা (মিনিট)",
       "মোট খরচ (টাকা)",
+    ],
+     [
+      "চারা রোপণ (তারিখ)",
+      "রোপণকৃত জমির পরিমান (শতাংশ)",
+      // Irrigation fields handled separately
+      // Fertilizer fields handled separately
+      "শ্রমিক (সংখ্যা)",
+      "মোট শ্রম ঘন্টা (মিনিট)",
+      "শ্রমিক বাবদ মোট খরচ (টাকা)",
+      // "মোট খরচ (টাকা)",
     ],
     [
       // Herbicide fields handled separately
@@ -528,10 +539,11 @@ const FarmerData = () => {
   // Multi-entry field configurations
   const multiEntryFields = {
     irrigation: [
-      { label: "বীজতলা তৈরিতে সেচ প্রদানের তারিখ", key: "date", type: "date" },
-      { label: "বীজতলা তৈরিতে সেচ প্রদানের খরচ (টাকা)", key: "cost", type: "text" },
-      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
-      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "সেচ প্রদানের তারিখ", key: "date", type: "date" },
+      { label: "সেচ প্রদানের খরচ (টাকা)", key: "cost", type: "text" },
+      { label: "শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "মোট শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      
       { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     fertilizer: [
@@ -539,8 +551,9 @@ const FarmerData = () => {
       { label: "সারের নাম", key: "name", type: "text" },
       { label: "সারের পরিমান (কেজি)", key: "amount", type: "text" },
       { label: "সারের মূল্য (টাকা)", key: "cost", type: "text" },
-      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
-      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "মোট শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      
       { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     herbicide: [
@@ -548,8 +561,9 @@ const FarmerData = () => {
       { label: "আগাছানাশকের নাম", key: "name", type: "text" },
       { label: "আগাছানাশকের পরিমান (গ্রাম)", key: "amount", type: "text" },
       { label: "আগাছানাশকের মূল্য (টাকা)", key: "cost", type: "text" },
-      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
-      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "মোট শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+      
       { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     pesticide: [
@@ -557,8 +571,9 @@ const FarmerData = () => {
       { label: "কীটনাশকের নাম", key: "name", type: "text" },
       { label: "কীটনাশকের পরিমান (গ্রাম)", key: "amount", type: "text" },
       { label: "কীটনাশকের মূল্য (টাকা)", key: "cost", type: "text" },
-      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
-      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+       { label: "শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "মোট শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+     
       { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
     fungicide: [
@@ -566,8 +581,9 @@ const FarmerData = () => {
       { label: "ছত্রাকনাশকের নাম", key: "name", type: "text" },
       { label: "ছত্রাকনাশকের পরিমান (গ্রাম)", key: "amount", type: "text" },
       { label: "ছত্রাকনাশকের মূল্য (টাকা)", key: "cost", type: "text" },
-      { label: "শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
-      { label: "ব্যবহৃত শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+       { label: "শ্রমিক (সংখ্যা)", key: "laborCount", type: "text" },
+      { label: "মোট শ্রম ঘন্টা (মিনিট)", key: "laborTime", type: "text" },
+     
       { label: "শ্রমিক বাবদ মোট খরচ (টাকা)", key: "totalCost", type: "text" },
     ],
   };
@@ -641,10 +657,10 @@ const FarmerData = () => {
   };
   const categoryTitleMap = {
     irrigation: "সেচ প্রদানের",
-    fertilizer: "সারের",
-    herbicide: "আগাছানাশকের",
-    pesticide: "কীটনাশকের",
-    fungicide: "ছত্রাকনাশকের",
+    fertilizer: "সার প্রয়োগের",
+    herbicide: "আগাছানাশক প্রদানের",
+    pesticide: "কীটনাশক প্রদানের",
+    fungicide: "ছত্রাকনাশক প্রদানের",
   };
   const getTitle = (category) => {
     const banglaTitle = categoryTitleMap[category] || category;
@@ -882,7 +898,7 @@ const FarmerData = () => {
       {/* Farmer Selection Modal */}
       <FarmerSelectionModal />
       <h1 className="text-2xl font-bold text-center mb-4 font-nikosh">
-        কৃষি তথ্য ফর্ম
+        তথ্য সংগ্রহ ফরম
       </h1>
 
       {/* Selected Farmers Dropdown */}
@@ -988,6 +1004,12 @@ const FarmerData = () => {
             {renderMultiEntrySection("herbicide", 3)}
             {renderMultiEntrySection("pesticide", 7)}
             {renderMultiEntrySection("fungicide", 8)}
+          </>
+        )}
+        {activeTab === 2 && (
+          <>
+            {renderMultiEntrySection("irrigation", 0)}
+            {renderMultiEntrySection("fertilizer", 5)}
           </>
         )}
         {activeTab === 5 && renderMultiEntrySection("fertilizer", 5)}
